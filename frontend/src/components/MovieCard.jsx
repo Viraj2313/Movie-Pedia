@@ -2,13 +2,13 @@ import { useInView } from "react-intersection-observer";
 import SaveMovie from "./SaveMovie";
 import { useUser } from "@/context/UserContext";
 const MovieCard = ({ movie, onClick }) => {
-  const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
+  const { ref, inView } = useInView({ threshold: 0.05, triggerOnce: true });
   const { userId } = useUser();
   return (
     <li
       ref={ref}
-      className={`relative cursor-pointer overflow-hidden shadow-lg dark:shadow-md rounded-lg transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-gray-500/40 dark:hover:shadow-gray-900/80 ${
-        inView ? "animate-fadeIn" : ""
+      className={`relative cursor-pointer overflow-hidden shadow-lg dark:shadow-md rounded-lg transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-gray-500/40 dark:hover:shadow-gray-900/80 duration-1000 ${
+        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
       }`}
       onClick={() => onClick(movie)}
     >

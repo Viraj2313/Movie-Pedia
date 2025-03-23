@@ -88,8 +88,10 @@ const SignUp = ({ setUserName }) => {
           </Link>
         </p>
       </div>
-      <div className="mt-4 md:w-72 md:m-8 w-3/4">
-        <GoogleSignInButton setUserName={setUserName} />
+      <div className="flex justify-center mt-4 md:w-72 md:m-8 w-full">
+        <div className="w-64 ">
+          <GoogleSignInButton setUserName={setUserName} />
+        </div>
       </div>
     </div>
   );
