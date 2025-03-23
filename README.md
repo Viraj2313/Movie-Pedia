@@ -41,7 +41,8 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 - 🔍 Browse movies by title and IMDb rating
 - 💬 Real-time chat to share movie recommendations with friends
 - ❤️ Wishlist functionality
-- 🔐 Secure JWT-based authentication
+- `Social Login with Google OAuth 2.0 or Custom Login
+- 🔐 Secure JWT-based authentication 
 - ⚡ Context API-based global state management
 - 🌐 Cross-domain cookie support
 - Movie recommendation through machine learning based on user’s preferences
