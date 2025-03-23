@@ -51,7 +51,7 @@ const NavBar = ({ user, handleLogout }) => {
         <div className="flex gap-4 items-center">
           {authLoading ? (
             <div className="flex gap-4 items-center animate-pulse">
-              <div className="bg-gray-200 dark:bg-gray-700 h-5 w-32 rounded"></div>
+              <div className="bg-gray-200 dark:bg-gray-700 h-5 w-20 rounded sm:w-32"></div>
               <div className="bg-gray-200 dark:bg-gray-700 h-8 w-20 rounded-md"></div>
               <div className="opacity-50">
                 <ThemeToggle />

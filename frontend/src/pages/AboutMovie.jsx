@@ -96,7 +96,7 @@ const AboutMovie = () => {
       if (Array.isArray(response.data)) {
         setWatchPlatforms(response.data);
       } else {
-        setWatchPlatforms([]); // Set empty array if the response is not an array
+        setWatchPlatforms([]);
       }
     } catch (error) {
       console.log(error);

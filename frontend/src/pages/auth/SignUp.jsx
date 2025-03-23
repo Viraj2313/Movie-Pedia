@@ -3,7 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { triggerNotification } from "../../utils/NotificationUtil";
 import { toast } from "react-toastify";
-
+import GoogleSignInButton from "@/components/GoogleSignInButton";
+import nProgress from "nprogress";
 const SignUp = ({ setUserName }) => {
   const navigate = useNavigate();
   const [user, setUserState] = useState({
@@ -16,6 +17,7 @@ const SignUp = ({ setUserName }) => {
     e.preventDefault();
     try {
       navigate("/loading");
+      nProgress.start();
       const response = await axios.post(`/api/register`, user, {
         withCredentials: true,
       });
@@ -25,16 +27,18 @@ const SignUp = ({ setUserName }) => {
         toast.success("Signed Up Successfully");
         setUserState({ name: "", email: "", password: "" });
         navigate("/");
+        nProgress.done();
       }
     } catch (error) {
       triggerNotification("Signup failed", "error");
       toast.error("Signup failed");
       navigate("/signup");
+      nProgress.done();
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex md:flex-row flex-col items-center justify-center min-h-[calc(100vh-5rem)] bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 dark:text-white p-8 rounded-xl shadow-lg w-full max-w-sm">
         <h1 className="text-2xl font-bold text-center mb-4">Sign Up</h1>
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
@@ -83,6 +87,9 @@ const SignUp = ({ setUserName }) => {
             Login here
           </Link>
         </p>
+      </div>
+      <div className="mt-4 md:w-72 md:m-8 w-3/4">
+        <GoogleSignInButton setUserName={setUserName} />
       </div>
     </div>
   );

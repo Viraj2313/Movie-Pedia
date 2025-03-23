@@ -4,7 +4,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import nProgress from "nprogress";
 const SaveMovie = ({ movie, userId }) => {
-  const handleSave = async (movie) => {
+  const handleSave = async (movie, e) => {
+    e.stopPropagation();
     try {
       nProgress.start();
       if (!userId) {
@@ -37,7 +38,7 @@ const SaveMovie = ({ movie, userId }) => {
     <>
       <button
         className=" border-none cursor-pointer bg-[#ff5722] text-white p-1.5 px-4 rounded-md transition-colors duration-300 ease relative z-20 hover:bg-[#e64a19]"
-        onClick={() => handleSave(movie)}
+        onClick={(e) => handleSave(movie, e)}
       >
         Save
       </button>
