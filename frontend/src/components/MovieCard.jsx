@@ -7,8 +7,8 @@ const MovieCard = ({ movie, onClick }) => {
   return (
     <li
       ref={ref}
-      className={`relative cursor-pointer overflow-hidden shadow-lg dark:shadow-md rounded-lg transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-gray-500/40 dark:hover:shadow-gray-900/80 ${
-        inView ? "animate-fadeIn" : ""
+      className={`relative cursor-pointer overflow-hidden shadow-lg dark:shadow-md rounded-lg transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-gray-500/40 dark:hover:shadow-gray-900/80 opacity-0 ${
+        inView ? "opacity-100 animate-fadeIn " : "opacity-0"
       }`}
       onClick={() => onClick(movie)}
     >
