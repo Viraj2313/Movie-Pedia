@@ -6,6 +6,7 @@ import { useUser } from "../../context/UserContext";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import nProgress from "nprogress";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 const Login = ({ setUserName }) => {
   const { setUserId } = useUser();
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const Login = ({ setUserName }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-col md:flex-row items-center justify-center min-h-[calc(100vh-5rem)] bg-gray-100 dark:bg-gray-900">
       <div className="p-8 rounded-xl shadow-lg w-full max-w-sm bg-white dark:bg-gray-800 dark:text-white">
         <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
@@ -67,6 +68,9 @@ const Login = ({ setUserName }) => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+      </div>
+      <div className="mt-4 md:w-72 md:m-8 w-3/4">
+        <GoogleSignInButton setUserName={setUserName} />
       </div>
     </div>
   );
