@@ -1,7 +1,7 @@
 # 🎬 Movie Pedia Project
 
 Welcome to **Movie Pedia**, a dynamic web application where users can explore movies, connect with friends, and chat about their favorite recommendations.
-
+Live preview - https://moviepedia-p9bf.onrender.com/
 ## 📁 Folder Structure
 
 ```
