@@ -8,14 +8,9 @@ namespace MovieApiApp.Controllers
 {
     [ApiController]
     [Route("api")]
-    public class UserLikesController : ControllerBase
+    public class UserLikesController(MainDbContext context) : ControllerBase
     {
-        private readonly MainDbContext _context;
-
-        public UserLikesController(MainDbContext context)
-        {
-            _context = context;
-        }
+        private readonly MainDbContext _context = context;
 
         [HttpPost("user-likes")]
         public IActionResult LikeMovie([FromBody] UserLike userLike)

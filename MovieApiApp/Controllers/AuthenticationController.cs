@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using MovieApiApp.Models;
 using MovieApiApp.Data;
 using MovieApiApp.Dto;
+using MovieApiApp.Services;
 
 namespace MovieApiApp.Controllers
 {

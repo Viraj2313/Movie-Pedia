@@ -6,13 +6,10 @@ namespace MovieApiApp.Controllers
 {
     [ApiController]
     [Route("api/gemini")]
-    public class GeminiController : ControllerBase
+    public class GeminiController(GeminiService geminiService) : ControllerBase
     {
-        private readonly GeminiService _geminiService;
-        public GeminiController(GeminiService geminiService)
-        {
-            _geminiService = geminiService;
-        }
+        private readonly GeminiService _geminiService = geminiService;
+
         [HttpPost("ask")]
         public async Task<IActionResult> Ask([FromBody] PromptDto promptDto)
         {

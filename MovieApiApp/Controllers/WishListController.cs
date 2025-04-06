@@ -10,14 +10,9 @@ namespace MovieApiApp.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class WishListController : ControllerBase
+    public class WishListController(MainDbContext context) : ControllerBase
     {
-        private readonly MainDbContext _context;
-
-        public WishListController(MainDbContext context)
-        {
-            _context = context;
-        }
+        private readonly MainDbContext _context = context;
 
         [Authorize]
         [HttpPost("add_wishlist")]

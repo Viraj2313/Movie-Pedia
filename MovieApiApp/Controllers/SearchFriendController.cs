@@ -7,13 +7,10 @@ namespace MovieApiApp.Controllers
 {
     [Route("api/friends")]
     [ApiController]
-    public class SearchFriendController : ControllerBase
+    public class SearchFriendController(MainDbContext context) : ControllerBase
     {
-        private readonly MainDbContext _context;
-        public SearchFriendController(MainDbContext context)
-        {
-            _context = context;
-        }
+        private readonly MainDbContext _context = context;
+
         [HttpGet("search")]
         public async Task<IActionResult> SearchFriend([FromQuery] string friendId)
         {

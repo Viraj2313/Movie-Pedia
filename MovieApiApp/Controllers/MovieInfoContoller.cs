@@ -7,13 +7,10 @@ namespace MovieApiApp.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class MovieInfoController : Controller
+    public class MovieInfoController(GeminiService geminiService) : Controller
     {
-        private readonly GeminiService _geminiService;
-        public MovieInfoController(GeminiService geminiService)
-        {
-            _geminiService = geminiService;
-        }
+        private readonly GeminiService _geminiService = geminiService;
+
         [HttpPost("get-trailer-url")]
         public async Task<IActionResult> GetTrailerUrl([FromBody] MovieInfoDto movieInfoDto)
         {

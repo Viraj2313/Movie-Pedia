@@ -11,13 +11,14 @@ import { Button } from "../components/ui/button";
 import { AiFillSound } from "react-icons/ai";
 import Comments from "@/components/Comments";
 import nProgress from "nprogress";
+import { useUser } from "@/context/UserContext";
 const AboutMovie = () => {
   const { imdbID } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
   const [movieDetails, setMovieDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [watchPlatforms, setWatchPlatforms] = useState([]);
-
+  const { userId } = useUser();
   useEffect(() => {
     if (imdbID) {
       fetchMovieDetails();
@@ -214,7 +215,7 @@ const AboutMovie = () => {
                 className="min-h-full"
                 movieTitle={movieDetails.Title}
               />
-              <SaveMovie />
+              <SaveMovie userId={userId} movie={movieDetails} />
             </div>
 
             <p className="text-lg ">{movieDetails.Plot}</p>
