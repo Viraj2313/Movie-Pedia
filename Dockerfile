@@ -8,7 +8,7 @@ WORKDIR /app/MovieApiApp
 RUN dotnet restore
 
 # Copy the entire API project and build it
-COPY MovieApiApp/. ./MovieApiApp/
+COPY MovieApiApp/. .
 RUN dotnet publish -c Release -o /out
 
 # Use a lightweight runtime image
