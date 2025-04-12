@@ -6,6 +6,7 @@ using WbApp.Services;
 using MovieApiApp.Data;
 using MovieApiApp.Controllers;
 using MovieApiApp.Hubs;
+using MovieApiApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
