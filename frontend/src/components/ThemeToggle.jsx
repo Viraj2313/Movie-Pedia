@@ -34,7 +34,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setIsDark(!isDark)}
-      className="p-2 rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white transition-colors duration-300 mr-2"
+      className="p-2 rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white transition-colors duration-300 "
     >
       {isDark ? (
         <Sun size={20} className="cursor-pointer" />

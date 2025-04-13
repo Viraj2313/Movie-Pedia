@@ -109,7 +109,7 @@ const Comments = ({ movieId }) => {
         />
         <button
           onClick={() => handleAddComment()}
-          className="bg-blue-500 hover:bg-blue-600  font-semibold py-2 px-4 rounded-lg"
+          className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer font-semibold py-2 px-4 rounded-lg"
         >
           Add
         </button>

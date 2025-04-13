@@ -7,13 +7,9 @@ namespace MovieApiApp.Controllers
 {
     [ApiController]
     [Route("api")]
-    public class CommentsController : ControllerBase
+    public class CommentsController(MainDbContext context) : ControllerBase
     {
-        private readonly MainDbContext _context;
-        public CommentsController(MainDbContext context)
-        {
-            _context = context;
-        }
+        private readonly MainDbContext _context = context;
 
         [HttpGet("movies/{movieId}/get-comments")]
         public async Task<IActionResult> GetComments(string movieId)

@@ -4,14 +4,9 @@ using MovieApiApp.Data;
 
 [Route("api/chat")]
 [ApiController]
-public class ChatController : ControllerBase
+public class ChatController(MainDbContext context) : ControllerBase
 {
-    private readonly MainDbContext _context;
-
-    public ChatController(MainDbContext context)
-    {
-        _context = context;
-    }
+    private readonly MainDbContext _context = context;
 
     [HttpGet("history")]
     public async Task<IActionResult> GetChatHistory([FromQuery] int senderId, [FromQuery] int receiverId)

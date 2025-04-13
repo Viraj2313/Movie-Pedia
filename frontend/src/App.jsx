@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import Recommendations from "./pages/Recommendations";
 import nProgress from "nprogress";
+import Profile from "./pages/Profile";
 function App() {
   const navigate = useNavigate();
   const [user, setUserName] = useState(null);
@@ -137,6 +138,7 @@ function App() {
             path="/recommendations"
             element={<Recommendations setSelectedMovie={setSelectedMovie} />}
           />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </UserProvider>
     </>

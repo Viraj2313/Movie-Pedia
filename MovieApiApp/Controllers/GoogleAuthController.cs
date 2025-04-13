@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
 using MovieApiApp.Dto;
 using MovieApiApp.Models;
+using MovieApiApp.Services;
 
 namespace MovieApiApp.Controllers
 {

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Logout from "./Logout";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, UserRound, UserCircle } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useUser } from "@/context/UserContext";
-
+import { FaUser, FaUserCircle } from "react-icons/fa";
 const NavBar = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -59,11 +59,18 @@ const NavBar = ({ user, handleLogout }) => {
             </div>
           ) : userId && user ? (
             <>
-              <strong className="font-light text-sm sm:text-base">
+              <strong className="font-light text-sm sm:text-base hidden md:block">
                 Welcome, {user}!
               </strong>
-              <Logout handleLogout={handleLogout} />
+              <Link to={"/profile"} className="">
+                <div className="border-2 border-gray-300 rounded-full p-1 w-8 h-8 flex items-center justify-center mr-1">
+                  <FaUser size={18} />
+                </div>
+              </Link>
               <ThemeToggle />
+
+              <Logout handleLogout={handleLogout} />
+              <div></div>
             </>
           ) : (
             <div className="flex gap-2">
