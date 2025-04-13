@@ -125,5 +125,20 @@ namespace MovieApiApp.Controllers
 
             return Ok(new { UserId = userId });
         }
+        [HttpGet("get-user-profile")]
+        public async Task<IActionResult> GetUserDetails()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest(new { Message = "User ID not found in token." });
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+            return Ok(new { name = user.Name, id = user.Id, email = user.Email });
+        }
     }
 }
