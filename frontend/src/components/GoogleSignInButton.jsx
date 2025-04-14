@@ -41,7 +41,11 @@ function GoogleSignInButton({ setUserName }) {
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
-      <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={handleFailure}
+        width={240}
+      />
     </GoogleOAuthProvider>
   );
 }
