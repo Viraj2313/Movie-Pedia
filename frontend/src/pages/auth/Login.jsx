@@ -70,7 +70,7 @@ const Login = ({ setUserName }) => {
         </form>
       </div>
       <div className="flex justify-center mt-4 md:w-72 md:m-8 w-full">
-        <div className="">
+        <div className="min-w-80">
           <GoogleSignInButton setUserName={setUserName} />
         </div>
       </div>
