@@ -62,10 +62,15 @@ jobs:
         run: |
           dotnet publish --configuration Release --output ./publish
 
-      - name: Deploy ASP.NET app to Linux VM
+      - name: Deploy ASP.NET app to Linux VM and restart with pm2
         run: |
-          scp -r ./MovieApiApp/publish/* ubuntu@${{ secrets.VM_IP }}:/tmp
-          ssh ubuntu@${{ secrets.VM_IP }} "sudo mkdir -p /var/www/moviepediaapi"
-          ssh ubuntu@${{ secrets.VM_IP }} "sudo mv /tmp/* /var/www/moviepediaapi"
-          ssh ubuntu@${{ secrets.VM_IP }} "sudo systemctl restart your-backend-service"
-
+          scp -r ./MovieApiApp/publish/* ubuntu@${{ secrets.VM_IP }}:/tmp/publish
+          ssh ubuntu@${{ secrets.VM_IP }} << 'EOF'
+            sudo mkdir -p /var/www/moviepediaapi
+            sudo rm -rf /var/www/moviepediaapi/*
+            sudo mv /tmp/publish/* /var/www/moviepediaapi/
+            cd /var/www/moviepediaapi
+            pm2 delete movieapi || true
+            pm2 start "dotnet MovieApiApp.dll --urls http://0.0.0.0:5000" --name movieapi
+            pm2 save
+          EOF
