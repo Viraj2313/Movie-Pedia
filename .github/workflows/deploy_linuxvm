@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - linux-vm-deploy
+  workflow_dispatch:
 
 jobs:
   build:
