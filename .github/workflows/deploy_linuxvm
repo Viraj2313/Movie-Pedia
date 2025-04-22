@@ -1,0 +1,64 @@
+name: Deploy to Linux VM
+
+on:
+  push:
+    branches:
+      - linux-vm-deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.14.0'
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: |
+          npm install
+
+      - name: Build React app
+        working-directory: ./frontend
+        run: |
+          npm run build
+
+      - name: Deploy React app to Linux VM
+        run: |
+          scp -r ./frontend/build/* ubuntu@${{ secrets.VM_IP }}:/var/www/html/moviepediafrontend
+          ssh ubuntu@${{ secrets.VM_IP }} "sudo systemctl restart nginx"
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore dependencies for ASP.NET
+        working-directory: ./backend
+        run: |
+          dotnet restore
+
+      - name: Build ASP.NET app
+        working-directory: ./backend
+        run: |
+          dotnet build --configuration Release
+
+      - name: Publish ASP.NET app
+        working-directory: ./backend
+        run: |
+          dotnet publish --configuration Release --output ./publish
+
+      - name: Deploy ASP.NET app to Linux VM
+        run: |
+          scp -r ./backend/publish/* ubuntu@${{ secrets.VM_IP }}:/var/www/moviepediaapi
+          ssh ubuntu@${{ secrets.VM_IP }} "sudo systemctl restart your-backend-service"
