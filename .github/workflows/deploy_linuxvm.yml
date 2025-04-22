@@ -64,6 +64,8 @@ jobs:
 
       - name: Deploy ASP.NET app to Linux VM
         run: |
-          scp -r ./MovieApiApp/publish/* ubuntu@${{ secrets.VM_IP }}:/tmp 
-          ssh ubuntu@${{ secrets.VM_IP }} "sudo cp -r /tmp/* /var/www/moviepediaapi"
+          scp -r ./MovieApiApp/publish/* ubuntu@${{ secrets.VM_IP }}:/tmp
+          ssh ubuntu@${{ secrets.VM_IP }} "sudo mkdir -p /var/www/moviepediaapi"
+          ssh ubuntu@${{ secrets.VM_IP }} "sudo mv /tmp/* /var/www/moviepediaapi"
           ssh ubuntu@${{ secrets.VM_IP }} "sudo systemctl restart your-backend-service"
+
