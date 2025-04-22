@@ -41,8 +41,8 @@ const Home = ({ setSelectedMovie }) => {
     axios
       .get("/api/home")
       .then((response) => {
-        setMovies(response.data);
-        setSearchResults(response.data);
+        setMovies(response.data || []);
+        setSearchResults(response.data || []);
         setLoading(false);
         nProgress.done();
       })
@@ -51,6 +51,8 @@ const Home = ({ setSelectedMovie }) => {
         setServerError(true);
         setError("Unable to fetch movies from server");
         setLoading(false);
+        setMovies([]);
+        setSearchResults([]);
         nProgress.done();
       });
   }, []);
