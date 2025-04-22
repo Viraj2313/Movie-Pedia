@@ -20,7 +20,7 @@ jobs:
 
       - name: Add server's SSH key to known hosts
         run: |
-          ssh-keyscan -t rsa ${VM_IP} >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa ${{secrets.VM_IP}} >> ~/.ssh/known_hosts
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
