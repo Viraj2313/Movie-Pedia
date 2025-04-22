@@ -20,7 +20,7 @@ jobs:
 
       - name: Add server's SSH key to known hosts
         run: |
-          ssh-keyscan -t rsa ${{secrets.VM_IP}} >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -48,21 +48,21 @@ jobs:
           dotnet-version: "8.0"
 
       - name: Restore dependencies for ASP.NET
-        working-directory: ./backend
+        working-directory: ./MovieApiApp
         run: |
           dotnet restore
 
       - name: Build ASP.NET app
-        working-directory: ./backend
+        working-directory: ./MovieApiApp
         run: |
           dotnet build --configuration Release
 
       - name: Publish ASP.NET app
-        working-directory: ./backend
+        working-directory: ./MovieApiApp
         run: |
           dotnet publish --configuration Release --output ./publish
 
       - name: Deploy ASP.NET app to Linux VM
         run: |
-          scp -r ./backend/publish/* ubuntu@${{ secrets.VM_IP }}:/var/www/moviepediaapi
+          scp -r ./MovieApiApp/publish/* ubuntu@${{ secrets.VM_IP }}:/var/www/moviepediaapi
           ssh ubuntu@${{ secrets.VM_IP }} "sudo systemctl restart your-backend-service"
