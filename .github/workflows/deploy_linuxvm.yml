@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - linux-vm-deploy
-  workflow_dispatch:
 
 jobs:
   build:
@@ -19,10 +18,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
 
+      - name: Add server's SSH key to known hosts
+        run: |
+          ssh-keyscan -t rsa ${VM_IP} >> ~/.ssh/known_hosts
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '22.14.0'
+          node-version: "22.14.0"
 
       - name: Install frontend dependencies
         working-directory: ./frontend
@@ -42,7 +45,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '8.0'
+          dotnet-version: "8.0"
 
       - name: Restore dependencies for ASP.NET
         working-directory: ./backend
