@@ -20,6 +20,7 @@ jobs:
         docker push viraj231/movieapiapp:latest
 
 
+
     - name: Build frontend Docker image
       run: |
         docker build -t frontend ./frontend
