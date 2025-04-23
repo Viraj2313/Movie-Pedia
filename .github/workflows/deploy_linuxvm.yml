@@ -33,6 +33,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
 
+    - name: Add VM to known hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
+
     - name: Deploy to Linux VM
       run: |
         ssh ubuntu@${{ secrets.VM_IP }} << 'EOF'
