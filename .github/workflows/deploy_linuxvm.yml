@@ -57,6 +57,10 @@ jobs:
           docker stop frontend_container || true
           docker rm frontend_container || true
     
-          docker run -d --name movieapiapp_container -p 6000:80 viraj231/movieapiapp:latest
+          docker run -d --name movieapiapp_container \
+            -p 6000:80 \
+            -e ConnectionStrings__DefaultConnection="${{ secrets.DB_CONNECTION_STRING }}" \
+            viraj231/movieapiapp:latest
+            
           docker run -d --name frontend_container -p 90:80 viraj231/frontend:latest
         EOF
