@@ -34,11 +34,8 @@ jobs:
         ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
 
     - name: Deploy to Linux VM
-      uses: appleboy/ssh-action@v0.1.0
-      with:
-        host: ${{ secrets.VM_IP }}
-        username: ubuntu
-        script: |
+      run: |
+        ssh ubuntu@${{ secrets.VM_IP }} << 'EOF'
           docker pull viraj231/movieapiapp:latest
           docker pull viraj231/frontend:latest
     
@@ -49,3 +46,4 @@ jobs:
     
           docker run -d --name movieapiapp_container -p 6000:80 viraj231/movieapiapp:latest
           docker run -d --name frontend_container -p 90:80 viraj231/frontend:latest
+        EOF
