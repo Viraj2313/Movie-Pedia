@@ -28,12 +28,16 @@ jobs:
         docker tag frontend viraj231/frontend:latest
         docker push viraj231/frontend:latest
 
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+
     - name: Deploy to Linux VM
       uses: appleboy/ssh-action@v0.1.0
       with:
         host: ${{ secrets.VM_IP }}
         username: ubuntu
-        key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
         script: |
           docker pull viraj231/movieapiapp:latest
           docker pull viraj231/frontend:latest
