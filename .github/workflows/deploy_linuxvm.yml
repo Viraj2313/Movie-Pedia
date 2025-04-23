@@ -1,76 +1,52 @@
-name: Deploy to Linux VM
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - linux-vm-deploy
+      - main
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    # Build and push the MovieApiApp Docker image
+    - name: Build MovieApiApp Docker image
+      run: |
+        docker build -t movieapiapp ./MovieApiApp
+        docker tag movieapiapp viraj231/movieapiapp:latest
+        docker push viraj231/movieapiapp:latest
 
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+    # Build and push the frontend Docker image
+    - name: Build frontend Docker image
+      run: |
+        docker build -t frontend ./frontend
+        docker tag frontend viraj231/frontend:latest
+        docker push viraj231/frontend:latest
 
-      - name: Add server's SSH key to known hosts
-        run: |
-          ssh-keyscan -t rsa ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
+    # Deploy to Linux VM (using SSH)
+    - name: Deploy to Linux VM
+      uses: appleboy/ssh-action@v0.1.0
+      with:
+        host: ${{ secrets.VM_IP }}
+        username: ubuntu
+        key: ${{ secrets.VM_SSH_PRIVATE_KEY}}
+        script: |
+          # Pull the latest Docker images
+          docker pull viraj231/movieapiapp:latest
+          docker pull viraj231/frontend:latest
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "22.14.0"
+          # Stop and remove existing containers
+          docker stop movieapiapp_container || true
+          docker rm movieapiapp_container || true
+          docker stop frontend_container || true
+          docker rm frontend_container || true
 
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: |
-          npm install
+          # Run the MovieApiApp container
+          docker run -d --name movieapiapp_container -p 6000:80 viraj231/movieapiapp:latest
 
-      - name: Build React app
-        working-directory: ./frontend
-        run: |
-          npm run build
-
-      - name: Deploy React app to Linux VM
-        run: |
-          scp -r ./frontend/build/* ubuntu@${{ secrets.VM_IP }}:/var/www/html/moviepediafrontend
-          ssh ubuntu@${{ secrets.VM_IP }} "sudo systemctl restart nginx"
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: "8.0"
-
-      - name: Restore dependencies for ASP.NET
-        working-directory: ./MovieApiApp
-        run: |
-          dotnet restore
-
-      - name: Build ASP.NET app
-        working-directory: ./MovieApiApp
-        run: |
-          dotnet build --configuration Release
-
-      - name: Publish ASP.NET app
-        working-directory: ./MovieApiApp
-        run: |
-          dotnet publish --configuration Release --output ./publish
-
-      - name: Deploy ASP.NET app to Linux VM and restart with pm2
-        run: |
-          scp -r ./MovieApiApp/publish/* ubuntu@${{ secrets.VM_IP }}:/tmp/publish
-          ssh ubuntu@${{ secrets.VM_IP }} << 'EOF'
-            sudo mkdir -p /var/www/moviepediaapi
-            sudo rm -rf /var/www/moviepediaapi/*
-            sudo mv /tmp/publish/* /var/www/moviepediaapi/
-            cd /var/www/moviepediaapi
-            pm2 delete movieapi || true
-            pm2 start "dotnet MovieApiApp.dll --urls http://0.0.0.0:5000" --name movieapi
-            pm2 save
-          EOF
+          # Run the frontend container
+          docker run -d --name frontend_container -p 90:80 viraj231/frontend:latest
