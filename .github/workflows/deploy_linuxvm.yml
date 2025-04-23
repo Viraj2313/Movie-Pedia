@@ -33,15 +33,15 @@ jobs:
       with:
         host: ${{ secrets.VM_IP }}
         username: ubuntu
-        key: ${{ secrets.VM_SSH_PRIVATE_KEY}}
+        key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
         script: |
           docker pull viraj231/movieapiapp:latest
           docker pull viraj231/frontend:latest
-
+    
           docker stop movieapiapp_container || true
           docker rm movieapiapp_container || true
           docker stop frontend_container || true
           docker rm frontend_container || true
-
+    
           docker run -d --name movieapiapp_container -p 6000:80 viraj231/movieapiapp:latest
           docker run -d --name frontend_container -p 90:80 viraj231/frontend:latest
