@@ -13,22 +13,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
-    # Build and push the MovieApiApp Docker image
     - name: Build MovieApiApp Docker image
       run: |
-        docker build -t movieapiapp -f MovieApiApp/Dockerfile .
+        docker build -t movieapiapp . -f MovieApiApp/Dockerfile
         docker tag movieapiapp viraj231/movieapiapp:latest
         docker push viraj231/movieapiapp:latest
 
-
-    # Build and push the frontend Docker image
     - name: Build frontend Docker image
       run: |
         docker build -t frontend ./frontend
         docker tag frontend viraj231/frontend:latest
         docker push viraj231/frontend:latest
 
-    # Deploy to Linux VM (using SSH)
     - name: Deploy to Linux VM
       uses: appleboy/ssh-action@v0.1.0
       with:
@@ -36,18 +32,14 @@ jobs:
         username: ubuntu
         key: ${{ secrets.VM_SSH_PRIVATE_KEY}}
         script: |
-          # Pull the latest Docker images
           docker pull viraj231/movieapiapp:latest
           docker pull viraj231/frontend:latest
 
-          # Stop and remove existing containers
           docker stop movieapiapp_container || true
           docker rm movieapiapp_container || true
           docker stop frontend_container || true
           docker rm frontend_container || true
 
-          # Run the MovieApiApp container
           docker run -d --name movieapiapp_container -p 6000:80 viraj231/movieapiapp:latest
 
-          # Run the frontend container
           docker run -d --name frontend_container -p 90:80 viraj231/frontend:latest
