@@ -23,6 +23,7 @@ jobs:
         docker push viraj231/movieapiapp:latest
 
 
+
     - name: Build frontend Docker image
       run: |
         docker build --platform linux/arm64 -t frontend ./frontend
