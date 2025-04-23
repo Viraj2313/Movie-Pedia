@@ -18,7 +18,7 @@ jobs:
 
     - name: Build MovieApiApp Docker image
       run: |
-        docker buildx build --platform linux/arm64 -t movieapiapp -f MovieApiApp/Dockerfile .
+        docker buildx build --platform linux/arm64 -t movieapiapp -f MovieApiApp/Dockerfile ./MovieApiApp
         docker tag movieapiapp viraj231/movieapiapp:latest
         docker push viraj231/movieapiapp:latest
 
