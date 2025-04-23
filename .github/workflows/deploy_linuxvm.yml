@@ -1,10 +1,8 @@
 name: CI/CD Pipeline
-
 on:
   push:
     branches:
       - linux-vm-deploy
-
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -13,32 +11,41 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    
     - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
    
-    - name: Build MovieApiApp Docker image
-      run: |
-        docker buildx build --platform linux/arm64 -t movieapiapp -f MovieApiApp/Dockerfile .
-        docker tag movieapiapp viraj231/movieapiapp:latest
-        docker push viraj231/movieapiapp:latest
-
-
-
-    - name: Build frontend Docker image
-      run: |
-        docker build --platform linux/arm64 -t frontend ./frontend
-        docker tag frontend viraj231/frontend:latest
-        docker push viraj231/frontend:latest
-
+    - name: Build and push MovieApiApp Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./MovieApiApp/Dockerfile
+        platforms: linux/arm64
+        push: true
+        tags: viraj231/movieapiapp:latest
+    
+    - name: Build and push frontend Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ./frontend
+        platforms: linux/arm64
+        push: true
+        tags: viraj231/frontend:latest
+    
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-
+    
     - name: Add VM to known hosts
       run: |
         ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
-
+    
     - name: Deploy to Linux VM
       run: |
         ssh ubuntu@${{ secrets.VM_IP }} << 'EOF'
