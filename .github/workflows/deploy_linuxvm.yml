@@ -16,9 +16,10 @@ jobs:
     # Build and push the MovieApiApp Docker image
     - name: Build MovieApiApp Docker image
       run: |
-        docker build -t movieapiapp ./MovieApiApp
+        docker build -t movieapiapp -f MovieApiApp/Dockerfile .
         docker tag movieapiapp viraj231/movieapiapp:latest
         docker push viraj231/movieapiapp:latest
+
 
     # Build and push the frontend Docker image
     - name: Build frontend Docker image
