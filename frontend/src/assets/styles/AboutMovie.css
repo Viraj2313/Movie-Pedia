@@ -1,0 +1,15 @@
+.movie-container{
+    color: black;
+    display: flex;
+    flex-direction: column;
+}
+#movie-title{
+    color:black;
+    margin: 28px auto; 
+    display: block;
+}
+#movie-poster{
+    width: 230px;
+    margin: 0 auto; 
+    display: block;
+}

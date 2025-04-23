@@ -1,0 +1,7 @@
+flask
+flask-cors
+scikit-learn
+aiohttp
+numpy
+gunicorn
+flask[async]
