@@ -13,13 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
     - name: Build MovieApiApp Docker image
       run: |
         docker build -t movieapiapp -f MovieApiApp/Dockerfile .
         docker tag movieapiapp viraj231/movieapiapp:latest
         docker push viraj231/movieapiapp:latest
-
-
 
     - name: Build frontend Docker image
       run: |
@@ -43,5 +44,4 @@ jobs:
           docker rm frontend_container || true
 
           docker run -d --name movieapiapp_container -p 6000:80 viraj231/movieapiapp:latest
-
           docker run -d --name frontend_container -p 90:80 viraj231/frontend:latest
