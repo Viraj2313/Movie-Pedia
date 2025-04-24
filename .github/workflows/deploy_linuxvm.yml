@@ -36,6 +36,8 @@ jobs:
         platforms: linux/arm64
         push: true
         tags: viraj231/frontend:latest
+        build-args: |
+          VITE_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
     
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.5.3
