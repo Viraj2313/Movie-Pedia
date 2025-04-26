@@ -61,7 +61,7 @@ jobs:
 
         docker run -d --name movieapiapp_container \
         -p 6000:80 \
-        -e ConnectionStrings__DefaultConnection="${{ secrets.DB_CONNECTION_STRING }}" \
+        -e ConnectionStrings__DefaultConnection="${{ secrets.LINUX_DB_CONN_STRING }}" \
         -e Jwt__Key="${{ secrets.JWT_SECRET_KEY }}" \
         -e Jwt__Issuer="https://moviepedia.virajdeveloper.online" \
         -e Jwt__Audience="https://moviepedia.virajdeveloper.online" \
