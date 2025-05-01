@@ -25,7 +25,7 @@ API_URL = config["API_URL"]
 
 
 app = Flask(__name__)
-CORS(app,resources={r"/*": {"origins": ["https://moviepedia-p9bf.onrender.com","http://localhost:5174"]}})
+CORS(app,resources={r"/*": {"origins": ["https://moviepedia.virajdeveloper.online","http://localhost:5174"]}})
 
 
 async def fetch_liked_movies(user_id):
