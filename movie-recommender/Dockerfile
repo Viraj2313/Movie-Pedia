@@ -14,5 +14,4 @@ COPY --from=builder /usr/local /usr/local
 
 COPY movie-recommender/ /app
 
-
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "app:app"]
