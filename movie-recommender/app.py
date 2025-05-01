@@ -114,7 +114,7 @@ async def recommend(user_id):
             "poster": home_movie_dict[home_titles[movie[0]]]["poster"]
         } for movie in similar_movies]
     #removes duplicates from the recommendations
-    recommendations = list({movie["imdbID"]: movie for movie in recommendations}.values())  # Remove duplicates
+    recommendations = list({movie["imdbID"]: movie for movie in recommendations}.values())
     
     return jsonify({"Recommendations": recommendations})
 @app.route("/healthcheck",methods=['GET','HEAD'])
@@ -123,4 +123,4 @@ def healthCheck():
         return '', 200
     return jsonify({"status":"OK"}),200
 if __name__ == '__main__':
-    app.run(host= "0.0.0.0")
+    app.run(host= "0.0.0.0", port =80)
