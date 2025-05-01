@@ -22,7 +22,7 @@ services:
     image: viraj231/python_recommender:latest
     container_name: recommender_container
     ports:
-      - "5002:80"
+      - "5002:5000"
     environment:
       - API_URL=${API_URL}
       - API_KEY=${OMDB_API_KEY}
