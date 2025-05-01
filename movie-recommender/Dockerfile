@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY --from=builder /usr/local /usr/local
 
-COPY . /app
+COPY movie-recommender/ /app
 
 
 CMD ["python", "app.py"]
