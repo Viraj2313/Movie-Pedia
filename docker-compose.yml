@@ -1,22 +1,21 @@
 version: "3.8"
 services: 
   movieapiapp:
-    build:
-      image: viraj231/movieapiapp:latest
-      container_name: movieapiapp_container
-      ports:
-        - "6000:80"
-      environment:
-        - ConnectionStrings__DefaultConnection=${LINUX_DB_CONN_STRING}
-        - Jwt__Key=${JWT_SECRET_KEY}
-        - Jwt__Issuer=https://moviepedia.virajdeveloper.online
-        - Jwt__Audience=https://moviepedia.virajdeveloper.online
-        - ApiKeyOmDb=${OMDB_API_KEY}
-        - GEMINI_API_KEY=${GEMINI_API_KEY}
-        - Google__Client_Id=${GOOGLE_CLIENT_ID}
-        - Google__Client_Secret=${GOOGLE_CLIENT_SECRET}
-        - ASPNETCORE_URLS=http://+:80
-      restart: always
+    image: viraj231/movieapiapp:latest
+    container_name: movieapiapp_container
+    ports:
+      - "6000:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=${LINUX_DB_CONN_STRING}
+      - Jwt__Key=${JWT_SECRET_KEY}
+      - Jwt__Issuer=https://moviepedia.virajdeveloper.online
+      - Jwt__Audience=https://moviepedia.virajdeveloper.online
+      - ApiKeyOmDb=${OMDB_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - Google__Client_Id=${GOOGLE_CLIENT_ID}
+      - Google__Client_Secret=${GOOGLE_CLIENT_SECRET}
+      - ASPNETCORE_URLS=http://+:80
+    restart: always
   
   
   recommender:
@@ -35,4 +34,3 @@ services:
     ports:
       - "90:80"
     restart: always
-    
