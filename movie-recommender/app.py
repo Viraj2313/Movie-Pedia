@@ -25,7 +25,7 @@ API_URL = config["API_URL"]
 
 
 app = Flask(__name__)
-CORS(app,resources={r"/*": {"origins": ["https://moviepedia.virajdeveloper.online","http://localhost:5174"]}})
+CORS(app,resources={r"/*": {"origins": ["https://moviepedia.virajdeveloper.online","http://localhost:5174", "http://localhost:90"]}})
 
 
 async def fetch_liked_movies(user_id):
@@ -123,4 +123,4 @@ def healthCheck():
         return '', 200
     return jsonify({"status":"OK"}),200
 if __name__ == '__main__':
-    app.run(host= "0.0.0.0" , port=80)
+    app.run(host= "0.0.0.0")
