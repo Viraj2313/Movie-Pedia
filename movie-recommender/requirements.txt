@@ -4,3 +4,4 @@ scikit-learn
 aiohttp
 numpy
 gunicorn
+flask[async]
