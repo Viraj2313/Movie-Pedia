@@ -5,7 +5,7 @@
 
 Properties/launchSettings.json
 Migrations/
-
+Dockerfile.dev
 .env
 config.json
 appsettings.json

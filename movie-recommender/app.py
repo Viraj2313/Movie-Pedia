@@ -72,7 +72,7 @@ async def fetch_movies():
                 return movie_data
     return []
 
-@app.route('/recommend/<user_id>', methods=['GET'])
+@app.route('/recommender-api/<user_id>', methods=['GET'])
 async def recommend(user_id):
     liked_movies = await fetch_liked_movies(user_id)
     if not liked_movies:
@@ -123,4 +123,4 @@ def healthCheck():
         return '', 200
     return jsonify({"status":"OK"}),200
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(host= "0.0.0.0" , port=80)
