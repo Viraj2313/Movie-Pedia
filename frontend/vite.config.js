@@ -23,16 +23,21 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:6000',
+        target: 'http://localhost:5132',
         changeOrigin: true,
         secure: false, 
       },
       '/chathub': {
-      target: 'http://localhost:6000',
+      target: 'http://localhost:5132',
       changeOrigin: true,
       secure: false,
       ws: true,
     },
+    '/recommender-api':{
+      target: 'http://localhost:80',
+      changeOrigin: true,
+      secure: false,
+    }
     },
   },
   

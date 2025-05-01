@@ -1,7 +1,6 @@
 import { useUser } from "@/context/UserContext";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { PY_API_URL } from "../config";
 import LoadingPage from "@/components/LoadingPage";
 import SaveMovie from "../components/SaveMovie";
 import { useNavigate } from "react-router-dom";
