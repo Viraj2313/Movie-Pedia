@@ -14,6 +14,5 @@ COPY --from=builder /usr/local /usr/local
 
 COPY . /app
 
-EXPOSE 5000
 
 CMD ["python", "app.py"]
