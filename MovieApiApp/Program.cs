@@ -61,11 +61,11 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Database connection string not found.");
 }
 
-// Add DbContext for database interaction
+// DbContext for database interaction
 builder.Services.AddDbContext<MainDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// Add other required services
+// services
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -73,25 +73,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 //chathub singnalr
 builder.Services.AddSignalR();
-// Add CORS configuration
+// CORS configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
         builder.WithOrigins(
                 "http://localhost:5174", "https://moviepedia-p9bf.onrender.com",
-            "https://pybackend-zo39.onrender.com", "https://moviepedia-1.onrender.com")
+            "https://pybackend-zo39.onrender.com", "http://localhost:5000", "http://localhost:90")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
     });
 });
 
-// Add session services
-builder.Services.AddDistributedMemoryCache(); // Required for session
+// session services
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Adjust timeout as needed
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -119,7 +119,6 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map controllers to the app
 app.MapControllers();
 
 app.Run();

@@ -23,7 +23,7 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:5132',
+        target: 'http://host.docker.internal:5132',
         changeOrigin: true,
         secure: false, 
       },

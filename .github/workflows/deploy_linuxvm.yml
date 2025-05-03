@@ -51,9 +51,26 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+
       - name: Add VM to known hosts
         run: |
           ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Create .env file
+        run: |
+          echo "LINUX_DB_CONN_STRING=${{ secrets.LINUX_DB_CONN_STRING }}" > .env
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "OMDB_API_KEY=${{ secrets.OMDB_API_KEY }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "API_URL=${{ secrets.API_URL }}" >> .env
+
+      - name: Copy .env and docker-compose to VM
+        run: |
+          scp .env ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/moviepedia/.env
+          scp ./docker-compose.yml ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/moviepedia/docker-compose.yml
+
       - name: Deploy to Linux VM
         run: |
           ssh ubuntu@${{ secrets.VM_IP }} << EOF
