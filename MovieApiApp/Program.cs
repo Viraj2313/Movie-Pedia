@@ -79,7 +79,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
         builder.WithOrigins(
-                "http://localhost:5174", "https://moviepedia-p9bf.onrender.com",
+                "http://localhost:5174", "http://localhost:80", "http://localhost:5002",
             "https://pybackend-zo39.onrender.com", "http://localhost:5000", "http://localhost:90")
                .AllowAnyMethod()
                .AllowAnyHeader()
