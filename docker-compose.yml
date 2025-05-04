@@ -1,5 +1,5 @@
 version: "3.8"
-services: 
+services:
   movieapiapp:
     image: viraj231/movieapiapp:latest
     container_name: movieapiapp_container
@@ -15,22 +15,33 @@ services:
       - Google__Client_Id=${GOOGLE_CLIENT_ID}
       - Google__Client_Secret=${GOOGLE_CLIENT_SECRET}
       - ASPNETCORE_URLS=http://+:80
+    networks:
+      - moviepedia-network
     restart: always
-  
-  
+ 
   recommender:
     image: viraj231/python_recommender:latest
     container_name: recommender_container
     ports:
       - "5002:80"
     environment:
-      - API_URL=${API_URL}
+      - API_URL=http://movieapiapp:80
       - API_KEY=${OMDB_API_KEY}
+    networks:
+      - moviepedia-network
+    depends_on:
+      - movieapiapp
     restart: always
-
+    
   frontend:
     image: viraj231/frontend:latest
     container_name: frontend_container
     ports:
       - "90:80"
+    networks:
+      - moviepedia-network
     restart: always
+
+networks:
+  moviepedia-network:
+    driver: bridge
