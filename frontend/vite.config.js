@@ -1,18 +1,18 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
-import { config } from 'process';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
+import { config } from "process";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tailwindcss({
-      config:{
-        darkMode:'class'
-      }
-    }), 
-    react()
+      config: {
+        darkMode: "class",
+      },
+    }),
+    react(),
   ],
   resolve: {
     alias: {
@@ -22,26 +22,26 @@ export default defineConfig({
   server: {
     port: 5174,
     proxy: {
-      '/api': {
-        target: 'http://localhost:5132',
+      "/api": {
+        target: "http://localhost:5132",
         changeOrigin: true,
-        secure: false, 
+        secure: false,
       },
-      '/chathub': {
-      target: 'http://localhost:5132',
-      changeOrigin: true,
-      secure: false,
-      ws: true,
-    },
-    '/recommender-api':{
-      target: 'http://localhost:80',
-      changeOrigin: true,
-      secure: false,
-    }
+      "/chathub": {
+        target: "http://localhost:5132",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+      "/recommender-api": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
-  
+
   build: {
-    outDir: 'build',
+    outDir: "build",
   },
 });
