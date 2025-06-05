@@ -5,8 +5,8 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 ## 📁 Folder Structure
 
 ```
-├─ MovieApiApp/   # ASP.NET Core API
-│  ├─ MovieApiApp/# API code
+├─ Movie-Pedia/   # ASP.NET Core API
+│  ├─ backend/# API code
 │  └─ README.md   # Backend-specific information
 ├─ frontend/      # React app
 │  ├─ src/        # React components and logic
@@ -33,8 +33,8 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 - Context API
 
 ### Infrastructure
-- **Database Hosting**: Railway
-- **API Hosting**: Azure
+- **Database Hosting**: Linux VM
+- **Deployment**: Linux VM
 - **CI/CD**: GitHub Actions
 
 ## 🌟 Features
