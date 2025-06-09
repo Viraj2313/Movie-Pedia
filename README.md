@@ -33,8 +33,8 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 - Context API
 - 
 ### Containerization 
--**Docker**
--**Docker-compose**
+- **Docker**
+- **Docker-compose**
 
 ### Infrastructure
 - **Database Hosting**: Linux VM
