@@ -31,7 +31,7 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 - React (Vite)
 - Tailwind CSS
 - Context API
-- 
+  
 ### Containerization 
 - **Docker**
 - **Docker-compose**
