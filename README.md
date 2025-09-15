@@ -1,8 +1,10 @@
 # 🎬 Movie Pedia Project
 
 Welcome to **Movie Pedia**, a dynamic web application where users can explore movies, connect with friends, and chat about their favorite recommendations.
+
 ### Live preview - https://moviepedia.virajdeveloper.online/
-## 📁 Folder Structure
+
+## Folder Structure
 
 ```
 ├─ Movie-Pedia/   # ASP.NET Core API
@@ -20,14 +22,17 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 └─ README.md      # Project overview
 ```
 
-## 🔑 Technologies Used
+## Technologies Used
+
 ### Backend
+
 - ASP.NET Core 8
 - MySQL
 - Entity Framework Core
 - JWT Authentication
 
 ### Frontend
+
 - React (Vite)
 - Tailwind CSS
 - Context API
@@ -37,22 +42,26 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 - **Docker-compose**
 
 ### Infrastructure
+
 - **Database Hosting**: Linux VM
 - **Deployment**: Linux VM
 - **CI/CD**: GitHub Actions
 
-## 🌟 Features
-- 🔍 Browse movies by title and IMDb rating
-- 💬 Real-time chat to share movie recommendations with friends
-- ❤️ Wishlist functionality
+## Features
+
+- Browse movies by title and IMDb rating
+- Real-time chat to share movie recommendations with friends
+- Wishlist functionality
 - `Social Login with Google OAuth 2.0 or Custom Login
-- 🔐 Secure JWT-based authentication 
-- ⚡ Context API-based global state management
-- 🌐 Cross-domain cookie support
+- Secure JWT-based authentication
+- Context API-based global state management
+- Cross-domain cookie support
 - Movie recommendation through machine learning based on user’s preferences
-## 🚀 Installation
+
+## Installation
 
 ### Backend Setup
+
 1. Navigate to the backend folder:
    ```bash
    cd MovieApiApp
@@ -67,6 +76,7 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
    ```
 
 ### Frontend Setup
+
 1. Navigate to the frontend folder:
    ```bash
    cd frontend
@@ -80,21 +90,25 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
    npm run dev
    ```
 
-## ⚙️ Environment Variables
+## Environment Variables
+
 Configure your environment by creating a `.env` file in both the `frontend` and `MovieApiApp` folders.
 
 ### Backend
+
 ```
 ConnectionStrings__DefaultConnection=your_mysql_connection_string
 Jwt__Secret=your_jwt_secret
 ```
 
 ### Frontend
+
 ```
 VITE_API_URL=your_backend_api_url
 ```
 
-## 🤝 Contributing
+## Contributing
+
 Contributions are welcome! Fork the repository, create your feature branch, and submit a pull request.
 
 1. Fork the Project

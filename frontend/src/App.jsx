@@ -1,5 +1,4 @@
-import "./App.css";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import NavBar from "./components/NavBar";
@@ -20,6 +19,7 @@ import { toast } from "react-toastify";
 import Recommendations from "./pages/Recommendations";
 import nProgress from "nprogress";
 import Profile from "./pages/Profile";
+import Footer from "./components/Footer";
 function App() {
   const navigate = useNavigate();
   const [user, setUserName] = useState(null);
@@ -141,6 +141,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </UserProvider>
+      <Footer />
     </>
   );
 }

@@ -163,7 +163,6 @@ const Comments = ({ movieId }) => {
                     </div>
                   )}
 
-                  {/* Render Replies */}
                   {comment.replies && comment.replies.length > 0 && (
                     <ul className="ml-6 mt-3 border-l pl-3">
                       {comment.replies.map((reply) => (

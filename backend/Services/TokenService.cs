@@ -54,7 +54,7 @@ namespace MovieApiApp.Services
             }
             catch
             {
-                return null; // Invalid token
+                return null;
             }
         }
     }

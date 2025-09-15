@@ -129,7 +129,6 @@ const Friends = ({ user }) => {
 
       {user ? (
         <div className="flex flex-col lg:flex-row lg:space-x-6">
-          {/* Friends List */}
           <div className="lg:w-1/3 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-2">Your Friends</h3>
             <ul className="overflow-y-auto max-h-60 space-y-2">
@@ -151,7 +150,6 @@ const Friends = ({ user }) => {
             </ul>
           </div>
 
-          {/* Search Friend */}
           <div className="lg:w-1/3 bg-white p-4 rounded-lg shadow-md mt-6 lg:mt-0 dark:bg-gray-800">
             <h3 className="text-lg font-semibold mb-2">Search Friend</h3>
             <form
@@ -187,7 +185,6 @@ const Friends = ({ user }) => {
             )}
           </div>
 
-          {/*Friend Requests */}
           <div className="lg:w-1/3 p-4 rounded-lg shadow-md mt-6 lg:mt-0 dark:bg-gray-800">
             <h3 className="flex text-lg font-semibold mb-2 flex-row">
               Friend Requests

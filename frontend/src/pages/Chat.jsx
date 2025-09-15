@@ -53,9 +53,8 @@ const Chat = () => {
         console.log("Connected to SignalR hub");
         setConnection(newConnection);
 
-        // Handle chat history load once, on connection
         newConnection.on("ReceiveChatHistory", (history) => {
-          console.log("Received chat history:", history); // Log the received history
+          console.log("Received chat history:", history);
 
           setMessages((prev) => {
             const filteredHistory = history
@@ -64,18 +63,15 @@ const Chat = () => {
                 message: msg.messageText,
                 timestamp: new Date(msg.timestamp),
               }))
-              .filter((msg) => msg.message.trim() !== ""); // Filter empty messages
+              .filter((msg) => msg.message.trim() !== "");
 
-            // Return the updated messages with no duplicates and sorted by timestamp
             return filteredHistory.sort((a, b) => a.timestamp - b.timestamp);
           });
         });
 
-        // Handle receiving new messages
         newConnection.on("ReceiveMessage", (senderId, message) => {
-          if (!message.trim()) return; // Avoid empty messages
+          if (!message.trim()) return;
 
-          // Add the new message to state
           setMessages((prev) => [
             ...prev,
             {
