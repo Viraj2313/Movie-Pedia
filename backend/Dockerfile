@@ -5,7 +5,7 @@ EXPOSE 80
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["MovieApiApp/MovieApiApp.csproj", "MovieApiApp/"]
+COPY ["backend/MovieApiApp.csproj", "MovieApiApp/"]
 RUN dotnet restore "MovieApiApp/MovieApiApp.csproj"
 
 COPY MovieApiApp/ MovieApiApp/
