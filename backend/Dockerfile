@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["backend/MovieApiApp.csproj", "MovieApiApp/"]
 RUN dotnet restore "MovieApiApp/MovieApiApp.csproj"
 
-COPY MovieApiApp/ MovieApiApp/
+COPY backend/ MovieApiApp/
 WORKDIR "/src/MovieApiApp"
 RUN dotnet build "MovieApiApp.csproj" -c Release -o /app/build
 
