@@ -1,7 +1,8 @@
 import React from "react";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
+import Tippy from "@tippyjs/react";
+// import "tippy.js/dist/tippy.css";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -49,16 +50,17 @@ const Footer = () => {
 
           <div className="flex justify-center space-x-6">
             {socialLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-orange-500 dark:hover:border-orange-400 transition-all duration-300 hover:scale-110 hover:shadow-lg"
-                aria-label={link.name}
-              >
-                {link.icon}
-              </a>
+              <Tippy content={`Open ${link.name}`} key={link.name}>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-orange-500 dark:hover:border-orange-400 transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                  aria-label={link.name}
+                >
+                  {link.icon}
+                </a>
+              </Tippy>
             ))}
           </div>
 
