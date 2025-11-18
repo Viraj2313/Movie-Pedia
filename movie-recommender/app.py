@@ -5,6 +5,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 def load_config():
     config = {}
@@ -53,6 +55,20 @@ async def fetch_movie_details(movie_id):
     else:
         return None
 
+async def fetch_similar_movies_from_omdb(title):
+    url = f"http://www.omdbapi.com/?s={title}&apikey={API_KEY}"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            data = await response.json()
+
+    results = []
+    if data.get("Search"):
+        for item in data["Search"]:
+            details = await fetch_movie_details(item["imdbID"])
+            if details:
+                results.append(details)
+    return results
+
 async def fetch_movies():
     url = f"{API_URL}/api/Home"
     async with aiohttp.ClientSession() as session:
@@ -76,26 +92,20 @@ async def recommend(user_id):
 
         liked_plots = [movie['plot'] for movie in liked_movies if 'plot' in movie]
         liked_titles = [movie['title'] for movie in liked_movies if 'title' in movie]
-        
+
         if not liked_plots:
             return jsonify({"Recommendations": []})
 
-        home_movies = await fetch_movies()
-        
-        # Ensure plots and titles stay aligned
-        home_titles = []
-        home_plots = []
-        home_movie_dict = {}
-        for movie in home_movies:
-            title = movie.get('title')
-            plot = movie.get('plot')
-            if title and plot:
-                home_titles.append(title)
-                home_plots.append(plot)
-                home_movie_dict[title] = {
-                    "id": movie['id'],
-                    "poster": movie['poster']
-                }
+        similar_movies_pool = []
+        for title in liked_titles:
+            movies = await fetch_similar_movies_from_omdb(title)
+            similar_movies_pool.extend(movies)
+
+        unique_pool = list({movie["id"]: movie for movie in similar_movies_pool}.values())
+
+        home_titles = [movie["title"] for movie in unique_pool]
+        home_plots = [movie["plot"] for movie in unique_pool]
+        home_movie_dict = {movie["title"]: movie for movie in unique_pool}
 
         if not home_plots:
             return jsonify({"Recommendations": []})
@@ -105,11 +115,19 @@ async def recommend(user_id):
         vectorizer = TfidfVectorizer(stop_words='english')
         tfidf_matrix = vectorizer.fit_transform(all_plots)
 
-        cosine_sim = cosine_similarity(tfidf_matrix[:len(liked_plots)], tfidf_matrix[len(liked_plots):])
+        cosine_sim = cosine_similarity(
+            tfidf_matrix[:len(liked_plots)],
+            tfidf_matrix[len(liked_plots):]
+        )
 
         recommendations = []
         for i, similarities in enumerate(cosine_sim):
-            similar_movies = sorted(list(enumerate(similarities)), key=lambda x: x[1], reverse=True)[:5]
+            similar_movies = sorted(
+                list(enumerate(similarities)),
+                key=lambda x: x[1],
+                reverse=True
+            )[:5]
+
             recommendations += [{
                 "title": home_titles[movie[0]],
                 "imdbID": home_movie_dict[home_titles[movie[0]]]["id"],
@@ -118,7 +136,7 @@ async def recommend(user_id):
 
         recommendations = list({movie["imdbID"]: movie for movie in recommendations}.values())
         return jsonify({"Recommendations": recommendations})
-    
+
     except Exception as e:
         print(f"Error in recommend(): {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -130,4 +148,5 @@ def healthCheck():
     return jsonify({"status": "OK"}), 200
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80)
+    port = int(os.getenv('PORT', 80))
+    app.run(host="0.0.0.0", port=port)

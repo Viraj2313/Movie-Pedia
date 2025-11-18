@@ -80,7 +80,7 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins(
                 "http://localhost:5174", "http://localhost:80", "http://localhost:5002",
-            "https://pybackend-zo39.onrender.com", "http://localhost:5000", "http://localhost:90")
+            "https://pybackend-zo39.onrender.com", "http://localhost:5000", "http://localhost:90", "http://localhost:6000")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();

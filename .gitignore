@@ -11,6 +11,7 @@ Dockerfile.dev
 config.json
 appsettings.json
 appsettings.Development.json
+venv/
 # User-specific files
 *.rsuser
 *.suo
