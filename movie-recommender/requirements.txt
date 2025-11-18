@@ -5,3 +5,4 @@ aiohttp
 numpy
 gunicorn
 flask[async]
+dotenv
