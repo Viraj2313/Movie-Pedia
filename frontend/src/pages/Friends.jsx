@@ -192,7 +192,7 @@ const Friends = ({ user }) => {
                 src="/refresh.png"
                 alt=""
                 className="ml-1.5 flex-row max-w-[7%] max-h-[7%] cursor-pointer"
-                onClick={getFriendsList}
+                onClick={getFriendRequests}
               />
             </h3>
             <ul className="overflow-y-auto max-h-60 space-y-2">

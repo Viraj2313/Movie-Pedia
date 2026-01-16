@@ -1,4 +1,4 @@
-# 🎬 Movie Pedia Project
+# Movie Pedia Project
 
 Welcome to **Movie Pedia**, a dynamic web application where users can explore movies, connect with friends, and chat about their favorite recommendations.
 
@@ -36,8 +36,9 @@ Welcome to **Movie Pedia**, a dynamic web application where users can explore mo
 - React (Vite)
 - Tailwind CSS
 - Context API
-  
-### Containerization 
+
+### Containerization
+
 - **Docker**
 - **Docker-compose**
 

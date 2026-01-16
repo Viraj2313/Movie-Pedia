@@ -25,12 +25,10 @@ namespace MovieApiApp.Controllers
 
                 var movies1 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=batman&apikey={apiKey}");
                 var movies2 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=superman&apikey={apiKey}");
-
                 var list1 = ExtractMovies(movies1);
                 var list2 = ExtractMovies(movies2);
-
                 var mergedMovies = list1.Concat(list2).ToList();
-
+                mergedMovies = mergedMovies.GroupBy(m => m["Title"].ToLower()).Select(g => g.First()).ToList();
                 return Ok(mergedMovies);
             }
             catch

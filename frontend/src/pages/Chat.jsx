@@ -130,7 +130,6 @@ const Chat = () => {
     <>
       {loadingFriendName || loadingMessages ? (
         <>
-          <p className="text-xl text-gray-700 mt-4">Loading Chat...</p>
           <Loader />
         </>
       ) : (
