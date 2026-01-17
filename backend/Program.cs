@@ -74,16 +74,21 @@ builder.Services.AddHttpClient();
 //chathub singnalr
 builder.Services.AddSignalR();
 // CORS configuration
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", builder =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        builder.WithOrigins(
-                "http://localhost:5174", "http://localhost:80", "http://localhost:5002",
-            "https://pybackend-zo39.onrender.com", "http://localhost:5000", "http://localhost:90", "http://localhost:6000")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+        if (allowedOrigins != null && allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
     });
 });
 
