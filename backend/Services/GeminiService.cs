@@ -1,5 +1,7 @@
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace WbApp.Services
 {
@@ -17,7 +19,8 @@ namespace WbApp.Services
         public async Task<string> GetGeminiResponse(string prompt)
         {
             string apiKey = _config["GEMINI_API_KEY"];
-            string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={apiKey}";
+            string url =
+                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={apiKey}";
 
             var requestBody = new
             {
@@ -33,19 +36,25 @@ namespace WbApp.Services
                 }
             };
 
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            using var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Content = JsonContent.Create(requestBody);
 
-
-            var response = await _httpClient.PostAsJsonAsync(url, requestBody);
+            var response = await _httpClient.SendAsync(request);
             var json = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
             {
-                dynamic result = JsonConvert.DeserializeObject(json);
-                return result.candidates[0].content.parts[0].text ?? "No response";
+                throw new HttpRequestException("Gemini RPD limit exceeded (429).", null, response.StatusCode);
             }
 
-            return "Error: " + json;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"Gemini Error: {json}", null, response.StatusCode);
+            }
+
+            dynamic result = JsonConvert.DeserializeObject(json);
+            return result.candidates[0].content.parts[0].text ?? "No response";
         }
     }
 }

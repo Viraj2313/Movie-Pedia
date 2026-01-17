@@ -20,6 +20,7 @@ import Recommendations from "./pages/Recommendations";
 import nProgress from "nprogress";
 import Profile from "./pages/Profile";
 import Footer from "./components/Footer";
+import { useLocation } from "react-router-dom";
 function App() {
   const navigate = useNavigate();
   const [user, setUserName] = useState(null);
@@ -47,7 +48,22 @@ function App() {
 
     return () => clearInterval(sessionInterval);
   }, []);
+  const location = useLocation();
 
+  useEffect(() => {
+    fetch("https://logvisits.duckdns.org/log-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        project: document.title || "unknown",
+        path: location.pathname,
+        fullUrl: window.location.href,
+        screen: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }),
+    });
+  }, [location.pathname]);
   const checkSessionExpiration = async () => {
     try {
       const response = await axios.get("/api/check-session", {

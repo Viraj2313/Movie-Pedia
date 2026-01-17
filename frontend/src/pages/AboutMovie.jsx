@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Loader from "../components/Loader";
 import "../assets/styles/AboutMovie.css";
 import { useOpenLink } from "../hooks/useOpenLink";
-import { useNavigate, useParams } from "react-router-dom";
+import { data, useNavigate, useParams } from "react-router-dom";
 import SaveMovie from "../components/SaveMovie";
 import ShareMovieButton from "../components/ShareMovieButton";
 import LikeMovie from "../components/LikeMovie";
@@ -93,9 +93,13 @@ const AboutMovie = () => {
       const response = await axios.post(`/api/where-to-watch`, {
         movieTitle: movieTitle,
       });
-
-      if (Array.isArray(response.data)) {
-        setWatchPlatforms(response.data);
+      let data = response.data;
+      if (typeof data === "string") {
+        data = data.replace(/'/g, '"');
+        data = JSON.parse(data);
+      }
+      if (Array.isArray(data)) {
+        setWatchPlatforms(data);
       } else {
         setWatchPlatforms([]);
       }
@@ -176,7 +180,7 @@ const AboutMovie = () => {
                       {watchPlatforms.map((platform, index) => (
                         <li
                           key={index}
-                          className="px-4 py-2  rounded-md text-sm font-medium hover:bg-gray-200 transition"
+                          className="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition"
                         >
                           {platform}
                         </li>
@@ -217,6 +221,10 @@ const AboutMovie = () => {
               />
               <SaveMovie userId={userId} movie={movieDetails} />
             </div>
+            <p className="text-center text-sm italic text-gray-500 mt-3 mb-3">
+              Note: The links for trailer, imdb and more are generated using an
+              LLM API and may not always work correctly.
+            </p>
 
             <p className="text-lg ">{movieDetails.Plot}</p>
             <Button
