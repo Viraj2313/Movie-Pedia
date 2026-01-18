@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<TokenService>(); // Register TokenService
 builder.Services.AddHttpClient<GeminiService>();
 builder.Services.AddHttpClient<GroqService>();
+builder.Services.AddHttpClient<YouTubeService>();
 
 builder.Services.AddScoped<AiService>();
 

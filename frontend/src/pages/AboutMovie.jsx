@@ -71,12 +71,12 @@ const AboutMovie = () => {
     }
   };
 
-  const goToImdb = async (movieTitle) => {
+  const goToImdb = async (movieId) => {
     const openLink = useOpenLink();
     const newTab = openLink("/loading", "_blank");
     try {
       const response = await axios.post(`/api/get-imdb-url`, {
-        movieTitle: movieTitle,
+        movieTitle: movieId,
       });
       const imdbUrl = response.data;
       if (imdbUrl && newTab) {
@@ -199,7 +199,7 @@ const AboutMovie = () => {
               </button>
               <button
                 className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition cursor-pointer"
-                onClick={() => goToImdb(movieDetails.Title)}
+                onClick={() => goToImdb(movieDetails.imdbID)}
               >
                 See Details on IMDb
               </button>
@@ -221,10 +221,6 @@ const AboutMovie = () => {
               />
               <SaveMovie userId={userId} movie={movieDetails} />
             </div>
-            <p className="text-center text-sm italic text-gray-500 mt-3 mb-3">
-              Note: The links for trailer, imdb and more are generated using an
-              LLM API and may not always work correctly.
-            </p>
 
             <p className="text-lg ">{movieDetails.Plot}</p>
             <Button

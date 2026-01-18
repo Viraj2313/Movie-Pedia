@@ -14,11 +14,12 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - Google__Client_Id=${GOOGLE_CLIENT_ID}
       - Google__Client_Secret=${GOOGLE_CLIENT_SECRET}
+      - YouTube__ApiKey=${YOUTUBE_API_KEY}
       - ASPNETCORE_URLS=http://+:80
     networks:
       - moviepedia-network
     restart: always
- 
+
   recommender:
     image: viraj231/python_recommender:latest
     container_name: recommender_container
@@ -32,7 +33,7 @@ services:
     depends_on:
       - movieapiapp
     restart: always
-    
+
   frontend:
     image: viraj231/frontend:latest
     container_name: frontend_container

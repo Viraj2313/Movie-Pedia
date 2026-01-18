@@ -6,39 +6,39 @@ namespace MovieApiApp.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class MovieInfoController(AiService aiService) : Controller
+    public class MovieInfoController(YouTubeService youTubeService, AiService aiService) : Controller
     {
+
+        private readonly YouTubeService _youTubeService = youTubeService;
         private readonly AiService _aiService = aiService;
 
         [HttpPost("get-trailer-url")]
         public async Task<IActionResult> GetTrailerUrl([FromBody] MovieInfoDto movieInfoDto)
         {
             if (string.IsNullOrWhiteSpace(movieInfoDto.MovieTitle))
-            {
                 return BadRequest("Movie title is required.");
-            }
 
-            var movieTitle = movieInfoDto.MovieTitle;
-            var prompt = $"Just give a url for the youtube trailer of this movie {movieTitle} dont give any other text with it";
-            var trailerUrl = await _aiService.GetResponse(prompt);
+            var url = await _youTubeService.GetFirstTrailerUrl(movieInfoDto.MovieTitle);
 
-            return Ok(trailerUrl);
+            if (string.IsNullOrWhiteSpace(url))
+                return NotFound("Trailer not found.");
+
+            return Ok(url);
         }
 
         [HttpPost("get-imdb-url")]
-        public async Task<IActionResult> GetImdbUrl([FromBody] MovieInfoDto movieInfoDto)
+        public IActionResult GetImdbUrl([FromBody] MovieInfoDto movieInfoDto)
         {
             if (string.IsNullOrWhiteSpace(movieInfoDto.MovieTitle))
-            {
-                return BadRequest("Movie title is required.");
-            }
+                return BadRequest("IMDb ID is required.");
 
-            var movieTitle = movieInfoDto.MovieTitle;
-            var prompt = $"Just give a url for the imdb page of this movie {movieTitle} dont give any other text with it";
-            var imdbUrl = await _aiService.GetResponse(prompt);
+            var imdbId = movieInfoDto.MovieTitle.Trim();
 
+
+            var imdbUrl = $"https://www.imdb.com/title/{imdbId}/";
             return Ok(imdbUrl);
         }
+
 
         [HttpPost("where-to-watch")]
         public async Task<IActionResult> WhereToWatch([FromBody] MovieInfoDto movieInfoDto)
