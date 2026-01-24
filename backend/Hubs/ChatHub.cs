@@ -18,12 +18,11 @@ namespace MovieApiApp.Hubs
             var messages = await _context.ChatMessages
                 .Where(m => m.SenderId == senderId && m.ReceiverId == receiverId ||
                             m.SenderId == receiverId && m.ReceiverId == senderId)
-                .OrderBy(m => m.Timestamp)  // Ensure correct order by timestamp
+                .OrderBy(m => m.Timestamp)  
                 .ToListAsync();
 
             Console.WriteLine($"Found {messages.Count} messages");
 
-            // Send the combined and sorted messages to the client
             await Clients.Caller.SendAsync("ReceiveChatHistory", messages);
         }
 

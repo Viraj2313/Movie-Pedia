@@ -14,5 +14,7 @@ namespace MovieApiApp.Data
     public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<UserLike> UserLikes { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<CommentReaction> CommentReactions { get; set; }
+
   }
 }

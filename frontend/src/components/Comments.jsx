@@ -3,11 +3,17 @@ import LoadingPage from "./LoadingPage";
 import { useUser } from "@/context/UserContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import {
+  AiOutlineLike,
+  AiFillLike,
+  AiOutlineDislike,
+  AiFillDislike,
+} from "react-icons/ai";
 
 const Comments = ({ movieId }) => {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
-  const { userId, setUserId } = useUser();
+  const { userId } = useUser();
   const [commentInput, setCommentInput] = useState("");
   const [replyInputs, setReplyInputs] = useState({});
   const [refresh, setRefresh] = useState(false);
@@ -15,19 +21,46 @@ const Comments = ({ movieId }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`/api/movies/${movieId}/get-comments`);
+        const response = await axios.get(
+          `/api/movies/${movieId}/get-comments`,
+          {
+            params: { userId: userId || null },
+          },
+        );
+
         if (response.status === 200) {
           setComments(response.data);
-          setLoading(false);
-          console.log(response.data);
         }
       } catch (error) {
         console.log(error);
+      } finally {
         setLoading(false);
       }
     };
+
     fetchComments();
-  }, [movieId, refresh]);
+  }, [movieId, refresh, userId]);
+
+  const toggleReaction = async (commentId, reaction) => {
+    try {
+      if (!userId) {
+        toast.error("Login first");
+        return;
+      }
+
+      await axios.post(
+        `/api/movies/${movieId}/comments/${commentId}/toggle-reaction`,
+        null,
+        {
+          params: { userId, reaction },
+        },
+      );
+
+      setRefresh(!refresh);
+    } catch (error) {
+      toast.error("Failed to react");
+    }
+  };
 
   const handleAddComment = async (parentCommentId = null) => {
     try {
@@ -45,9 +78,13 @@ const Comments = ({ movieId }) => {
         return;
       }
 
-      const response = await axios.post(
-        `/api/movies/${userId}/${movieId}/${text}/${parentCommentId || ""}`
-      );
+      const response = await axios.post(`/api/movies/add-comment`, {
+        userId: parseInt(userId),
+        movieId,
+        commentText: text,
+        parentCommentId,
+      });
+
       if (response.status === 200) {
         setCommentInput("");
 
@@ -63,15 +100,13 @@ const Comments = ({ movieId }) => {
     } catch (error) {
       console.log(error);
       toast.error("Failed to add comment");
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleDeleteComment = async (commentId) => {
     try {
       const response = await axios.delete(
-        `/api/movies/${userId}/${movieId}/${commentId}`
+        `/api/movies/${userId}/${movieId}/${commentId}`,
       );
       if (response.status === 200) {
         toast.success("Comment deleted successfully");
@@ -98,7 +133,7 @@ const Comments = ({ movieId }) => {
   };
 
   return (
-    <div className="w-full mx-auto  shadow-lg rounded-lg p-6">
+    <div className="w-full mx-auto shadow-lg rounded-lg p-6">
       <div className="flex items-center gap-1 p-3 rounded-lg shadow-sm dark:bg-gray-800">
         <input
           type="text"
@@ -117,6 +152,7 @@ const Comments = ({ movieId }) => {
 
       <div className="mt-4">
         <h2 className="text-xl font-semibold mb-3">Comments</h2>
+
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <LoadingPage />
@@ -130,9 +166,40 @@ const Comments = ({ movieId }) => {
                 key={comment.id}
                 className="p-4 shadow-md rounded-lg mt-2 flex justify-between items-start dark:bg-gray-800"
               >
-                <div>
+                <div className="w-full">
                   <p className="font-semibold">{comment.commentorName}</p>
                   <p>{comment.commentText}</p>
+
+                  <div className="flex items-center gap-5 mt-2">
+                    <button
+                      onClick={() => toggleReaction(comment.id, "like")}
+                      className="flex items-center gap-1 hover:cursor-pointer"
+                    >
+                      {comment.userReaction === "like" ? (
+                        <AiFillLike size={20} />
+                      ) : (
+                        <AiOutlineLike size={20} />
+                      )}
+                      <span className="text-sm text-gray-400">
+                        {comment.commentLikes}
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => toggleReaction(comment.id, "dislike")}
+                      className="flex items-center gap-1 hover:cursor-pointer"
+                    >
+                      {comment.userReaction === "dislike" ? (
+                        <AiFillDislike size={20} />
+                      ) : (
+                        <AiOutlineDislike size={20} />
+                      )}
+                      <span className="text-sm text-gray-400">
+                        {comment.commentDislikes}
+                      </span>
+                    </button>
+                  </div>
+
                   <button
                     onClick={() => toggleReplyInput(comment.id)}
                     className="text-blue-500 underline mt-2 hover:cursor-pointer"
@@ -169,7 +236,39 @@ const Comments = ({ movieId }) => {
                         <li key={reply.id} className="p-2">
                           <p className="font-semibold">{reply.commentorName}</p>
                           <p>{reply.commentText}</p>
-                          {/* delete button */}
+
+                          <div className="flex items-center gap-5 mt-2">
+                            <button
+                              onClick={() => toggleReaction(reply.id, "like")}
+                              className="flex items-center gap-1 hover:cursor-pointer"
+                            >
+                              {reply.userReaction === "like" ? (
+                                <AiFillLike size={18} />
+                              ) : (
+                                <AiOutlineLike size={18} />
+                              )}
+                              <span className="text-sm text-gray-400">
+                                {reply.commentLikes}
+                              </span>
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                toggleReaction(reply.id, "dislike")
+                              }
+                              className="flex items-center gap-1 hover:cursor-pointer"
+                            >
+                              {reply.userReaction === "dislike" ? (
+                                <AiFillDislike size={18} />
+                              ) : (
+                                <AiOutlineDislike size={18} />
+                              )}
+                              <span className="text-sm text-gray-400">
+                                {reply.commentDislikes}
+                              </span>
+                            </button>
+                          </div>
+
                           {reply.commentorId === parseInt(userId) && (
                             <button
                               onClick={() => handleDeleteComment(reply.id)}

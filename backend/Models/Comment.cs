@@ -7,10 +7,14 @@ namespace MovieApiApp.Models
         public string Name { get; set; }
         public string MovieId { get; set; }
         public string CommentText { get; set; }
+        public int Likes { get; set; }
+        public int Dislikes { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public int? ParentCommentId { get; set; }//navigation to main comment
+        public int? ParentCommentId { get; set; }
 
         public Comment? ParentComment { get; set; }
+        public ICollection<CommentReaction> Reactions { get; set; }
+
         public ICollection<Comment> Replies { get; set; } = new List<Comment>();
 
     }
