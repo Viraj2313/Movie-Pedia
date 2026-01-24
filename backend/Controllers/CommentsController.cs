@@ -73,7 +73,7 @@ namespace MovieApiApp.Controllers
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
             return Ok("Comment Deleted Successfully");
-
+            
 
         }
     }

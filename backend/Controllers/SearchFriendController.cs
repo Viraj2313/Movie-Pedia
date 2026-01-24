@@ -37,6 +37,27 @@ namespace MovieApiApp.Controllers
             return Ok(result);
         }
 
+        [HttpGet("search-by-name")]
+        public async Task<IActionResult> SearchByName([FromQuery] string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                return BadRequest("Username is required.");
+
+            var friends = await _context.Users
+                .Where(u => u.Name.ToLower().Contains(username.ToLower()))
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Name
+                })
+                .ToListAsync();
+
+            if (friends.Count == 0)
+                return NotFound($"No users found with name: {username}");
+
+            return Ok(friends);
+        }
+
 
 
         [HttpPost("add-friend")]

@@ -1,22 +1,25 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { triggerNotification } from "../utils/NotificationUtil";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUser } from "../context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
 import nProgress from "nprogress";
+
 const Friends = ({ user }) => {
   const { userId, setUserId } = useUser();
   const [friends, setFriends] = useState([]);
-  const [friendId, setFriendId] = useState("");
-  const [friend, setFriend] = useState({});
-  const [friendFound, setFriendFound] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [searchText, setSearchText] = useState("");
+  const [friend, setFriend] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+
   const Loader = () => (
     <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-t-transparent border-blue-600"></div>
   );
+
   useEffect(() => {
     const fetchData = async () => {
       await getUserIdFromToken();
@@ -57,7 +60,6 @@ const Friends = ({ user }) => {
 
   const getFriendsList = async () => {
     try {
-      console.log(userId);
       const response = await axios.get(`/api/friends/get-friends-list`, {
         params: { userId },
       });
@@ -84,35 +86,62 @@ const Friends = ({ user }) => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!friendId) {
-      toast.error("Enter student ID first");
+
+    if (!searchText.trim()) {
+      toast.error("Enter username or ID first");
       return;
     }
+
     try {
-      const response = await axios.get(`/api/friends/search`, {
-        params: { friendId },
-      });
       nProgress.start();
-      if (response.status === 200) {
-        setFriend(response.data);
-        setFriendFound(true);
-        toast.success("Friend found");
-        nProgress.done();
+
+      setFriend(null);
+      setSearchResults([]);
+
+      const isNumber = !isNaN(searchText);
+
+      if (isNumber) {
+        const response = await axios.get(`/api/friends/search`, {
+          params: { friendId: searchText },
+        });
+
+        if (response.status === 200) {
+          setFriend(response.data);
+          toast.success("Friend found");
+        }
+        console.log(response);
+      } else {
+        const response = await axios.get(`/api/friends/search-by-name`, {
+          params: { username: searchText },
+        });
+
+        if (response.status === 200) {
+          setSearchResults(response.data);
+          toast.success("Friends found");
+        }
+        console.log(response);
       }
+
+      nProgress.done();
     } catch (error) {
-      toast.error("Friend not found");
+      toast.error("No user found");
+      console.log(error);
+
       nProgress.done();
     }
   };
 
-  const handleSendFriendReq = async () => {
+  const handleSendFriendReq = async (receiverId) => {
     try {
       nProgress.start();
+
       await axios.post(`/api/friends/send-request`, null, {
-        params: { senderId: userId, receiverId: friend.id },
+        params: { senderId: userId, receiverId },
       });
-      setFriendFound(false);
-      setFriend({});
+
+      setFriend(null);
+      setSearchResults([]);
+
       nProgress.done();
       toast.success("Friend request sent!");
     } catch (error) {
@@ -133,13 +162,13 @@ const Friends = ({ user }) => {
             <h3 className="text-lg font-semibold mb-2">Your Friends</h3>
             <ul className="overflow-y-auto max-h-60 space-y-2">
               {friends.length > 0 ? (
-                friends.map((friend) => (
+                friends.map((friendItem) => (
                   <Link
-                    key={friend.friendId}
-                    to={`/chatHub?senderId=${userId}&receiverId=${friend.friendId}`}
+                    key={friendItem.friendId}
+                    to={`/chatHub?senderId=${userId}&receiverId=${friendItem.friendId}`}
                     className="block p-2 bg-gray-100 dark:bg-gray-700 rounded shadow-md hover:bg-gray-600 transition"
                   >
-                    {friend.friendName}
+                    {friendItem.friendName}
                   </Link>
                 ))
               ) : loading ? (
@@ -152,15 +181,16 @@ const Friends = ({ user }) => {
 
           <div className="lg:w-1/3 bg-white p-4 rounded-lg shadow-md mt-6 lg:mt-0 dark:bg-gray-800">
             <h3 className="text-lg font-semibold mb-2">Search Friend</h3>
+
             <form
               onSubmit={handleSearch}
               className="flex flex-col sm:flex-row gap-2"
             >
               <input
                 type="text"
-                value={friendId}
-                onChange={(e) => setFriendId(e.target.value)}
-                placeholder="Enter friend's ID"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Enter friend's username or ID"
                 className="border border-gray-300 rounded-md px-3 py-2 flex-1"
               />
               <button
@@ -171,16 +201,36 @@ const Friends = ({ user }) => {
               </button>
             </form>
 
-            {friendFound && (
+            {friend && (
               <div className="mt-4 p-3 border border-gray-300 dark:bg-gray-800 rounded-md bg-gray-50">
                 <p className="font-semibold">Name: {friend.name}</p>
                 <p className="text-gray-500">ID: {friend.id}</p>
                 <button
-                  onClick={handleSendFriendReq}
+                  onClick={() => handleSendFriendReq(friend.id)}
                   className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition cursor-pointer"
                 >
                   Send Request
                 </button>
+              </div>
+            )}
+
+            {searchResults.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {searchResults.map((f) => (
+                  <div
+                    key={f.id}
+                    className="p-3 border border-gray-300 dark:bg-gray-800 rounded-md bg-gray-50"
+                  >
+                    <p className="font-semibold">Name: {f.name}</p>
+                    <p className="text-gray-500">ID: {f.id}</p>
+                    <button
+                      onClick={() => handleSendFriendReq(f.id)}
+                      className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition cursor-pointer"
+                    >
+                      Send Request
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -195,6 +245,7 @@ const Friends = ({ user }) => {
                 onClick={getFriendRequests}
               />
             </h3>
+
             <ul className="overflow-y-auto max-h-60 space-y-2">
               {friendRequests.length > 0 ? (
                 friendRequests.map((request) => (
