@@ -76,7 +76,7 @@ const Home = ({ setSelectedMovie }) => {
 
     const searchWords = movieSearch.toLowerCase().split(" ");
     const filteredMovies = movies.filter((movie) =>
-      searchWords.every((word) => movie.Title.toLowerCase().includes(word))
+      searchWords.every((word) => movie.Title.toLowerCase().includes(word)),
     );
 
     if (filteredMovies.length > 0) {
@@ -152,11 +152,14 @@ const Home = ({ setSelectedMovie }) => {
             <div className="relative px-4 py-16 sm:py-20 lg:py-24">
               <div className="text-center">
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-4 text-black dark:text-white">
-                  Discover Movies
+                  Moviepedia
                 </h1>
                 <p className="text-xl text-blue-500 mb-8 max-w-2xl mx-auto">
-                  Explore thousands of movies and find your next favorite film
+                  Search movies, check ratings, read plot summaries, discover
+                  recommendations and everything you need to decide what to
+                  watch next
                 </p>
+
                 <form
                   onSubmit={handleSearchSubmit}
                   className="max-w-2xl mx-auto"
