@@ -47,8 +47,7 @@ const getActivityText = (activity) => {
 const formatTime = (dateString) => {
     if (!dateString) return "";
 
-    // Backend sends UTC timestamps without 'Z' suffix
-    // Append 'Z' to treat as UTC if no timezone indicator exists
+
     let normalizedDate = dateString;
     if (!dateString.endsWith('Z') && !dateString.match(/[+-]\d{2}:\d{2}$/)) {
         normalizedDate = dateString + 'Z';

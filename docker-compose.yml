@@ -1,10 +1,22 @@
 version: "3.8"
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: moviepedia_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - moviepedia-network
+      - gateway_net
+    restart: always
+    depends_on:
+      - movieapiapp
+      - frontend
+      - recommender
+
   movieapiapp:
     image: viraj231/movieapiapp:latest
-    container_name: movieapiapp_container
-    ports:
-      - "6000:80"
+    container_name: movieapiapp
     environment:
       - ConnectionStrings__DefaultConnection=${LINUX_DB_CONN_STRING}
       - Jwt__Key=${JWT_SECRET_KEY}
@@ -23,9 +35,7 @@ services:
 
   recommender:
     image: viraj231/python_recommender:latest
-    container_name: recommender_container
-    ports:
-      - "5002:80"
+    container_name: recommender
     environment:
       - API_URL=http://movieapiapp:80
       - API_KEY=${OMDB_API_KEY}
@@ -37,9 +47,7 @@ services:
 
   frontend:
     image: viraj231/frontend:latest
-    container_name: frontend_container
-    ports:
-      - "90:80"
+    container_name: frontend
     networks:
       - moviepedia-network
     restart: always
@@ -47,3 +55,5 @@ services:
 networks:
   moviepedia-network:
     driver: bridge
+  gateway_net:
+    external: true

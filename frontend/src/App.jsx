@@ -24,7 +24,7 @@ import WatchDiary from "./pages/WatchDiary";
 import Footer from "./components/Footer";
 import { useLocation } from "react-router-dom";
 
-// Scroll to top on route change
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 

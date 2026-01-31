@@ -12,14 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-builder.Services.AddScoped<TokenService>(); // Register TokenService
+builder.Services.AddScoped<TokenService>(); 
 builder.Services.AddHttpClient<GeminiService>();
 builder.Services.AddHttpClient<GroqService>();
 builder.Services.AddHttpClient<YouTubeService>();
 
 builder.Services.AddScoped<AiService>();
 
-// Add JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -65,7 +64,6 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Database connection string not found.");
 }
 
-// DbContext for database interaction
 builder.Services.AddDbContext<MainDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 

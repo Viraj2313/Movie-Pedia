@@ -5,43 +5,48 @@ nav {
   background-color: #333;
   padding: 16px 10px;
   gap: 7px;
-  /* height: 40px; */
+
   height: 60px;
 }
-.tabs{
+
+.tabs {
   display: flex;
   gap: 18px;
-  
+
 }
-.tabs a{
+
+.tabs a {
   text-decoration: none;
 }
-.tabs a:hover h2{
+
+.tabs a:hover h2 {
   color: #ff5722;
   transition: color 0.3s ease;
 }
-.wlc{
+
+.wlc {
   font-weight: 300;
   width: 106px;
   padding: 10px 20px;
   color: white;
   font-size: 16px;
-  
+
 
 }
+
 h2 {
   flex-grow: 1;
   font-size: 36px;
   font-weight: bold;
   color: #fff;
-  
+
 }
 
 button {
   gap: 2px;
   padding: 8px 16px;
-  font-size: 14px;  
-  height: 40px; 
+  font-size: 14px;
+  height: 40px;
   font-size: 14px;
   background-color: #ff5722;
   color: white;
@@ -54,10 +59,12 @@ button {
 button:hover {
   background-color: #e64a19;
 }
-body{
+
+body {
   margin: 0px;
 }
-.nav-btns{
+
+.nav-btns {
   display: flex;
   flex-grow: 0;
   gap: 8px;
@@ -75,34 +82,36 @@ body{
     height: 60px;
     width: auto;
   }
-  .tabs{
+
+  .tabs {
     display: flex;
     gap: 18px;
-    
+
   }
-  
-  .wlc{
+
+  .wlc {
     font-weight: 300;
     width: 106px;
     padding: 10px 20px;
     color: white;
     font-size: 16px;
-    
-  
+
+
   }
+
   h2 {
     flex-grow: 1;
     font-size: 20px;
     font-weight: bold;
     color: #fff;
-    
+
   }
-  
+
   button {
     gap: 2px;
     padding: 8px 12px;
-    font-size: 14px;  
-    height: 40px; 
+    font-size: 14px;
+    height: 40px;
     font-size: 14px;
     background-color: #ff5722;
     color: white;
@@ -111,14 +120,16 @@ body{
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
+
   button:hover {
     background-color: #e64a19;
   }
-  body{
+
+  body {
     margin: 0px;
   }
-  .nav-btns{
+
+  .nav-btns {
     display: flex;
     flex-grow: 0;
     gap: 8px;

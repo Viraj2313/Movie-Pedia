@@ -172,7 +172,7 @@ const Friends = ({ user }) => {
       </motion.h1>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Friends List */}
+
         <motion.div
           variants={itemVariants}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
@@ -215,7 +215,7 @@ const Friends = ({ user }) => {
           )}
         </motion.div>
 
-        {/* Search Friends */}
+
         <motion.div
           variants={itemVariants}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
@@ -253,7 +253,7 @@ const Friends = ({ user }) => {
             </motion.button>
           </form>
 
-          {/* Search Results */}
+
           <AnimatePresence>
             {friend && (
               <motion.div
@@ -307,7 +307,7 @@ const Friends = ({ user }) => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Friend Requests */}
+
         <motion.div
           variants={itemVariants}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
