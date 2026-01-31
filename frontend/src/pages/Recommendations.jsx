@@ -1,16 +1,20 @@
 import { useUser } from "@/context/UserContext";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import axios from "axios";
-import LoadingPage from "@/components/LoadingPage";
-import SaveMovie from "../components/SaveMovie";
 import { useNavigate } from "react-router-dom";
+import { Sparkles, Film } from "lucide-react";
+import Loader, { PageLoader } from "@/components/Loader";
+import SaveMovie from "../components/SaveMovie";
 import LoginRequired from "@/components/LoginRequired";
 import nProgress from "nprogress";
+
 const Recommendations = ({ setSelectedMovie }) => {
   const { userId } = useUser();
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!userId) return;
 
@@ -18,8 +22,6 @@ const Recommendations = ({ setSelectedMovie }) => {
       try {
         nProgress.start();
         const response = await axios.get(`/recommender-api/${userId}`);
-        console.log(response.data);
-
         setRecommendations(response.data.Recommendations);
       } catch (error) {
         console.error("Error fetching recommendations:", error);
@@ -35,50 +37,120 @@ const Recommendations = ({ setSelectedMovie }) => {
 
   const handleClick = (movie) => {
     setSelectedMovie(movie.imdbID);
-    console.log(movie);
     navigate(`/about/${movie.title}/${movie.imdbID}`);
-    console.log(`Clicked on movie with ID: ${movie.imdbID}`);
   };
+
   if (!userId) {
     return <LoginRequired />;
   }
 
   if (loading) {
-    return <LoadingPage />;
+    return <PageLoader message="Finding movies for you..." />;
   }
 
   return (
-    <div className="text-xl font-bold text-center sm:text-2xl m-4">
-      Recommendations
-      <div>
-        <ul className="movie-list grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-5 p-5">
-          {recommendations.map((item) => (
-            <li
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen px-4 py-8"
+    >
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
+        <div className="inline-flex items-center gap-2 mb-2">
+          <Sparkles className="w-6 h-6 text-orange-500" />
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+            Recommendations
+          </h1>
+        </div>
+        <p className="text-gray-500 dark:text-gray-400">
+          Movies picked just for you based on your preferences
+        </p>
+      </motion.div>
+
+      {recommendations.length > 0 ? (
+        <motion.ul
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 list-none"
+        >
+          {recommendations.map((item, index) => (
+            <motion.li
               key={item.imdbID}
-              className="list-none flex flex-col text-center justify-start movie relative cursor-pointer overflow-hidden shadow-[0px_1px_11px_5px_rgba(0,0,0,0.4)] after:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-transparent after:to-[rgba(0,0,0,0.7)] after:z-10 after:pointer-events-none"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative cursor-pointer overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 shadow-lg group"
+              onClick={() => handleClick(item)}
             >
-              <img
-                src={item.poster}
-                alt={`${item.title} Poster`}
-                onClick={() => handleClick(item)}
-                className="w-[100%] h-auto transition-transform duration-300 ease hover:scale-110 hover:z-10"
-              />
-              <h3 className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 text-white p-1.5 px-4 rounded-md text-lg shadow-[1px_1px_5px_rgba(0,0,0,0.8)] w-64">
-                <span className="break-words mr-4 text-xl">{item.title}</span>
-                <SaveMovie
-                  movie={{
-                    imdbID: item.imdbID,
-                    Title: item.title,
-                    Poster: item.poster,
-                  }}
-                  userId={userId}
+              {/* Image */}
+              <div className="relative overflow-hidden aspect-[2/3]">
+                <motion.img
+                  src={item.poster}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.4 }}
                 />
-              </h3>
-            </li>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
+
+                {/* AI Badge */}
+                <div className="absolute top-2 right-2 px-2 py-1 bg-orange-500/90 backdrop-blur-sm rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-white" />
+                  <span className="text-xs text-white font-medium">AI Pick</span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <h3 className="text-white font-semibold text-base leading-tight mb-3 line-clamp-2 drop-shadow-lg">
+                  {item.title}
+                </h3>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <SaveMovie
+                    movie={{
+                      imdbID: item.imdbID,
+                      Title: item.title,
+                      Poster: item.poster,
+                    }}
+                    userId={userId}
+                  />
+                </div>
+              </div>
+
+              {/* Border */}
+              <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-orange-500/30 transition-colors pointer-events-none" />
+            </motion.li>
           ))}
-        </ul>
-      </div>
-    </div>
+        </motion.ul>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center min-h-[50vh]"
+        >
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl flex items-center justify-center mb-6"
+          >
+            <Film className="w-10 h-10 text-orange-500" />
+          </motion.div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            No recommendations yet
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 text-center max-w-sm">
+            Start adding movies to your watchlist to get personalized recommendations
+          </p>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 

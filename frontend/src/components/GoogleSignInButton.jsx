@@ -2,7 +2,7 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
-import LoadingPage from "./LoadingPage";
+import LoadingPage from "../pages/LoadingPage";
 import nProgress from "nprogress";
 import { toast } from "react-toastify";
 

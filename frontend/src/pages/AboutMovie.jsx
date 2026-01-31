@@ -1,17 +1,19 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
-import Loader from "../components/Loader";
-import "../assets/styles/AboutMovie.css";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useParams } from "react-router-dom";
+import { Play, ExternalLink, BookOpen, Star, Volume2, VolumeX, Eye, Check, X } from "lucide-react";
+import Loader, { PageLoader } from "../components/Loader";
 import { useOpenLink } from "../hooks/useOpenLink";
-import { data, useNavigate, useParams } from "react-router-dom";
 import SaveMovie from "../components/SaveMovie";
 import ShareMovieButton from "../components/ShareMovieButton";
 import LikeMovie from "../components/LikeMovie";
-import { Button } from "../components/ui/button";
-import { AiFillSound } from "react-icons/ai";
 import Comments from "@/components/Comments";
 import nProgress from "nprogress";
 import { useUser } from "@/context/UserContext";
+import StarRating from "@/components/StarRating";
+import { toast } from "react-toastify";
+
 const AboutMovie = () => {
   const { imdbID } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,9 +21,17 @@ const AboutMovie = () => {
   const [loading, setLoading] = useState(false);
   const [watchPlatforms, setWatchPlatforms] = useState([]);
   const { userId } = useUser();
+  const [watched, setWatched] = useState(false);
+  const [watchEntry, setWatchEntry] = useState(null);
+  const [showWatchModal, setShowWatchModal] = useState(false);
+  const [watchRating, setWatchRating] = useState(null);
+  const [watchReview, setWatchReview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     if (imdbID) {
       fetchMovieDetails();
+      checkWatchStatus();
     }
   }, [imdbID]);
 
@@ -40,6 +50,58 @@ const AboutMovie = () => {
     }
   };
 
+  const checkWatchStatus = async () => {
+    try {
+      const res = await axios.get(`/api/watch-history/check/${imdbID}`, {
+        withCredentials: true,
+      });
+      setWatched(res.data.watched);
+      setWatchEntry(res.data.entry);
+      if (res.data.entry) {
+        setWatchRating(res.data.entry.rating);
+        setWatchReview(res.data.entry.review || "");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleMarkAsWatched = async () => {
+    if (!userId) {
+      toast.error("Please login to track movies");
+      return;
+    }
+    setShowWatchModal(true);
+  };
+
+  const submitWatch = async () => {
+    try {
+      setSubmitting(true);
+      nProgress.start();
+      await axios.post(
+        "/api/watch-history/add",
+        {
+          movieId: imdbID,
+          movieTitle: movieDetails.Title,
+          moviePoster: movieDetails.Poster,
+          rating: watchRating,
+          review: watchReview,
+          watchedAt: new Date().toISOString(),
+        },
+        { withCredentials: true }
+      );
+      setWatched(true);
+      setShowWatchModal(false);
+      toast.success("Added to your watch history!");
+      checkWatchStatus();
+    } catch (err) {
+      toast.error("Failed to add to watch history");
+    } finally {
+      setSubmitting(false);
+      nProgress.done();
+    }
+  };
+
   const handleReadPlot = () => {
     if (!isPlaying) {
       const utterance = new SpeechSynthesisUtterance(movieDetails.Plot);
@@ -51,17 +113,15 @@ const AboutMovie = () => {
       setIsPlaying(false);
     }
   };
+
   const goToTrailer = async (movieTitle) => {
     const openLink = useOpenLink();
-
     const newTab = openLink(`/loading`, "_blank");
-
     try {
       const response = await axios.post(`/api/get-trailer-url`, {
         movieTitle: movieTitle,
       });
       const youtubeUrl = response.data;
-
       if (youtubeUrl && newTab) {
         newTab.location.href = youtubeUrl;
       }
@@ -116,11 +176,8 @@ const AboutMovie = () => {
       const response = await axios.post(`/api/get-wiki-url`, {
         movieTitle: movieTitle,
       });
-      console.log(response.data);
       const wikiUrl = response.data;
-
       if (wikiUrl && newTab) {
-        console.log(wikiUrl);
         newTab.location.href = wikiUrl;
       }
     } catch (error) {
@@ -132,16 +189,12 @@ const AboutMovie = () => {
   const getReviews = async (movieTitle) => {
     const openLink = useOpenLink();
     const newTab = openLink("/loading", "_blank");
-
     try {
       const response = await axios.post(`/api/get-reviews-url`, {
         movieTitle: movieTitle,
       });
-      console.log(response.data);
       const reviewUrl = response.data;
-
       if (reviewUrl && newTab) {
-        console.log(reviewUrl);
         newTab.location.href = reviewUrl;
       }
     } catch (error) {
@@ -149,102 +202,262 @@ const AboutMovie = () => {
       console.error("Failed to get Rotten Tomatoes URL:", error);
     }
   };
-  return (
-    <div className="max-w-screen-lg mx-auto p-4 animate-fadeIn">
-      {loading ? (
-        <div className="flex justify-center items-center h-vw">
-          <Loader />
-        </div>
-      ) : movieDetails ? (
-        <div className="space-y-6 animate-fadeIn">
-          <h1 className="text-3xl font-bold text-center">About Movie</h1>
-          <div className=" shadow-lg rounded-lg overflow-hidden p-6 dark:bg-gray-800">
-            <h2 className="text-2xl font-semibold mb-4">
-              {movieDetails.Title}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex justify-center">
-                <img
-                  className="rounded-lg shadow-md max-w-xs"
-                  src={movieDetails.Poster}
-                  alt={movieDetails.Title}
-                />
-              </div>
-              <div className="space-y-4">
-                {Array.isArray(watchPlatforms) && watchPlatforms.length > 0 && (
-                  <div className="border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold  mb-4 text-center tracking-wide">
-                      Where to Watch
-                    </h3>
-                    <ul className="flex flex-wrap justify-center gap-3">
-                      {watchPlatforms.map((platform, index) => (
-                        <li
-                          key={index}
-                          className="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition"
-                        >
-                          {platform}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3 mt-4 mb-4 md:flex md:justify-center md:gap-3">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition cursor-pointer"
-                onClick={() => goToTrailer(movieDetails.Title)}
-              >
-                See Trailer on YouTube
-              </button>
-              <button
-                className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition cursor-pointer"
-                onClick={() => goToImdb(movieDetails.imdbID)}
-              >
-                See Details on IMDb
-              </button>
-              <button
-                className="bg-zinc-300 text-black px-4 py-2 rounded-md hover:bg-zinc-600 transition cursor-pointer"
-                onClick={() => goToWiki(movieDetails.Title)}
-              >
-                Know more on Wikipedia
-              </button>
-              <button
-                className="bg-red-500 px-4 py-2 rounded-md hover:bg-red-600 transition cursor-pointer"
-                onClick={() => getReviews(movieDetails.Title)}
-              >
-                Read Reviews (Rotten Tomatoes)
-              </button>
-              <ShareMovieButton
-                className="min-h-full"
-                movieTitle={movieDetails.Title}
-              />
-              <SaveMovie userId={userId} movie={movieDetails} />
-            </div>
 
-            <p className="text-lg ">{movieDetails.Plot}</p>
-            <Button
-              className="bg-blue-500  hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 px-4 py-2 rounded-2xl hover:cursor-pointer mt-2"
-              onClick={handleReadPlot}
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  if (loading) {
+    return <PageLoader message="Loading movie details..." />;
+  }
+
+  if (!movieDetails) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-center min-h-[60vh]"
+      >
+        <p className="text-gray-500 dark:text-gray-400 text-lg">
+          No movie selected or details unavailable.
+        </p>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="max-w-5xl mx-auto px-4 py-8"
+    >
+      <motion.h1
+        variants={itemVariants}
+        className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+      >
+        {movieDetails.Title}
+      </motion.h1>
+
+      <motion.div
+        variants={itemVariants}
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-center md:col-span-1"
+          >
+            <img
+              className="rounded-xl shadow-lg max-w-full h-auto object-cover"
+              src={movieDetails.Poster}
+              alt={movieDetails.Title}
+            />
+          </motion.div>
+
+          <div className="md:col-span-2 space-y-6">
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-2">
+              {movieDetails.Year && (
+                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium">
+                  {movieDetails.Year}
+                </span>
+              )}
+              {movieDetails.Runtime && (
+                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium">
+                  {movieDetails.Runtime}
+                </span>
+              )}
+              {movieDetails.imdbRating && (
+                <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full text-sm font-medium flex items-center gap-1">
+                  <Star className="w-4 h-4" /> {movieDetails.imdbRating}
+                </span>
+              )}
+              {watched && (
+                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium flex items-center gap-1">
+                  <Check className="w-4 h-4" /> Watched
+                  {watchEntry?.rating && ` • ★${watchEntry.rating}`}
+                </span>
+              )}
+            </motion.div>
+
+            {Array.isArray(watchPlatforms) && watchPlatforms.length > 0 && (
+              <motion.div
+                variants={itemVariants}
+                className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+              >
+                <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                  Where to Watch
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {watchPlatforms.map((platform, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-white dark:bg-gray-600 rounded-lg text-sm font-medium shadow-sm"
+                    >
+                      {platform}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            <motion.div variants={itemVariants}>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                {movieDetails.Plot}
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleReadPlot}
+                className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition-colors"
+              >
+                {isPlaying ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                {isPlaying ? "Stop Reading" : "Read Aloud"}
+              </motion.button>
+            </motion.div>
+          </div>
+        </div>
+
+        <motion.div
+          variants={itemVariants}
+          className="px-6 pb-6"
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleMarkAsWatched}
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${watched
+                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  : "bg-purple-500 hover:bg-purple-600 text-white"
+                }`}
             >
-              <AiFillSound />
-              {isPlaying ? "Stop Reading" : "Read Plot Aloud"}
-            </Button>
+              <Eye className="w-4 h-4" />
+              {watched ? "Watched" : "Mark Watched"}
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => goToTrailer(movieDetails.Title)}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors"
+            >
+              <Play className="w-4 h-4" /> Trailer
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => goToImdb(movieDetails.imdbID)}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-colors"
+            >
+              <Star className="w-4 h-4" /> IMDb
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => goToWiki(movieDetails.Title)}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-xl text-sm font-medium transition-colors"
+            >
+              <BookOpen className="w-4 h-4" /> Wiki
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => getReviews(movieDetails.Title)}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl text-sm font-medium transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" /> Reviews
+            </motion.button>
+
+            <ShareMovieButton movieTitle={movieDetails.Title} />
+            <SaveMovie userId={userId} movie={movieDetails} />
           </div>
-          <div>
-            <LikeMovie movieId={movieDetails.imdbID} />
-          </div>
-          <div>
-            <Comments movieId={movieDetails.imdbID} />
-          </div>
-        </div>
-      ) : (
-        <div className="text-center text-gray-600">
-          No movie selected or no details available.
-        </div>
-      )}
-    </div>
+        </motion.div>
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="mt-8 space-y-6">
+        <LikeMovie movieId={movieDetails.imdbID} />
+        <Comments movieId={movieDetails.imdbID} />
+      </motion.div>
+
+      <AnimatePresence>
+        {showWatchModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowWatchModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {watched ? "Update Watch Entry" : "Mark as Watched"}
+                </h3>
+                <button
+                  onClick={() => setShowWatchModal(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Your Rating (optional)
+                  </label>
+                  <StarRating rating={watchRating} setRating={setWatchRating} />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Quick Review (optional)
+                  </label>
+                  <textarea
+                    value={watchReview}
+                    onChange={(e) => setWatchReview(e.target.value)}
+                    placeholder="What did you think?"
+                    rows={3}
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none resize-none"
+                  />
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={submitWatch}
+                  disabled={submitting}
+                  className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium disabled:opacity-60"
+                >
+                  {submitting ? "Saving..." : watched ? "Update" : "Add to Diary"}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
 export default AboutMovie;
+

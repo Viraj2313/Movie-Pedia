@@ -10,7 +10,7 @@ import axios from "axios";
 import { triggerNotification } from "./utils/NotificationUtil";
 import Friends from "./pages/Friends";
 import Chat from "./pages/Chat";
-import LoadingPage from "./components/LoadingPage";
+import LoadingPage from "./pages/LoadingPage";
 import FriendsToShare from "./pages/FriendsToShare";
 import { UserProvider } from "./context/UserContext";
 import { ToastContainer } from "react-toastify";
@@ -19,8 +19,22 @@ import { toast } from "react-toastify";
 import Recommendations from "./pages/Recommendations";
 import nProgress from "nprogress";
 import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
+import WatchDiary from "./pages/WatchDiary";
 import Footer from "./components/Footer";
 import { useLocation } from "react-router-dom";
+
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const navigate = useNavigate();
   const [user, setUserName] = useState(null);
@@ -44,7 +58,7 @@ function App() {
 
     fetchUser();
 
-    const sessionInterval = setInterval(checkSessionExpiration, 1800000); // 30 min
+    const sessionInterval = setInterval(checkSessionExpiration, 1800000);
 
     return () => clearInterval(sessionInterval);
   }, []);
@@ -113,6 +127,7 @@ function App() {
           userId={userId}
         />
         <ToastContainer />
+        <ScrollToTop />
         <Routes>
           <Route
             path="/wishlist"
@@ -155,6 +170,8 @@ function App() {
             element={<Recommendations setSelectedMovie={setSelectedMovie} />}
           />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user/:userId" element={<UserProfile />} />
+          <Route path="/diary" element={<WatchDiary />} />
         </Routes>
       </UserProvider>
       <Footer />

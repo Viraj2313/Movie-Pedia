@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
-import LoadingPage from "./LoadingPage";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {
-  AiOutlineLike,
-  AiFillLike,
-  AiOutlineDislike,
-  AiFillDislike,
-} from "react-icons/ai";
+import { ThumbsUp, ThumbsDown, MessageCircle, Trash2, Send, CornerDownRight } from "lucide-react";
 
 const Comments = ({ movieId }) => {
   const [loading, setLoading] = useState(true);
@@ -94,7 +89,7 @@ const Comments = ({ movieId }) => {
           setReplyInputs(newReplyInputs);
         }
 
-        toast.success("Comment added successfully");
+        toast.success("Comment added");
         setRefresh(!refresh);
       }
     } catch (error) {
@@ -109,7 +104,7 @@ const Comments = ({ movieId }) => {
         `/api/movies/${userId}/${movieId}/${commentId}`,
       );
       if (response.status === 200) {
-        toast.success("Comment deleted successfully");
+        toast.success("Comment deleted");
         setRefresh(!refresh);
       }
     } catch (error) {
@@ -132,169 +127,201 @@ const Comments = ({ movieId }) => {
     });
   };
 
-  return (
-    <div className="w-full mx-auto shadow-lg rounded-lg p-6">
-      <div className="flex items-center gap-1 p-3 rounded-lg shadow-sm dark:bg-gray-800">
-        <input
-          type="text"
-          placeholder="Write a comment..."
-          value={commentInput}
-          onChange={(e) => setCommentInput(e.target.value)}
-          className="flex-1 border order-gray-300 rounded-lg py-2 px-2"
-        />
-        <button
-          onClick={() => handleAddComment()}
-          className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer font-semibold py-2 px-4 rounded-lg"
-        >
-          Add
-        </button>
+  const formatTimeAgo = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return `${minutes}m`;
+    if (hours < 24) return `${hours}h`;
+    if (days < 7) return `${days}d`;
+    return date.toLocaleDateString();
+  };
+
+  const CommentItem = ({ comment, isReply = false }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`group ${isReply ? "ml-10 mt-3" : "mt-4"}`}
+    >
+      <div className="flex gap-3">
+        <div className={`${isReply ? "w-8 h-8" : "w-10 h-10"} flex-shrink-0 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center`}>
+          <span className={`${isReply ? "text-xs" : "text-sm"} font-medium text-gray-600 dark:text-gray-300`}>
+            {comment.commentorName?.charAt(0).toUpperCase()}
+          </span>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
+              {comment.commentorName}
+            </span>
+            <span className="text-xs text-gray-400">
+              {formatTimeAgo(comment.createdAt)}
+            </span>
+          </div>
+
+          <p className="text-gray-700 dark:text-gray-300 text-sm mt-1 leading-relaxed">
+            {comment.commentText}
+          </p>
+
+          <div className="flex items-center gap-4 mt-2">
+            <button
+              onClick={() => toggleReaction(comment.id, "like")}
+              className={`flex items-center gap-1.5 text-xs transition-colors ${comment.userReaction === "like"
+                  ? "text-blue-500"
+                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                }`}
+            >
+              <ThumbsUp size={14} className={comment.userReaction === "like" ? "fill-current" : ""} />
+              {comment.commentLikes > 0 && <span>{comment.commentLikes}</span>}
+            </button>
+
+            <button
+              onClick={() => toggleReaction(comment.id, "dislike")}
+              className={`flex items-center gap-1.5 text-xs transition-colors ${comment.userReaction === "dislike"
+                  ? "text-red-500"
+                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                }`}
+            >
+              <ThumbsDown size={14} className={comment.userReaction === "dislike" ? "fill-current" : ""} />
+              {comment.commentDislikes > 0 && <span>{comment.commentDislikes}</span>}
+            </button>
+
+            {!isReply && (
+              <button
+                onClick={() => toggleReplyInput(comment.id)}
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <MessageCircle size={14} />
+                Reply
+              </button>
+            )}
+
+            {comment.commentorId === parseInt(userId) && (
+              <button
+                onClick={() => handleDeleteComment(comment.id)}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <Trash2 size={13} />
+              </button>
+            )}
+          </div>
+
+          <AnimatePresence>
+            {comment.id in replyInputs && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-3 flex gap-2"
+              >
+                <div className="w-8 h-8 flex-shrink-0 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <CornerDownRight size={14} className="text-gray-400" />
+                </div>
+                <div className="flex-1 flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Write a reply..."
+                    value={replyInputs[comment.id]}
+                    onChange={(e) =>
+                      setReplyInputs({
+                        ...replyInputs,
+                        [comment.id]: e.target.value,
+                      })
+                    }
+                    onKeyDown={(e) => e.key === "Enter" && handleAddComment(comment.id)}
+                    className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                  />
+                  <button
+                    onClick={() => handleAddComment(comment.id)}
+                    className="px-3 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:opacity-80 transition-opacity"
+                  >
+                    <Send size={14} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
-      <div className="mt-4">
-        <h2 className="text-xl font-semibold mb-3">Comments</h2>
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="border-l-2 border-gray-100 dark:border-gray-800 ml-5">
+          {comment.replies.map((reply) => (
+            <CommentItem key={reply.id} comment={reply} isReply />
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
 
-        {loading ? (
-          <div className="flex items-center justify-center h-32">
-            <LoadingPage />
+  return (
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800">
+      <div className="p-5 border-b border-gray-100 dark:border-gray-800">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <MessageCircle size={18} className="text-gray-400" />
+          Discussion
+          {comments.length > 0 && (
+            <span className="text-xs font-normal text-gray-400 ml-1">
+              ({comments.length})
+            </span>
+          )}
+        </h3>
+      </div>
+
+      <div className="p-5">
+        <div className="flex gap-3">
+          <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+            <span className="text-sm font-medium text-white">
+              {userId ? "Y" : "?"}
+            </span>
           </div>
-        ) : comments.length === 0 ? (
-          <p>No comments yet</p>
-        ) : (
-          <ul>
-            {comments.map((comment) => (
-              <li
-                key={comment.id}
-                className="p-4 shadow-md rounded-lg mt-2 flex justify-between items-start dark:bg-gray-800"
-              >
-                <div className="w-full">
-                  <p className="font-semibold">{comment.commentorName}</p>
-                  <p>{comment.commentText}</p>
+          <div className="flex-1 flex gap-2">
+            <input
+              type="text"
+              placeholder={userId ? "Add a comment..." : "Login to comment..."}
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+              disabled={!userId}
+              className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleAddComment()}
+              disabled={!userId || !commentInput.trim()}
+              className="px-4 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Post
+            </motion.button>
+          </div>
+        </div>
 
-                  <div className="flex items-center gap-5 mt-2">
-                    <button
-                      onClick={() => toggleReaction(comment.id, "like")}
-                      className="flex items-center gap-1 hover:cursor-pointer"
-                    >
-                      {comment.userReaction === "like" ? (
-                        <AiFillLike size={20} />
-                      ) : (
-                        <AiOutlineLike size={20} />
-                      )}
-                      <span className="text-sm text-gray-400">
-                        {comment.commentLikes}
-                      </span>
-                    </button>
-
-                    <button
-                      onClick={() => toggleReaction(comment.id, "dislike")}
-                      className="flex items-center gap-1 hover:cursor-pointer"
-                    >
-                      {comment.userReaction === "dislike" ? (
-                        <AiFillDislike size={20} />
-                      ) : (
-                        <AiOutlineDislike size={20} />
-                      )}
-                      <span className="text-sm text-gray-400">
-                        {comment.commentDislikes}
-                      </span>
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={() => toggleReplyInput(comment.id)}
-                    className="text-blue-500 underline mt-2 hover:cursor-pointer"
-                  >
-                    {comment.id in replyInputs ? "Cancel" : "Reply"}
-                  </button>
-
-                  {comment.id in replyInputs && (
-                    <div className="ml-6 mt-2">
-                      <input
-                        type="text"
-                        placeholder="Write a reply..."
-                        value={replyInputs[comment.id]}
-                        onChange={(e) =>
-                          setReplyInputs({
-                            ...replyInputs,
-                            [comment.id]: e.target.value,
-                          })
-                        }
-                        className="border border-gray-300 rounded-lg py-2 px-2 w-full"
-                      />
-                      <button
-                        onClick={() => handleAddComment(comment.id)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-lg mt-2 hover:cursor-pointer"
-                      >
-                        Reply
-                      </button>
-                    </div>
-                  )}
-
-                  {comment.replies && comment.replies.length > 0 && (
-                    <ul className="ml-6 mt-3 border-l pl-3">
-                      {comment.replies.map((reply) => (
-                        <li key={reply.id} className="p-2">
-                          <p className="font-semibold">{reply.commentorName}</p>
-                          <p>{reply.commentText}</p>
-
-                          <div className="flex items-center gap-5 mt-2">
-                            <button
-                              onClick={() => toggleReaction(reply.id, "like")}
-                              className="flex items-center gap-1 hover:cursor-pointer"
-                            >
-                              {reply.userReaction === "like" ? (
-                                <AiFillLike size={18} />
-                              ) : (
-                                <AiOutlineLike size={18} />
-                              )}
-                              <span className="text-sm text-gray-400">
-                                {reply.commentLikes}
-                              </span>
-                            </button>
-
-                            <button
-                              onClick={() =>
-                                toggleReaction(reply.id, "dislike")
-                              }
-                              className="flex items-center gap-1 hover:cursor-pointer"
-                            >
-                              {reply.userReaction === "dislike" ? (
-                                <AiFillDislike size={18} />
-                              ) : (
-                                <AiOutlineDislike size={18} />
-                              )}
-                              <span className="text-sm text-gray-400">
-                                {reply.commentDislikes}
-                              </span>
-                            </button>
-                          </div>
-
-                          {reply.commentorId === parseInt(userId) && (
-                            <button
-                              onClick={() => handleDeleteComment(reply.id)}
-                              className="text-red-500 text-sm mt-1"
-                            >
-                              Delete
-                            </button>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                {comment.commentorId === parseInt(userId) && (
-                  <button
-                    onClick={() => handleDeleteComment(comment.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg"
-                  >
-                    Delete
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="mt-2">
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="w-6 h-6 border-2 border-gray-200 dark:border-gray-700 border-t-orange-500 rounded-full animate-spin" />
+            </div>
+          ) : comments.length === 0 ? (
+            <div className="text-center py-10">
+              <MessageCircle size={32} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+              <p className="text-sm text-gray-400">No comments yet. Be the first!</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
+              {comments.map((comment) => (
+                <CommentItem key={comment.id} comment={comment} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

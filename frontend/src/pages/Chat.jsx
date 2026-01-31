@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 import axios from "axios";
-import Loader from "../components/Loader";
-import { toast } from "react-toastify";
+import { Send, ArrowLeft } from "lucide-react";
+import Loader, { PageLoader } from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+
 const Chat = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
@@ -13,11 +15,20 @@ const Chat = () => {
   const [friendName, setFriendName] = useState("");
   const [loadingFriendName, setLoadingFriendName] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(true);
+  const messagesEndRef = useRef(null);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const senderId = params.get("senderId");
   const receiverId = params.get("receiverId");
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const getFriendName = async () => {
     try {
@@ -54,9 +65,7 @@ const Chat = () => {
         setConnection(newConnection);
 
         newConnection.on("ReceiveChatHistory", (history) => {
-          console.log("Received chat history:", history);
-
-          setMessages((prev) => {
+          setMessages(() => {
             const filteredHistory = history
               .map((msg) => ({
                 user: msg.senderId,
@@ -126,53 +135,103 @@ const Chat = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  if (loadingFriendName || loadingMessages) {
+    return <PageLoader message="Connecting to chat..." />;
+  }
+
   return (
-    <>
-      {loadingFriendName || loadingMessages ? (
-        <>
-          <Loader />
-        </>
-      ) : (
-        <div className="flex flex-col h-[calc(100vh-5rem)]">
-          <div className="bg-blue-600 text-white text-center p-4 font-bold text-lg">
-            Chat with {friendName}
-          </div>
-          <div className="flex-1 overflow-auto p-4 space-y-2">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`max-w-xs p-3 rounded-lg text-white shadow-md ${
-                  msg.user == senderId
-                    ? "bg-blue-500 ml-auto"
-                    : "bg-gray-700 mr-auto"
-                }`}
-              >
-                <strong>
-                  {msg.user == senderId ? "You" : `${friendName}`}:
-                </strong>
-                <p>{msg.message}</p>
-              </div>
-            ))}
-          </div>
-          <div className="p-4 bg-white flex items-center border-t sticky bottom-0">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message..."
-              className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={sendMessage}
-              disabled={!connection}
-              className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
-            >
-              Send
-            </button>
-          </div>
+    <div className="flex flex-col h-[calc(100vh-5rem)] bg-gray-50 dark:bg-gray-900">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-4 shadow-sm"
+      >
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate("/friends")}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </motion.button>
+        <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+          {friendName.charAt(0).toUpperCase()}
         </div>
-      )}
-    </>
+        <div>
+          <h2 className="font-semibold">{friendName}</h2>
+          <p className="text-xs text-green-500">Online</p>
+        </div>
+      </motion.div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <AnimatePresence initial={false}>
+          {messages.map((msg, index) => {
+            const isOwn = msg.user == senderId;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[75%] px-4 py-2.5 rounded-2xl shadow-sm ${isOwn
+                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-br-md"
+                      : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md border border-gray-200 dark:border-gray-700"
+                    }`}
+                >
+                  <p className="text-sm leading-relaxed">{msg.message}</p>
+                  <p
+                    className={`text-xs mt-1 ${isOwn ? "text-white/70" : "text-gray-400"
+                      }`}
+                  >
+                    {msg.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+        <div ref={messagesEndRef} />
+      </div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+      >
+        <div className="flex items-center gap-3 max-w-4xl mx-auto">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type a message..."
+            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-transparent focus:border-orange-500 focus:bg-white dark:focus:bg-gray-600 outline-none transition-all"
+          />
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={sendMessage}
+            disabled={!connection || !newMessage.trim()}
+            className="p-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          >
+            <Send className="w-5 h-5" />
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 

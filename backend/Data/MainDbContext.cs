@@ -15,6 +15,8 @@ namespace MovieApiApp.Data
     public DbSet<UserLike> UserLikes { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<CommentReaction> CommentReactions { get; set; }
+    public DbSet<WatchHistory> WatchHistories { get; set; }
+    public DbSet<ActivityLog> ActivityLogs { get; set; }
 
   }
 }

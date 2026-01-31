@@ -1,9 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Search, UserPlus, Users, RefreshCw, MessageCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import { useUser } from "../context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
+import Loader, { InlineLoader } from "@/components/Loader";
 import nProgress from "nprogress";
 
 const Friends = ({ user }) => {
@@ -11,14 +14,10 @@ const Friends = ({ user }) => {
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [searchText, setSearchText] = useState("");
   const [friend, setFriend] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
-
-  const Loader = () => (
-    <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-t-transparent border-blue-600"></div>
-  );
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +27,6 @@ const Friends = ({ user }) => {
         getFriendRequests();
       }
     };
-
     fetchData();
   }, [userId]);
 
@@ -69,6 +67,7 @@ const Friends = ({ user }) => {
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -79,6 +78,7 @@ const Friends = ({ user }) => {
       });
       getFriendRequests();
       getFriendsList();
+      toast.success("Friend request accepted!");
     } catch (error) {
       toast.error("Couldn't accept friend request");
     }
@@ -86,15 +86,14 @@ const Friends = ({ user }) => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
     if (!searchText.trim()) {
       toast.error("Enter username or ID first");
       return;
     }
 
     try {
+      setSearching(true);
       nProgress.start();
-
       setFriend(null);
       setSearchResults([]);
 
@@ -104,29 +103,23 @@ const Friends = ({ user }) => {
         const response = await axios.get(`/api/friends/search`, {
           params: { friendId: searchText },
         });
-
         if (response.status === 200) {
           setFriend(response.data);
           toast.success("Friend found");
         }
-        console.log(response);
       } else {
         const response = await axios.get(`/api/friends/search-by-name`, {
           params: { username: searchText },
         });
-
         if (response.status === 200) {
           setSearchResults(response.data);
           toast.success("Friends found");
         }
-        console.log(response);
       }
-
-      nProgress.done();
     } catch (error) {
       toast.error("No user found");
-      console.log(error);
-
+    } finally {
+      setSearching(false);
       nProgress.done();
     }
   };
@@ -134,144 +127,249 @@ const Friends = ({ user }) => {
   const handleSendFriendReq = async (receiverId) => {
     try {
       nProgress.start();
-
       await axios.post(`/api/friends/send-request`, null, {
         params: { senderId: userId, receiverId },
       });
-
       setFriend(null);
       setSearchResults([]);
-
-      nProgress.done();
       toast.success("Friend request sent!");
     } catch (error) {
-      nProgress.done();
       toast.error("Friend request not sent");
+    } finally {
+      nProgress.done();
     }
   };
 
-  return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold text-center sm:text-2xl mb-4">
-        Your Friends
-      </h2>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
 
-      {user ? (
-        <div className="flex flex-col lg:flex-row lg:space-x-6">
-          <div className="lg:w-1/3 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-2">Your Friends</h3>
-            <ul className="overflow-y-auto max-h-60 space-y-2">
-              {friends.length > 0 ? (
-                friends.map((friendItem) => (
-                  <Link
-                    key={friendItem.friendId}
-                    to={`/chatHub?senderId=${userId}&receiverId=${friendItem.friendId}`}
-                    className="block p-2 bg-gray-100 dark:bg-gray-700 rounded shadow-md hover:bg-gray-600 transition"
-                  >
-                    {friendItem.friendName}
-                  </Link>
-                ))
-              ) : loading ? (
-                <Loader />
-              ) : (
-                <p className="text-gray-500">No friends added yet.</p>
-              )}
-            </ul>
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  if (!user) {
+    return <LoginRequired />;
+  }
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen p-4 md:p-6"
+    >
+      <motion.h1
+        variants={itemVariants}
+        className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+      >
+        Friends
+      </motion.h1>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Friends List */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5 text-orange-500" />
+            <h3 className="text-lg font-semibold">Your Friends</h3>
           </div>
 
-          <div className="lg:w-1/3 bg-white p-4 rounded-lg shadow-md mt-6 lg:mt-0 dark:bg-gray-800">
-            <h3 className="text-lg font-semibold mb-2">Search Friend</h3>
+          {loading ? (
+            <InlineLoader />
+          ) : friends.length > 0 ? (
+            <ul className="space-y-2 max-h-64 overflow-y-auto">
+              <AnimatePresence>
+                {friends.map((friendItem, index) => (
+                  <motion.li
+                    key={friendItem.friendId}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Link
+                      to={`/chatHub?senderId=${userId}&receiverId=${friendItem.friendId}`}
+                      className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-orange-50 dark:hover:bg-gray-600 transition-colors group"
+                    >
+                      <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        {friendItem.friendName.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="flex-1 font-medium">{friendItem.friendName}</span>
+                      <MessageCircle className="w-4 h-4 text-gray-400 group-hover:text-orange-500 transition-colors" />
+                    </Link>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
+            </ul>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+              No friends added yet
+            </p>
+          )}
+        </motion.div>
 
-            <form
-              onSubmit={handleSearch}
-              className="flex flex-col sm:flex-row gap-2"
+        {/* Search Friends */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Search className="w-5 h-5 text-orange-500" />
+            <h3 className="text-lg font-semibold">Find Friends</h3>
+          </div>
+
+          <form onSubmit={handleSearch} className="space-y-3">
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Username or ID..."
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 dark:bg-gray-700 dark:text-white transition-all outline-none"
+            />
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              type="submit"
+              disabled={searching}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl font-medium disabled:opacity-60"
             >
-              <input
-                type="text"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Enter friend's username or ID"
-                className="border border-gray-300 rounded-md px-3 py-2 flex-1"
-              />
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition cursor-pointer"
-              >
-                Search
-              </button>
-            </form>
+              {searching ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                />
+              ) : (
+                <Search className="w-4 h-4" />
+              )}
+              Search
+            </motion.button>
+          </form>
 
+          {/* Search Results */}
+          <AnimatePresence>
             {friend && (
-              <div className="mt-4 p-3 border border-gray-300 dark:bg-gray-800 rounded-md bg-gray-50">
-                <p className="font-semibold">Name: {friend.name}</p>
-                <p className="text-gray-500">ID: {friend.id}</p>
-                <button
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"
+              >
+                <p className="font-semibold">{friend.name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">ID: {friend.id}</p>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => handleSendFriendReq(friend.id)}
-                  className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition cursor-pointer"
+                  className="mt-3 flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
                 >
+                  <UserPlus className="w-4 h-4" />
                   Send Request
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             )}
 
             {searchResults.length > 0 && (
-              <div className="mt-4 space-y-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-4 space-y-2 max-h-48 overflow-y-auto"
+              >
                 {searchResults.map((f) => (
-                  <div
+                  <motion.div
                     key={f.id}
-                    className="p-3 border border-gray-300 dark:bg-gray-800 rounded-md bg-gray-50"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-3 bg-gray-50 dark:bg-gray-700 rounded-xl"
                   >
-                    <p className="font-semibold">Name: {f.name}</p>
-                    <p className="text-gray-500">ID: {f.id}</p>
-                    <button
+                    <p className="font-semibold">{f.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">ID: {f.id}</p>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleSendFriendReq(f.id)}
-                      className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition cursor-pointer"
+                      className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium"
                     >
-                      Send Request
-                    </button>
-                  </div>
+                      <UserPlus className="w-3 h-3" />
+                      Add
+                    </motion.button>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Friend Requests */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-orange-500" />
+              <h3 className="text-lg font-semibold">Requests</h3>
+              {friendRequests.length > 0 && (
+                <span className="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-medium rounded-full">
+                  {friendRequests.length}
+                </span>
+              )}
+            </div>
+            <motion.button
+              whileHover={{ rotate: 180 }}
+              transition={{ duration: 0.3 }}
+              onClick={getFriendRequests}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 text-gray-500" />
+            </motion.button>
           </div>
 
-          <div className="lg:w-1/3 p-4 rounded-lg shadow-md mt-6 lg:mt-0 dark:bg-gray-800">
-            <h3 className="flex text-lg font-semibold mb-2 flex-row">
-              Friend Requests
-              <img
-                src="/refresh.png"
-                alt=""
-                className="ml-1.5 flex-row max-w-[7%] max-h-[7%] cursor-pointer"
-                onClick={getFriendRequests}
-              />
-            </h3>
-
-            <ul className="overflow-y-auto max-h-60 space-y-2">
-              {friendRequests.length > 0 ? (
-                friendRequests.map((request) => (
-                  <li
+          {friendRequests.length > 0 ? (
+            <ul className="space-y-2 max-h-64 overflow-y-auto">
+              <AnimatePresence>
+                {friendRequests.map((request, index) => (
+                  <motion.li
                     key={request.senderId}
-                    className="p-1 bg-gray-100 dark:bg-gray-700 rounded-md shadow-md flex justify-between items-center"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-xl"
                   >
-                    <span>{request.senderName}</span>
-                    <button
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        {request.senderName.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-medium">{request.senderName}</span>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleAcceptReq(request.senderId)}
-                      className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition cursor-pointer"
+                      className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
                     >
                       Accept
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <p className="text-gray-500">No friend requests.</p>
-              )}
+                    </motion.button>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
             </ul>
-          </div>
-        </div>
-      ) : (
-        <LoginRequired />
-      )}
-    </div>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+              No pending requests
+            </p>
+          )}
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 

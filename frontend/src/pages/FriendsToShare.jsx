@@ -32,7 +32,6 @@ const FriendsToShare = () => {
       console.log("User ID Set: ", userId);
       getFriendsList();
 
-      //signalr connection
       const newConnection = new signalR.HubConnectionBuilder()
         .withUrl(`/chatHub?senderId=${userId}`)
         .withAutomaticReconnect()

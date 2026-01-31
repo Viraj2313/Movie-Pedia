@@ -1,27 +1,68 @@
-import { useInView } from "react-intersection-observer";
+import { motion } from "framer-motion";
 import SaveMovie from "./SaveMovie";
 import { useUser } from "@/context/UserContext";
-const MovieCard = ({ movie, onClick }) => {
-  const { ref, inView } = useInView({ threshold: 0.05, triggerOnce: true });
+
+const MovieCard = ({ movie, onClick, index = 0 }) => {
   const { userId } = useUser();
+
   return (
-    <li
-      ref={ref}
-      className={`relative cursor-pointer overflow-hidden shadow-lg dark:shadow-md rounded-lg transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-gray-500/40 dark:hover:shadow-gray-900/80 duration-1000 ${
-        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
-      }`}
+    <motion.li
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.05,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="relative cursor-pointer overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 shadow-lg group"
       onClick={() => onClick(movie)}
     >
-      <img
-        src={movie.Poster}
-        alt={movie.Title}
-        className="w-full h-auto rounded-lg object-cover transition-transform duration-300 ease-in-out hover:scale-110"
-      />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-3 text-white text-center">
-        <h3 className="text-lg font-semibold">{movie.Title}</h3>
-        <SaveMovie movie={movie} userId={userId} />
+      <div className="relative overflow-hidden aspect-[2/3]">
+        <motion.img
+          src={movie.Poster}
+          alt={movie.Title}
+          className="w-full h-full object-cover"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-300" />
+
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+        </div>
       </div>
-    </li>
+
+      <motion.div
+        className="absolute inset-x-0 bottom-0 p-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 + 0.2 }}
+      >
+        <h3 className="text-white font-semibold text-lg leading-tight mb-2 line-clamp-2 drop-shadow-lg">
+          {movie.Title}
+        </h3>
+
+        {movie.Year && (
+          <span className="inline-block text-xs text-gray-300 bg-white/10 backdrop-blur-sm px-2 py-0.5 rounded-full mb-2">
+            {movie.Year}
+          </span>
+        )}
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: index * 0.05 + 0.3 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <SaveMovie movie={movie} userId={userId} />
+        </motion.div>
+      </motion.div>
+
+      <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-orange-500/30 transition-colors duration-300" />
+    </motion.li>
   );
 };
 

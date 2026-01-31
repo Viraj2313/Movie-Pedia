@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import "../assets/styles/Home.css";
 import { useNavigate } from "react-router-dom";
-import Loader from "../components/Loader";
-import SaveMovie from "../components/SaveMovie";
+import { Search, X, Film } from "lucide-react";
+import Loader, { PageLoader } from "../components/Loader";
 import { useUser } from "../context/UserContext";
-import LoadingPage from "../components/LoadingPage";
 import InternalServerError from "@/components/ServerError";
 import nProgress from "nprogress";
 import MovieCard from "../components/MovieCard";
@@ -76,7 +75,7 @@ const Home = ({ setSelectedMovie }) => {
 
     const searchWords = movieSearch.toLowerCase().split(" ");
     const filteredMovies = movies.filter((movie) =>
-      searchWords.every((word) => movie.Title.toLowerCase().includes(word)),
+      searchWords.every((word) => movie.Title.toLowerCase().includes(word))
     );
 
     if (filteredMovies.length > 0) {
@@ -141,168 +140,192 @@ const Home = ({ setSelectedMovie }) => {
     searchInputRef.current?.focus();
   };
 
+  if (loading) {
+    return <PageLoader message="Loading movies..." />;
+  }
+
   return (
-    <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="min-h-screen dark:text-gray-100 dark:bg-gray-900">
-          <div className="relative overflow-hidden bg-gradient-to-r text-white">
-            <div className="absolute inset-0"></div>
-            <div className="relative px-4 py-16 sm:py-20 lg:py-24">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-4 text-black dark:text-white">
-                  Moviepedia
-                </h1>
-                <p className="text-xl text-blue-500 mb-8 max-w-2xl mx-auto">
-                  Search movies, check ratings, read plot summaries, discover
-                  recommendations and everything you need to decide what to
-                  watch next
-                </p>
+    <div className="min-h-screen dark:text-gray-100 dark:bg-gray-900">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
 
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="max-w-2xl mx-auto"
-                >
-                  <div className="relative group">
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      value={movieSearch}
-                      onChange={handleInputChange}
-                      onInput={(e) => {
-                        if (!e.target.value.trim()) {
-                          clearSearch();
-                        }
-                      }}
-                      className="w-full pl-12 pr-32 py-4 text-lg bg-white/95 backdrop-blur-sm text-gray-900 placeholder-gray-500 rounded-2xl border-0 shadow-xl focus:ring-4 focus:ring-white/30 focus:outline-none transition-all duration-300 group-hover:shadow-2xl"
-                      placeholder="Search for movies, tv shows..."
-                      autoFocus
-                    />
-                    {movieSearch && (
-                      <button
-                        type="button"
-                        onClick={clearSearch}
-                        className="absolute inset-y-0 right-24 flex items-center pr-2 text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    )}
-                    <button
-                      type="submit"
-                      className="absolute inset-y-0 right-0 flex items-center px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-r-2xl hover:from-blue-600 hover:to-purple-700 focus:ring-4 focus:ring-purple-300 transition-all duration-300 transform hover:scale-105 font-semibold shadow-lg"
+        <div className="relative px-4 py-12 sm:py-16 lg:py-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4"
+            >
+              <span className="bg-gradient-to-r from-orange-500 via-orange-600 to-purple-600 bg-clip-text text-transparent">
+                Moviepedia
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto"
+            >
+              Search movies, check ratings, read plot summaries, and discover
+              your next favorite film
+            </motion.p>
+
+            <motion.form
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+              onSubmit={handleSearchSubmit}
+              className="max-w-2xl mx-auto"
+            >
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                  <Search className="w-5 h-5 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
+                </div>
+
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={movieSearch}
+                  onChange={handleInputChange}
+                  className="w-full pl-12 pr-28 py-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-lg focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none transition-all duration-300"
+                  placeholder="Search for movies..."
+                  autoFocus
+                />
+
+                <AnimatePresence>
+                  {movieSearch && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      type="button"
+                      onClick={clearSearch}
+                      className="absolute inset-y-0 right-24 flex items-center pr-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     >
-                      Search
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+                      <X className="w-5 h-5" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
 
-          <div className="px-4 py-8 sm:px-6 lg:px-8">
-            {serverError ? (
-              <div className="flex justify-center items-center min-h-[400px]">
-                <InternalServerError />
+                <motion.button
+                  type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="absolute inset-y-2 right-2 flex items-center px-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 font-medium shadow-lg shadow-orange-500/25 transition-all duration-300"
+                >
+                  Search
+                </motion.button>
+              </div>
+            </motion.form>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 py-8 sm:px-6 lg:px-8">
+        {serverError ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-center items-center min-h-[400px]"
+          >
+            <InternalServerError />
+          </motion.div>
+        ) : (
+          <>
+            <AnimatePresence mode="wait">
+              {movieSearch && !searchLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mb-8 text-center"
+                >
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    {searchResults.length > 0
+                      ? `Found ${searchResults.length} results for "${movieSearch}"`
+                      : `No results found for "${movieSearch}"`}
+                  </h2>
+                  {searchResults.length === 0 && (
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Try different keywords or check spelling
+                    </p>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {searchLoading ? (
+              <div className="flex flex-col items-center justify-center min-h-[400px]">
+                <Loader message="Searching movies..." />
               </div>
             ) : (
               <>
-                {movieSearch && !searchLoading && (
-                  <div className="mb-8 text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                      {searchResults.length > 0
-                        ? `Found ${searchResults.length} results for "${movieSearch}"`
-                        : `No results found for "${movieSearch}"`}
-                    </h2>
-                    {searchResults.length === 0 && (
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Try searching with different keywords or check your
-                        spelling
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {searchLoading ? (
-                  <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                    <LoadingPage />
-                    <p className="text-lg text-gray-600 dark:text-gray-400 animate-pulse">
-                      Searching for movies...
-                    </p>
+                {searchResults.length > 0 ? (
+                  <div className="max-w-7xl mx-auto">
+                    <motion.ul
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 list-none"
+                    >
+                      {searchResults.map((movie, index) => (
+                        <MovieCard
+                          key={movie.imdbID || index}
+                          movie={movie}
+                          onClick={handleClick}
+                          index={index}
+                        />
+                      ))}
+                    </motion.ul>
                   </div>
                 ) : (
-                  <>
-                    {searchResults.length > 0 ? (
-                      <div className="max-w-7xl mx-auto">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
-                          {searchResults.map((movie, index) => (
-                            <div
-                              key={movie.imdbID || index}
-                              className="transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                            >
-                              <MovieCard movie={movie} onClick={handleClick} />
-                            </div>
-                          ))}
-                        </div>
+                  !movieSearch && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center py-16"
+                    >
+                      <div className="max-w-md mx-auto">
+                        <motion.div
+                          initial={{ scale: 0.8 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 200 }}
+                          className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl flex items-center justify-center"
+                        >
+                          <Film className="w-10 h-10 text-orange-500" />
+                        </motion.div>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                          Start Your Movie Journey
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400">
+                          Use the search bar above to discover amazing movies
+                        </p>
                       </div>
-                    ) : (
-                      !movieSearch && (
-                        <div className="text-center py-16">
-                          <div className="max-w-md mx-auto">
-                            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full flex items-center justify-center">
-                              <svg
-                                className="w-12 h-12 text-blue-600 dark:text-blue-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-8 0h8M7 4L5.5 20h13L17 4M7 4h10m-5 4v8m-3-4h6"
-                                />
-                              </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                              Start Your Movie Journey
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
-                              Use the search bar above to discover amazing
-                              movies
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </>
+                    </motion.div>
+                  )
                 )}
               </>
             )}
-          </div>
+          </>
+        )}
+      </div>
 
-          {movieSearch && searchResults.length > 0 && !searchLoading && (
-            <div className="fixed bottom-6 right-6 bg-white dark:bg-gray-800 rounded-full px-4 py-2 shadow-lg border border-gray-200 dark:border-gray-700 z-10">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {searchResults.length} movies
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-    </>
+      <AnimatePresence>
+        {movieSearch && searchResults.length > 0 && !searchLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 right-6 bg-white dark:bg-gray-800 rounded-full px-4 py-2 shadow-lg border border-gray-200 dark:border-gray-700 z-10"
+          >
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {searchResults.length} movies
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
