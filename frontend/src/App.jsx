@@ -174,7 +174,7 @@ function App() {
           <Route path="/diary" element={<WatchDiary />} />
         </Routes>
       </UserProvider>
-      <Footer />
+      {location.pathname !== "/chatHub" && <Footer />}
     </>
   );
 }

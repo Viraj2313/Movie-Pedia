@@ -27,6 +27,9 @@ const AboutMovie = () => {
   const [watchRating, setWatchRating] = useState(null);
   const [watchReview, setWatchReview] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [trailerVideoId, setTrailerVideoId] = useState(null);
+  const [trailerLoading, setTrailerLoading] = useState(false);
+  const [showTrailer, setShowTrailer] = useState(false);
 
   useEffect(() => {
     if (imdbID) {
@@ -34,6 +37,16 @@ const AboutMovie = () => {
       checkWatchStatus();
     }
   }, [imdbID]);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setShowTrailer(false);
+    };
+    if (showTrailer) {
+      window.addEventListener("keydown", handleEsc);
+      return () => window.removeEventListener("keydown", handleEsc);
+    }
+  }, [showTrailer]);
 
   const fetchMovieDetails = async () => {
     nProgress.start();
@@ -114,20 +127,22 @@ const AboutMovie = () => {
     }
   };
 
-  const goToTrailer = async (movieTitle) => {
-    const openLink = useOpenLink();
-    const newTab = openLink(`/loading`, "_blank");
+  const fetchTrailerVideoId = async (movieTitle) => {
+    if (trailerVideoId) {
+      setShowTrailer(!showTrailer);
+      return;
+    }
+    setTrailerLoading(true);
     try {
-      const response = await axios.post(`/api/get-trailer-url`, {
+      const response = await axios.post(`/api/get-trailer-id`, {
         movieTitle: movieTitle,
       });
-      const youtubeUrl = response.data;
-      if (youtubeUrl && newTab) {
-        newTab.location.href = youtubeUrl;
-      }
+      setTrailerVideoId(response.data);
+      setShowTrailer(true);
     } catch (error) {
-      console.log(error);
-      newTab.close();
+      toast.error("Trailer not found");
+    } finally {
+      setTrailerLoading(false);
     }
   };
 
@@ -337,8 +352,8 @@ const AboutMovie = () => {
               whileTap={{ scale: 0.98 }}
               onClick={handleMarkAsWatched}
               className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${watched
-                  ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-purple-500 hover:bg-purple-600 text-white"
+                ? "bg-green-500 hover:bg-green-600 text-white"
+                : "bg-purple-500 hover:bg-purple-600 text-white"
                 }`}
             >
               <Eye className="w-4 h-4" />
@@ -348,10 +363,11 @@ const AboutMovie = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => goToTrailer(movieDetails.Title)}
-              className="flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors"
+              onClick={() => fetchTrailerVideoId(movieDetails.Title)}
+              disabled={trailerLoading}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
             >
-              <Play className="w-4 h-4" /> Trailer
+              <Play className="w-4 h-4" /> {trailerLoading ? "Loading..." : showTrailer ? "Hide Trailer" : "Trailer"}
             </motion.button>
 
             <motion.button
@@ -386,6 +402,44 @@ const AboutMovie = () => {
           </div>
         </motion.div>
       </motion.div>
+
+      <AnimatePresence>
+        {showTrailer && trailerVideoId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowTrailer(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-4xl"
+            >
+              <button
+                onClick={() => setShowTrailer(false)}
+                className="absolute -top-12 right-0 flex items-center gap-2 text-white hover:text-red-400 transition-colors text-sm font-medium"
+              >
+                <X className="w-5 h-5" /> Close
+              </button>
+              <div className="relative w-full pt-[56.25%] rounded-2xl overflow-hidden bg-black shadow-2xl">
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src={`https://www.youtube.com/embed/${trailerVideoId}?autoplay=1`}
+                  title="Movie Trailer"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <p className="text-center text-gray-400 text-sm mt-4">Press ESC or click outside to close</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div variants={itemVariants} className="mt-8 space-y-6">
         <LikeMovie movieId={movieDetails.imdbID} />

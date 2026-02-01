@@ -374,3 +374,4 @@ FodyWeavers.xsd
 /MovieApiApp/appsettings.json
 /MovieApiApp/appsettings.Development.json
 /MovieApiApp/Properties/launchSettings.json
+.idea/

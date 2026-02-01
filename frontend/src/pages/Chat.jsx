@@ -15,6 +15,7 @@ const Chat = () => {
   const [friendName, setFriendName] = useState("");
   const [loadingFriendName, setLoadingFriendName] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
   const messagesEndRef = useRef(null);
 
   const location = useLocation();
@@ -91,6 +92,20 @@ const Chat = () => {
           ]);
         });
 
+        newConnection.on("ReceiveOnlineStatus", (userId, online) => {
+          if (parseInt(userId) === parseInt(receiverId)) {
+            setIsOnline(online);
+          }
+        });
+
+        newConnection.on("UserOnlineStatusChanged", (userId, online) => {
+          if (parseInt(userId) === parseInt(receiverId)) {
+            setIsOnline(online);
+          }
+        });
+
+        newConnection.invoke("CheckUserOnline", parseInt(receiverId));
+
         return newConnection
           .invoke("GetChatHistory", parseInt(senderId), parseInt(receiverId))
           .catch((err) => console.error("Error fetching chat history:", err));
@@ -147,7 +162,7 @@ const Chat = () => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-5rem)] bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -166,7 +181,9 @@ const Chat = () => {
         </div>
         <div>
           <h2 className="font-semibold">{friendName}</h2>
-          <p className="text-xs text-green-500">Online</p>
+          <p className={`text-xs ${isOnline ? "text-green-500" : "text-gray-400"}`}>
+            {isOnline ? "Online" : "Offline"}
+          </p>
         </div>
       </motion.div>
 
@@ -184,8 +201,8 @@ const Chat = () => {
               >
                 <div
                   className={`max-w-[75%] px-4 py-2.5 rounded-2xl shadow-sm ${isOwn
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-br-md"
-                      : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md border border-gray-200 dark:border-gray-700"
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-br-md"
+                    : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md border border-gray-200 dark:border-gray-700"
                     }`}
                 >
                   <p className="text-sm leading-relaxed">{msg.message}</p>

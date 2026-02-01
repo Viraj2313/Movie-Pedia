@@ -26,6 +26,20 @@ namespace MovieApiApp.Controllers
             return Ok(url);
         }
 
+        [HttpPost("get-trailer-id")]
+        public async Task<IActionResult> GetTrailerId([FromBody] MovieInfoDto movieInfoDto)
+        {
+            if (string.IsNullOrWhiteSpace(movieInfoDto.MovieTitle))
+                return BadRequest("Movie title is required.");
+
+            var videoId = await _youTubeService.GetTrailerVideoId(movieInfoDto.MovieTitle);
+
+            if (string.IsNullOrWhiteSpace(videoId))
+                return NotFound("Trailer not found.");
+
+            return Ok(videoId);
+        }
+
         [HttpPost("get-imdb-url")]
         public IActionResult GetImdbUrl([FromBody] MovieInfoDto movieInfoDto)
         {

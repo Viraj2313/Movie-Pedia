@@ -37,6 +37,8 @@ namespace MovieApiApp.Hubs
                     UserConnections[userId] = Context.ConnectionId;
                     Console.WriteLine($"User {userId} connected with Connection ID: {Context.ConnectionId}");
 
+                    await Clients.All.SendAsync("UserOnlineStatusChanged", userId, true);
+
                     var pendingMessages = await _context.ChatMessages
                         .Where(m => m.ReceiverId == userId)
                         .OrderBy(m => m.Timestamp)
@@ -62,12 +64,14 @@ namespace MovieApiApp.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
+            int disconnectedUserId = 0;
             try
             {
                 var user = UserConnections.FirstOrDefault(x => x.Value == Context.ConnectionId);
 
                 if (!user.Equals(default(KeyValuePair<int, string>)))
                 {
+                    disconnectedUserId = user.Key;
                     UserConnections.TryRemove(user.Key, out _);
                     Console.WriteLine($"User {user.Key} disconnected");
                 }
@@ -82,7 +86,18 @@ namespace MovieApiApp.Hubs
                 Console.WriteLine($"Error during disconnection: {ex.Message}");
             }
 
+            if (disconnectedUserId > 0)
+            {
+                await Clients.All.SendAsync("UserOnlineStatusChanged", disconnectedUserId, false);
+            }
+
             await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task CheckUserOnline(int userId)
+        {
+            bool isOnline = UserConnections.ContainsKey(userId);
+            await Clients.Caller.SendAsync("ReceiveOnlineStatus", userId, isOnline);
         }
 
         public async Task SendMessage(int senderId, int receiverId, string message)
