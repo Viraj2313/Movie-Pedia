@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
-const StarRating = ({ rating, setRating, maxStars = 10, size = "md", readonly = false }) => {
+const StarRating = ({ rating, setRating, maxStars = 5, size = "md", readonly = false }) => {
     const sizes = {
         sm: { star: 16, gap: 1 },
         md: { star: 24, gap: 2 },
@@ -35,8 +35,8 @@ const StarRating = ({ rating, setRating, maxStars = 10, size = "md", readonly = 
                         <Star
                             size={starSize}
                             className={`transition-colors ${isFilled
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "fill-transparent text-gray-300 dark:text-gray-600"
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "fill-transparent text-gray-300 dark:text-gray-600"
                                 } ${!readonly && "hover:text-yellow-400"}`}
                         />
                     </motion.button>
@@ -51,7 +51,7 @@ const StarRating = ({ rating, setRating, maxStars = 10, size = "md", readonly = 
     );
 };
 
-export const DisplayRating = ({ rating, maxStars = 10, size = "sm" }) => {
+export const DisplayRating = ({ rating, maxStars = 5, size = "sm" }) => {
     const sizes = {
         sm: 14,
         md: 18,
@@ -68,8 +68,8 @@ export const DisplayRating = ({ rating, maxStars = 10, size = "sm" }) => {
                     key={index}
                     size={starSize}
                     className={`${index < rating
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "fill-transparent text-gray-300 dark:text-gray-600"
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "fill-transparent text-gray-300 dark:text-gray-600"
                         }`}
                 />
             ))}

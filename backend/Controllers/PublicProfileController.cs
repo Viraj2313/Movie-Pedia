@@ -34,7 +34,7 @@ namespace MovieApiApp.Controllers
                 .ToListAsync();
 
             var favoriteMovies = await _context.WatchHistories
-                .Where(w => w.UserId == userId && w.Rating >= 8)
+                .Where(w => w.UserId == userId && w.Rating >= 4)
                 .OrderByDescending(w => w.Rating)
                 .ThenByDescending(w => w.WatchedAt)
                 .Take(5)

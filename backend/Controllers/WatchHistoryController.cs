@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
@@ -179,6 +180,7 @@ namespace MovieApiApp.Controllers
         public string MovieId { get; set; }
         public string MovieTitle { get; set; }
         public string MoviePoster { get; set; }
+        [Range(1, 5)]
         public int? Rating { get; set; }
         public string Review { get; set; }
         public DateTime? WatchedAt { get; set; }
@@ -186,6 +188,7 @@ namespace MovieApiApp.Controllers
 
     public class UpdateWatchHistoryDto
     {
+        [Range(1, 5)]
         public int? Rating { get; set; }
         public string Review { get; set; }
         public DateTime? WatchedAt { get; set; }
