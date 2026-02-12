@@ -1,13 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Film } from "lucide-react";
+import { Search, X, Film, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import Loader, { PageLoader } from "../components/Loader";
 import { useUser } from "../context/UserContext";
 import InternalServerError from "@/components/ServerError";
 import nProgress from "nprogress";
 import MovieCard from "../components/MovieCard";
+
+const TYPE_OPTIONS = [
+  { label: "All", value: "" },
+  { label: "Movies", value: "movie" },
+  { label: "Series", value: "series" },
+];
+
+const SORT_OPTIONS = [
+  { label: "Default", value: "default" },
+  { label: "Title A-Z", value: "title-asc" },
+  { label: "Title Z-A", value: "title-desc" },
+  { label: "Year ↑", value: "year-asc" },
+  { label: "Year ↓", value: "year-desc" },
+];
 
 const Home = ({ setSelectedMovie }) => {
   const { userId, setUserId } = useUser();
@@ -18,6 +32,13 @@ const Home = ({ setSelectedMovie }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [serverError, setServerError] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [yearInput, setYearInput] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+  const [sortBy, setSortBy] = useState("default");
+  const [showFilters, setShowFilters] = useState(false);
+  const isInitialLoad = useRef(true);
+  const yearDebounceRef = useRef(null);
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
   const abortControllerRef = useRef(null);
@@ -36,16 +57,31 @@ const Home = ({ setSelectedMovie }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
+    if (yearDebounceRef.current) clearTimeout(yearDebounceRef.current);
+    yearDebounceRef.current = setTimeout(() => {
+      setYearFilter(yearInput);
+    }, 800);
+    return () => clearTimeout(yearDebounceRef.current);
+  }, [yearInput]);
+
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      setLoading(true);
+    }
     nProgress.start();
     getUserIdFromToken();
 
+    const params = {};
+    if (typeFilter) params.type = typeFilter;
+    if (yearFilter) params.year = yearFilter;
+
     axios
-      .get("/api/home")
+      .get("/api/home", { params })
       .then((response) => {
         setMovies(response.data || []);
         setSearchResults(response.data || []);
         setLoading(false);
+        isInitialLoad.current = false;
         nProgress.done();
       })
       .catch((error) => {
@@ -53,11 +89,12 @@ const Home = ({ setSelectedMovie }) => {
         setServerError(true);
         setError("Unable to fetch movies from server");
         setLoading(false);
+        isInitialLoad.current = false;
         setMovies([]);
         setSearchResults([]);
         nProgress.done();
       });
-  }, []);
+  }, [typeFilter, yearFilter]);
 
   useEffect(() => {
     if (abortControllerRef.current) {
@@ -82,9 +119,14 @@ const Home = ({ setSelectedMovie }) => {
       setSearchResults(filteredMovies);
       setSearchLoading(false);
     } else {
+      const params = {};
+      if (typeFilter) params.type = typeFilter;
+      if (yearFilter) params.year = yearFilter;
+
       axios
         .get(`/api/home/search-movie/${movieSearch}`, {
           signal: abortControllerRef.current.signal,
+          params,
         })
         .then((response) => {
           setSearchResults(response.data.Search || []);
@@ -106,7 +148,26 @@ const Home = ({ setSelectedMovie }) => {
         abortControllerRef.current.abort();
       }
     };
-  }, [movieSearch, movies]);
+  }, [movieSearch, movies, typeFilter, yearFilter]);
+
+  const sortedResults = useMemo(() => {
+    if (sortBy === "default") return searchResults;
+    return [...searchResults].sort((a, b) => {
+      const titleA = (a.Title || "").toLowerCase();
+      const titleB = (b.Title || "").toLowerCase();
+      const yearA = parseInt(a.Year) || 0;
+      const yearB = parseInt(b.Year) || 0;
+      switch (sortBy) {
+        case "title-asc": return titleA.localeCompare(titleB);
+        case "title-desc": return titleB.localeCompare(titleA);
+        case "year-asc": return yearA - yearB;
+        case "year-desc": return yearB - yearA;
+        default: return 0;
+      }
+    });
+  }, [searchResults, sortBy]);
+
+  const activeFilterCount = (typeFilter ? 1 : 0) + (yearInput ? 1 : 0) + (sortBy !== "default" ? 1 : 0);
 
   const handleClick = (movie) => {
     setSelectedMovie(movie.imdbID);
@@ -219,6 +280,111 @@ const Home = ({ setSelectedMovie }) => {
                 </motion.button>
               </div>
             </motion.form>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              className="mt-6 flex justify-center"
+            >
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-orange-500 transition-all"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                Filters & Sort
+                {activeFilterCount > 0 && (
+                  <span className="px-1.5 py-0.5 bg-orange-500 text-white text-xs rounded-full min-w-[20px] text-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+            </motion.div>
+
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4 overflow-hidden"
+                >
+                  <div className="max-w-2xl mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 p-4 space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                        Type
+                      </p>
+                      <div className="flex gap-2">
+                        {TYPE_OPTIONS.map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setTypeFilter(opt.value)}
+                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${typeFilter === opt.value
+                              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
+                              : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                              }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                          Year
+                        </p>
+                        <input
+                          type="number"
+                          min="1900"
+                          max="2030"
+                          value={yearInput}
+                          onChange={(e) => setYearInput(e.target.value)}
+                          placeholder="e.g. 2024"
+                          className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-orange-500 outline-none transition-all text-sm"
+                        />
+                      </div>
+
+                      <div className="flex-1">
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                          Sort By
+                        </p>
+                        <div className="relative">
+                          <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                          <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-orange-500 outline-none transition-all text-sm appearance-none cursor-pointer"
+                          >
+                            {SORT_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {activeFilterCount > 0 && (
+                      <button
+                        onClick={() => {
+                          setTypeFilter("");
+                          setYearInput("");
+                          setYearFilter("");
+                          setSortBy("default");
+                        }}
+                        className="text-sm text-orange-500 hover:text-orange-600 font-medium transition-colors"
+                      >
+                        Clear All Filters
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -262,14 +428,14 @@ const Home = ({ setSelectedMovie }) => {
               </div>
             ) : (
               <>
-                {searchResults.length > 0 ? (
+                {sortedResults.length > 0 ? (
                   <div className="max-w-7xl mx-auto">
                     <motion.ul
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 list-none"
                     >
-                      {searchResults.map((movie, index) => (
+                      {sortedResults.map((movie, index) => (
                         <MovieCard
                           key={movie.imdbID || index}
                           movie={movie}
@@ -312,7 +478,7 @@ const Home = ({ setSelectedMovie }) => {
       </div>
 
       <AnimatePresence>
-        {movieSearch && searchResults.length > 0 && !searchLoading && (
+        {movieSearch && sortedResults.length > 0 && !searchLoading && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -320,7 +486,7 @@ const Home = ({ setSelectedMovie }) => {
             className="fixed bottom-6 right-6 bg-white dark:bg-gray-800 rounded-full px-4 py-2 shadow-lg border border-gray-200 dark:border-gray-700 z-10"
           >
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {searchResults.length} movies
+              {sortedResults.length} movies
             </span>
           </motion.div>
         )}

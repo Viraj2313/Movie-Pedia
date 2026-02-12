@@ -17,14 +17,15 @@ namespace MovieApiApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMovies()
+        public async Task<IActionResult> GetMovies([FromQuery] string? type, [FromQuery] string? year)
         {
             try
             {
                 var apiKey = _configuration["ApiKeyOmDb"];
+                var filterParams = BuildFilterParams(type, year);
 
-                var movies1 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=batman&apikey={apiKey}");
-                var movies2 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=superman&apikey={apiKey}");
+                var movies1 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=batman&apikey={apiKey}{filterParams}");
+                var movies2 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=superman&apikey={apiKey}{filterParams}");
                 var list1 = ExtractMovies(movies1);
                 var list2 = ExtractMovies(movies2);
                 var mergedMovies = list1.Concat(list2).ToList();
@@ -65,7 +66,7 @@ namespace MovieApiApp.Controllers
         }
 
         [HttpGet("search-movie/{query}")]
-        public async Task<IActionResult> SearchMovies(string query)
+        public async Task<IActionResult> SearchMovies(string query, [FromQuery] string? type, [FromQuery] string? year)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -74,7 +75,8 @@ namespace MovieApiApp.Controllers
             try
             {
                 string apiKey = _configuration["ApiKeyOmDb"];
-                string apiUrl = $"http://www.omdbapi.com/?s={query}&apikey={apiKey}";
+                var filterParams = BuildFilterParams(type, year);
+                string apiUrl = $"http://www.omdbapi.com/?s={query}&apikey={apiKey}{filterParams}";
                 var movies = await _httpClient.GetStringAsync(apiUrl);
                 return Ok(movies);
             }
@@ -82,6 +84,16 @@ namespace MovieApiApp.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        private static string BuildFilterParams(string? type, string? year)
+        {
+            var filterParams = "";
+            if (!string.IsNullOrWhiteSpace(type))
+                filterParams += $"&type={type}";
+            if (!string.IsNullOrWhiteSpace(year))
+                filterParams += $"&y={year}";
+            return filterParams;
         }
         [HttpGet("healthcheck"), HttpHead("healthcheck")]
         public IActionResult HealthCheck()
