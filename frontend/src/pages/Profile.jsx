@@ -138,7 +138,7 @@ const Profile = () => {
               className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg h-full">
                   <Film className="w-5 h-5 text-purple-500" />
                 </div>
                 <span className="font-medium text-gray-900 dark:text-white">Watch Diary</span>

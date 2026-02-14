@@ -94,8 +94,8 @@ const NavBar = ({ user, handleLogout }) => {
           to={to}
           onClick={toggleMenu}
           className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${isActive
-              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
-              : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+            ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
+            : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
         >
           <div className={`p-2 rounded-xl ${isActive ? "bg-white/20" : "bg-gray-100 dark:bg-gray-800"}`}>
@@ -118,17 +118,19 @@ const NavBar = ({ user, handleLogout }) => {
           className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
         >
           <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
-                <span className="text-lg font-bold text-white">
-                  {user?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p className="font-semibold text-gray-900 dark:text-white text-sm">{user}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">View your profile</p>
-              </div>
-            </div>
+            <Link to={"/profile"}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-bold text-white">
+                    {user?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">{user}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">View your profile</p>
+                </div>
+              </div></Link>
+
           </div>
 
           <div className="p-2">
