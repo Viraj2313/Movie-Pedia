@@ -5,7 +5,6 @@
 Dockerfile.dev
 docker-compose.dev.yml
 Properties/launchSettings.json
-Migrations/
 Dockerfile.dev
 .env
 config.json
