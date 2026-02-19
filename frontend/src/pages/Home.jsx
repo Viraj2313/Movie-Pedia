@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Film, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import { Search, X, Film, SlidersHorizontal, ArrowUpDown, ChevronDown } from "lucide-react";
 import Loader from "../components/Loader";
 import { HomeSkeleton } from "../components/Skeletons";
 import { useUser } from "../context/UserContext";
@@ -38,11 +38,15 @@ const Home = ({ setSelectedMovie }) => {
   const [yearFilter, setYearFilter] = useState("");
   const [sortBy, setSortBy] = useState("default");
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const isInitialLoad = useRef(true);
   const yearDebounceRef = useRef(null);
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
   const abortControllerRef = useRef(null);
+  const seenIds = useRef(new Set());
 
   const getUserIdFromToken = async () => {
     try {
@@ -71,16 +75,25 @@ const Home = ({ setSelectedMovie }) => {
     }
     nProgress.start();
     getUserIdFromToken();
+    setPage(1);
+    seenIds.current = new Set();
 
-    const params = {};
+    const params = { page: 1 };
     if (typeFilter) params.type = typeFilter;
     if (yearFilter) params.year = yearFilter;
 
     axios
       .get("/api/home", { params })
       .then((response) => {
-        setMovies(response.data || []);
-        setSearchResults(response.data || []);
+        const data = response.data;
+        const newMovies = (data.movies || []).filter((m) => {
+          if (seenIds.current.has(m.imdbID)) return false;
+          seenIds.current.add(m.imdbID);
+          return true;
+        });
+        setMovies(newMovies);
+        setSearchResults(newMovies);
+        setHasMore(data.hasMore);
         setLoading(false);
         isInitialLoad.current = false;
         nProgress.done();
@@ -96,6 +109,36 @@ const Home = ({ setSelectedMovie }) => {
         nProgress.done();
       });
   }, [typeFilter, yearFilter]);
+
+  const loadMore = async () => {
+    const nextPage = page + 1;
+    setLoadingMore(true);
+
+    try {
+      const params = { page: nextPage };
+      if (typeFilter) params.type = typeFilter;
+      if (yearFilter) params.year = yearFilter;
+
+      const response = await axios.get("/api/home", { params });
+      const data = response.data;
+      const newMovies = (data.movies || []).filter((m) => {
+        if (seenIds.current.has(m.imdbID)) return false;
+        seenIds.current.add(m.imdbID);
+        return true;
+      });
+
+      setMovies((prev) => [...prev, ...newMovies]);
+      if (!movieSearch.trim()) {
+        setSearchResults((prev) => [...prev, ...newMovies]);
+      }
+      setHasMore(data.hasMore);
+      setPage(nextPage);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     if (abortControllerRef.current) {
@@ -445,6 +488,29 @@ const Home = ({ setSelectedMovie }) => {
                         />
                       ))}
                     </motion.ul>
+
+                    {hasMore && !movieSearch.trim() && (
+                      <div className="flex justify-center mt-10 mb-4">
+                        <motion.button
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={loadMore}
+                          disabled={loadingMore}
+                          className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium shadow-lg shadow-orange-500/25 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {loadingMore ? (
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                            />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                          {loadingMore ? "Loading..." : "Load More Movies"}
+                        </motion.button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   !movieSearch && (

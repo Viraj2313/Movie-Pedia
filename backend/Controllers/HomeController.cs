@@ -16,21 +16,40 @@ namespace MovieApiApp.Controllers
             _configuration = configuration;
         }
 
+        private static readonly string[] SearchTerms = ["batman", "superman", "marvel", "star", "spider", "action", "avenger", "dark", "iron", "war"];
+
         [HttpGet]
-        public async Task<IActionResult> GetMovies([FromQuery] string? type, [FromQuery] string? year)
+        public async Task<IActionResult> GetMovies([FromQuery] string? type, [FromQuery] string? year, [FromQuery] int page = 1)
         {
             try
             {
                 var apiKey = _configuration["ApiKeyOmDb"];
                 var filterParams = BuildFilterParams(type, year);
 
-                var movies1 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=batman&apikey={apiKey}{filterParams}");
-                var movies2 = await _httpClient.GetStringAsync($"http://www.omdbapi.com/?s=superman&apikey={apiKey}{filterParams}");
-                var list1 = ExtractMovies(movies1);
-                var list2 = ExtractMovies(movies2);
-                var mergedMovies = list1.Concat(list2).ToList();
-                mergedMovies = mergedMovies.GroupBy(m => m["Title"].ToLower()).Select(g => g.First()).ToList();
-                return Ok(mergedMovies);
+                int termsPerPage = 2;
+                int termIndex = ((page - 1) * termsPerPage) % SearchTerms.Length;
+                int omdbPage = ((page - 1) * termsPerPage / SearchTerms.Length) + 1;
+
+                var allMovies = new List<Dictionary<string, string>>();
+                bool hasMore = true;
+
+                for (int i = 0; i < termsPerPage; i++)
+                {
+                    var term = SearchTerms[(termIndex + i) % SearchTerms.Length];
+                    var url = $"http://www.omdbapi.com/?s={term}&page={omdbPage}&apikey={apiKey}{filterParams}";
+                    var response = await _httpClient.GetStringAsync(url);
+                    var movies = ExtractMovies(response);
+                    allMovies.AddRange(movies);
+
+                    if (movies.Count < 10) hasMore = false;
+                }
+
+                allMovies = allMovies
+                    .GroupBy(m => m.ContainsKey("imdbID") ? m["imdbID"] : m["Title"].ToLower())
+                    .Select(g => g.First())
+                    .ToList();
+
+                return Ok(new { movies = allMovies, hasMore, page });
             }
             catch
             {
