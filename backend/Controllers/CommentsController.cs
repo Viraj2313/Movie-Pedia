@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
@@ -56,6 +57,7 @@ namespace MovieApiApp.Controllers
             return Ok(comments);
         }
 
+        [Authorize]
         [HttpPost("movies/add-comment")]
         public async Task<IActionResult> AddComment([FromBody] AddCommentRequestDto request)
         {
@@ -85,6 +87,7 @@ namespace MovieApiApp.Controllers
             return Ok("Comment added successfully");
         }
 
+        [Authorize]
         [HttpDelete("movies/{userId}/{movieId}/{commentId}")]
         public async Task<IActionResult> DeleteComment(int userId, string movieId, int commentId)
         {
@@ -100,6 +103,7 @@ namespace MovieApiApp.Controllers
             return Ok("Comment Deleted Successfully");
         }
 
+        [Authorize]
         [HttpPost("movies/{movieId}/comments/{commentId}/toggle-reaction")]
         public async Task<IActionResult> ToggleReaction(string movieId, int commentId, [FromQuery] int userId, [FromQuery] string reaction)
         {

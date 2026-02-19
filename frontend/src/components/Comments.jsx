@@ -48,6 +48,7 @@ const Comments = ({ movieId }) => {
         null,
         {
           params: { userId, reaction },
+          withCredentials: true,
         },
       );
 
@@ -78,6 +79,8 @@ const Comments = ({ movieId }) => {
         movieId,
         commentText: text,
         parentCommentId,
+      }, {
+        withCredentials: true,
       });
 
       if (response.status === 200) {
@@ -102,6 +105,7 @@ const Comments = ({ movieId }) => {
     try {
       const response = await axios.delete(
         `/api/movies/${userId}/${movieId}/${commentId}`,
+        { withCredentials: true },
       );
       if (response.status === 200) {
         toast.success("Comment deleted");
@@ -174,8 +178,8 @@ const Comments = ({ movieId }) => {
             <button
               onClick={() => toggleReaction(comment.id, "like")}
               className={`flex items-center gap-1.5 text-xs transition-colors ${comment.userReaction === "like"
-                  ? "text-blue-500"
-                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                ? "text-blue-500"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 }`}
             >
               <ThumbsUp size={14} className={comment.userReaction === "like" ? "fill-current" : ""} />
@@ -185,8 +189,8 @@ const Comments = ({ movieId }) => {
             <button
               onClick={() => toggleReaction(comment.id, "dislike")}
               className={`flex items-center gap-1.5 text-xs transition-colors ${comment.userReaction === "dislike"
-                  ? "text-red-500"
-                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                ? "text-red-500"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 }`}
             >
               <ThumbsDown size={14} className={comment.userReaction === "dislike" ? "fill-current" : ""} />

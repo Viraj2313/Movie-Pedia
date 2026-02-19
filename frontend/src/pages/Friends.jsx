@@ -47,6 +47,7 @@ const Friends = ({ user }) => {
     try {
       const response = await axios.get(`/api/friends/get-friend-requests`, {
         params: { userId },
+        withCredentials: true,
       });
       if (response.status === 200) {
         setFriendRequests(response.data);
@@ -60,6 +61,7 @@ const Friends = ({ user }) => {
     try {
       const response = await axios.get(`/api/friends/get-friends-list`, {
         params: { userId },
+        withCredentials: true,
       });
       if (response.status === 200) {
         setLoading(false);
@@ -75,6 +77,7 @@ const Friends = ({ user }) => {
     try {
       await axios.post(`/api/friends/accept-request`, null, {
         params: { userId, senderId },
+        withCredentials: true,
       });
       getFriendRequests();
       getFriendsList();
@@ -129,6 +132,7 @@ const Friends = ({ user }) => {
       nProgress.start();
       await axios.post(`/api/friends/send-request`, null, {
         params: { senderId: userId, receiverId },
+        withCredentials: true,
       });
       setFriend(null);
       setSearchResults([]);

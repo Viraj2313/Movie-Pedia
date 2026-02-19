@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
@@ -36,6 +37,7 @@ namespace MovieApiApp.Controllers
             return await GetUserActivity(userId, page, pageSize);
         }
 
+        [Authorize]
         [HttpGet("friends/{userId}")]
         public async Task<IActionResult> GetFriendsActivity(int userId, [FromQuery] int page = 1, [FromQuery] int pageSize = 30)
         {

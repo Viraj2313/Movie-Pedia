@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
@@ -12,6 +13,7 @@ namespace MovieApiApp.Controllers
     {
         private readonly MainDbContext _context = context;
 
+        [Authorize]
         [HttpPost("user-likes")]
         public IActionResult LikeMovie([FromBody] UserLike userLike)
         {

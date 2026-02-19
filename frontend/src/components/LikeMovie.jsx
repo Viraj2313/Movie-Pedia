@@ -18,6 +18,8 @@ const LikeMovie = ({ movieId }) => {
         userId: parseInt(userId),
         movieId: String(movieId),
         liked: value,
+      }, {
+        withCredentials: true,
       });
       if (response.status === 200) {
         toast.success("Your preference has been saved");

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
@@ -76,6 +77,7 @@ namespace MovieApiApp.Controllers
         }
 
 
+        [Authorize]
         [HttpPost("send-request")]
         public async Task<IActionResult> SendFriendRequest([FromQuery] int senderId, [FromQuery] int receiverId)
         {
@@ -115,6 +117,7 @@ namespace MovieApiApp.Controllers
             return Ok(new { Message = "Friend request sent successfully.", FriendRequest = friendRequest });
         }
 
+        [Authorize]
         [HttpGet("get-friend-requests")]
         public async Task<IActionResult> GetFriendRequestsList([FromQuery] int userId)
         {
@@ -140,6 +143,7 @@ namespace MovieApiApp.Controllers
         }
 
 
+        [Authorize]
         [HttpPost("accept-request")]
         public async Task<IActionResult> AcceptFriendRequest([FromQuery] int userId, [FromQuery] int senderId)
         {
@@ -179,6 +183,7 @@ namespace MovieApiApp.Controllers
 
         }
 
+        [Authorize]
         [HttpGet("get-friends-list")]
         public async Task<IActionResult> GetFriendsList([FromQuery] int userId)
         {

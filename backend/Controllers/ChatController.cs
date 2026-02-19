@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
@@ -8,6 +9,7 @@ public class ChatController(MainDbContext context) : ControllerBase
 {
     private readonly MainDbContext _context = context;
 
+    [Authorize]
     [HttpGet("history")]
     public async Task<IActionResult> GetChatHistory(
         [FromQuery] int senderId,

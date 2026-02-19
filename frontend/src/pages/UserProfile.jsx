@@ -66,6 +66,7 @@ const UserProfile = () => {
             nProgress.start();
             await axios.post(`/api/friends/send-request`, null, {
                 params: { senderId: currentUserId, receiverId: profileUserId },
+                withCredentials: true,
             });
             toast.success("Friend request sent!");
             setProfile((prev) => ({ ...prev, hasPendingRequest: true }));
