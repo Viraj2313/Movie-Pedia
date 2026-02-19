@@ -2,25 +2,7 @@
 
 Welcome to **Movie Pedia**, a dynamic web application where users can explore movies, connect with friends, and chat about their favorite recommendations.
 
-### Live preview - https://moviepedia.virajdeveloper.online/
-
-## Folder Structure
-
-```
-├─ Movie-Pedia/   # ASP.NET Core API
-│  ├─ backend/# API code
-│  └─ README.md   # Backend-specific information
-├─ frontend/      # React app
-│  ├─ src/        # React components and logic
-│  ├─ public/     # Static files
-│  ├─ tests/      # Frontend tests
-│  └─ README.md   # Frontend-specific information
-├─ movie-recommender/
-|  ├─ app.py      # Movie recommendation (Machine Learning script)
-├─ .github/       # CI/CD workflows
-├─ .gitignore     # Git ignore rules
-└─ README.md      # Project overview
-```
+### Live preview - https://movie-pedia.duckdns.org/
 
 ## Technologies Used
 
