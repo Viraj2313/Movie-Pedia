@@ -18,6 +18,7 @@ builder.Services.AddHttpClient<GroqService>();
 builder.Services.AddHttpClient<YouTubeService>();
 
 builder.Services.AddScoped<AiService>();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

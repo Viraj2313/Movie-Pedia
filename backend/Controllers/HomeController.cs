@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
 namespace MovieApiApp.Controllers
@@ -9,11 +10,13 @@ namespace MovieApiApp.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _cache;
 
-        public HomeController(HttpClient httpClient, IConfiguration configuration)
+        public HomeController(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache)
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            _cache = cache;
         }
 
         private static readonly string[] SearchTerms = ["batman", "superman", "marvel", "star", "spider", "action", "avenger", "dark", "iron", "war"];
@@ -36,8 +39,15 @@ namespace MovieApiApp.Controllers
                 for (int i = 0; i < termsPerPage; i++)
                 {
                     var term = SearchTerms[(termIndex + i) % SearchTerms.Length];
-                    var url = $"http://www.omdbapi.com/?s={term}&page={omdbPage}&apikey={apiKey}{filterParams}";
-                    var response = await _httpClient.GetStringAsync(url);
+                    var cacheKey = $"omdb_browse_{term}_{omdbPage}_{type}_{year}";
+
+                    if (!_cache.TryGetValue(cacheKey, out string response))
+                    {
+                        var url = $"http://www.omdbapi.com/?s={term}&page={omdbPage}&apikey={apiKey}{filterParams}";
+                        response = await _httpClient.GetStringAsync(url);
+                        _cache.Set(cacheKey, response, TimeSpan.FromMinutes(30));
+                    }
+
                     var movies = ExtractMovies(response);
                     allMovies.AddRange(movies);
 
@@ -93,10 +103,17 @@ namespace MovieApiApp.Controllers
             }
             try
             {
-                string apiKey = _configuration["ApiKeyOmDb"];
-                var filterParams = BuildFilterParams(type, year);
-                string apiUrl = $"http://www.omdbapi.com/?s={query}&apikey={apiKey}{filterParams}";
-                var movies = await _httpClient.GetStringAsync(apiUrl);
+                var cacheKey = $"omdb_search_{query.ToLower()}_{type}_{year}";
+
+                if (!_cache.TryGetValue(cacheKey, out string movies))
+                {
+                    string apiKey = _configuration["ApiKeyOmDb"];
+                    var filterParams = BuildFilterParams(type, year);
+                    string apiUrl = $"http://www.omdbapi.com/?s={query}&apikey={apiKey}{filterParams}";
+                    movies = await _httpClient.GetStringAsync(apiUrl);
+                    _cache.Set(cacheKey, movies, TimeSpan.FromMinutes(15));
+                }
+
                 return Ok(movies);
             }
             catch (Exception ex)
@@ -114,11 +131,11 @@ namespace MovieApiApp.Controllers
                 filterParams += $"&y={year}";
             return filterParams;
         }
+
         [HttpGet("healthcheck"), HttpHead("healthcheck")]
         public IActionResult HealthCheck()
         {
             return Ok(new { status = "OK" });
         }
-
     }
 }
