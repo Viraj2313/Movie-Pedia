@@ -13,15 +13,13 @@ namespace MovieApiApp.Hubs
 
         public async Task GetChatHistory(int senderId, int receiverId)
         {
-            Console.WriteLine($"Fetching chat history for: {senderId} and {receiverId}");
-
             var messages = await _context.ChatMessages
                 .Where(m => m.SenderId == senderId && m.ReceiverId == receiverId ||
                             m.SenderId == receiverId && m.ReceiverId == senderId)
-                .OrderBy(m => m.Timestamp)  
+                .OrderByDescending(m => m.Timestamp)
+                .Take(50)
+                .OrderBy(m => m.Timestamp)
                 .ToListAsync();
-
-            Console.WriteLine($"Found {messages.Count} messages");
 
             await Clients.Caller.SendAsync("ReceiveChatHistory", messages);
         }

@@ -16,7 +16,6 @@ export const UserProvider = ({ children }) => {
         setAuthLoading(false);
       }
     };
-    getUserIdFromToken(setUserId);
     checkAuth();
   }, []);
 
