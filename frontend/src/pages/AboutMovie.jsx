@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { Play, ExternalLink, BookOpen, Star, Volume2, VolumeX, Eye, Check, X } from "lucide-react";
-import Loader, { PageLoader } from "../components/Loader";
+import { MovieDetailSkeleton } from "../components/Skeletons";
 import { useOpenLink } from "../hooks/useOpenLink";
 import SaveMovie from "../components/SaveMovie";
 import ShareMovieButton from "../components/ShareMovieButton";
@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 
 const AboutMovie = () => {
   const { imdbID } = useParams();
+  const openLink = useOpenLink();
   const [isPlaying, setIsPlaying] = useState(false);
   const [movieDetails, setMovieDetails] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -147,8 +148,7 @@ const AboutMovie = () => {
   };
 
   const goToImdb = async (movieId) => {
-    const openLink = useOpenLink();
-    const newTab = openLink("/loading", "_blank");
+    const newTab = openLink("/loading");
     try {
       const response = await axios.post(`/api/get-imdb-url`, {
         movieTitle: movieId,
@@ -185,8 +185,7 @@ const AboutMovie = () => {
   };
 
   const goToWiki = async (movieTitle) => {
-    const openLink = useOpenLink();
-    const newTab = openLink("/loading", "_blank");
+    const newTab = openLink("/loading");
     try {
       const response = await axios.post(`/api/get-wiki-url`, {
         movieTitle: movieTitle,
@@ -202,8 +201,7 @@ const AboutMovie = () => {
   };
 
   const getReviews = async (movieTitle) => {
-    const openLink = useOpenLink();
-    const newTab = openLink("/loading", "_blank");
+    const newTab = openLink("/loading");
     try {
       const response = await axios.post(`/api/get-reviews-url`, {
         movieTitle: movieTitle,
@@ -232,7 +230,7 @@ const AboutMovie = () => {
   };
 
   if (loading) {
-    return <PageLoader message="Loading movie details..." />;
+    return <MovieDetailSkeleton />;
   }
 
   if (!movieDetails) {

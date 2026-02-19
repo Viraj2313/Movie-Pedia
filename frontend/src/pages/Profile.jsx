@@ -5,7 +5,7 @@ import { User, Mail, Hash, Users, Film, Star, MessageCircle, ChevronRight } from
 import { useUser } from "@/context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
 import axios from "axios";
-import { PageLoader } from "@/components/Loader";
+import { ProfileSkeleton } from "@/components/Skeletons";
 import ActivityFeed from "@/components/ActivityFeed";
 import UserStats from "@/components/UserStats";
 
@@ -89,7 +89,7 @@ const Profile = () => {
   }
 
   if (loading) {
-    return <PageLoader message="Loading profile..." />;
+    return <ProfileSkeleton />;
   }
 
   return (

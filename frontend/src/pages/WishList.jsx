@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Trash2, Film } from "lucide-react";
-import Loader, { PageLoader } from "../components/Loader";
+import { MovieCardSkeleton } from "../components/Skeletons";
 import LoginRequired from "@/components/LoginRequired";
 import { useUser } from "@/context/UserContext";
 import nProgress from "nprogress";
@@ -67,7 +67,12 @@ const WishList = ({ setSelectedMovie }) => {
   }
 
   if (loading) {
-    return <PageLoader message="Loading your watchlist..." />;
+    return (
+      <div className="min-h-screen px-4 py-8">
+        <div className="animate-pulse h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8" />
+        <MovieCardSkeleton count={6} />
+      </div>
+    );
   }
 
   return (

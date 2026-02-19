@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Film } from "lucide-react";
-import Loader, { PageLoader } from "@/components/Loader";
+import Loader from "@/components/Loader";
+import { MovieCardSkeleton } from "@/components/Skeletons";
 import SaveMovie from "../components/SaveMovie";
 import LoginRequired from "@/components/LoginRequired";
 import nProgress from "nprogress";
@@ -45,7 +46,12 @@ const Recommendations = ({ setSelectedMovie }) => {
   }
 
   if (loading) {
-    return <PageLoader message="Finding movies for you..." />;
+    return (
+      <div className="min-h-screen px-4 py-8">
+        <div className="animate-pulse h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-lg mx-auto mb-8" />
+        <MovieCardSkeleton count={8} />
+      </div>
+    );
   }
 
   return (

@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Search, X, Film, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import Loader, { PageLoader } from "../components/Loader";
+import Loader from "../components/Loader";
+import { HomeSkeleton } from "../components/Skeletons";
 import { useUser } from "../context/UserContext";
 import InternalServerError from "@/components/ServerError";
 import nProgress from "nprogress";
@@ -202,7 +203,7 @@ const Home = ({ setSelectedMovie }) => {
   };
 
   if (loading) {
-    return <PageLoader message="Loading movies..." />;
+    return <HomeSkeleton />;
   }
 
   return (

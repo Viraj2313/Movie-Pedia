@@ -5,7 +5,7 @@ import axios from "axios";
 import { Calendar, Film, Star, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
-import { PageLoader } from "@/components/Loader";
+import { DiaryEntrySkeleton, ProfileSkeleton } from "@/components/Skeletons";
 import { DisplayRating } from "@/components/StarRating";
 import nProgress from "nprogress";
 
@@ -68,7 +68,27 @@ const WatchDiary = () => {
     }
 
     if (loading && page === 1) {
-        return <PageLoader message="Loading your diary..." />;
+        return (
+            <div className="min-h-screen px-4 py-8">
+                <div className="max-w-5xl mx-auto">
+                    <div className="animate-pulse h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8" />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-4 animate-pulse">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                                    <div className="space-y-2">
+                                        <div className="h-6 w-12 bg-gray-200 dark:bg-gray-700 rounded" />
+                                        <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <DiaryEntrySkeleton />
+                </div>
+            </div>
+        );
     }
 
     return (

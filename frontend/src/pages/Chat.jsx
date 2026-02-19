@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 import axios from "axios";
 import { Send, ArrowLeft } from "lucide-react";
-import Loader, { PageLoader } from "../components/Loader";
+import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
@@ -158,7 +158,27 @@ const Chat = () => {
   };
 
   if (loadingFriendName || loadingMessages) {
-    return <PageLoader message="Connecting to chat..." />;
+    return (
+      <div className="flex flex-col h-[calc(100dvh-4rem)] bg-gray-50 dark:bg-gray-900">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-4">
+          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="flex-1 p-4 space-y-4">
+          <div className="flex justify-start"><div className="h-10 w-48 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" /></div>
+          <div className="flex justify-end"><div className="h-10 w-36 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" /></div>
+          <div className="flex justify-start"><div className="h-10 w-56 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" /></div>
+          <div className="flex justify-end"><div className="h-10 w-40 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" /></div>
+          <div className="flex justify-start"><div className="h-10 w-44 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" /></div>
+        </div>
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+        </div>
+      </div>
+    );
   }
 
   return (

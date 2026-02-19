@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useUser } from "@/context/UserContext";
 import ActivityFeed from "@/components/ActivityFeed";
 import UserStats from "@/components/UserStats";
-import { PageLoader } from "@/components/Loader";
+import { ProfileSkeleton } from "@/components/Skeletons";
 import nProgress from "nprogress";
 
 const UserProfile = () => {
@@ -78,7 +78,7 @@ const UserProfile = () => {
     };
 
     if (loading) {
-        return <PageLoader message="Loading profile..." />;
+        return <ProfileSkeleton />;
     }
 
     if (!profile) {

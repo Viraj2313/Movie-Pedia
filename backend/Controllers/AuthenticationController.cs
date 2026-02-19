@@ -27,6 +27,19 @@ namespace MovieApiApp.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> SignUp([FromBody] User user)
         {
+            if (string.IsNullOrWhiteSpace(user.Email) || !user.Email.Contains("@") || !user.Email.Contains("."))
+                return BadRequest(new { message = "Invalid email format" });
+
+            if (string.IsNullOrWhiteSpace(user.Name))
+                return BadRequest(new { message = "Name is required" });
+
+            if (string.IsNullOrWhiteSpace(user.Password))
+                return BadRequest(new { message = "Password is required" });
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+            if (existingUser != null)
+                return Conflict(new { message = "An account with this email already exists" });
+
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -93,7 +106,6 @@ namespace MovieApiApp.Controllers
                 return Ok(new { message = "Cookie deleted" });
             }
 
-            // If the cookie does not exist
             return Ok(new { message = "Not logged out, no cookie found" });
         }
 
