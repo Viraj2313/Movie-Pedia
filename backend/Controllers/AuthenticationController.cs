@@ -150,7 +150,32 @@ namespace MovieApiApp.Controllers
             {
                 return NotFound(new { Message = "User not found." });
             }
-            return Ok(new { name = user.Name, id = user.Id, email = user.Email });
+            return Ok(new { name = user.Name, id = user.Id, email = user.Email, bio = user.Bio ?? "" });
         }
+        [Authorize]
+        [HttpPut("update-bio")]
+        public async Task<IActionResult> UpdateBio([FromBody] UpdateBioRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+            if (user == null)
+                return NotFound();
+
+            if (request.Bio?.Length > 200)
+                return BadRequest(new { message = "Bio must be 200 characters or less" });
+
+            user.Bio = request.Bio?.Trim();
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Bio updated", bio = user.Bio });
+        }
+    }
+
+    public class UpdateBioRequest
+    {
+        public string? Bio { get; set; }
     }
 }

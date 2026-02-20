@@ -115,6 +115,12 @@ const UserProfile = () => {
                         {profile.user.name}
                     </h1>
 
+                    {profile.user.bio && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-3">
+                            {profile.user.bio}
+                        </p>
+                    )}
+
                     <button
                         onClick={handleShowFriends}
                         className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors"

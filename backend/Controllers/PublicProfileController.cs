@@ -58,7 +58,7 @@ namespace MovieApiApp.Controllers
 
             return Ok(new
             {
-                user = new { user.Id, user.Name },
+                user = new { user.Id, user.Name, Bio = user.Bio ?? "" },
                 stats = new
                 {
                     friendCount,

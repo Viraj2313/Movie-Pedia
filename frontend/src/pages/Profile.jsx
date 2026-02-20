@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { User, Mail, Hash, Users, Film, Star, MessageCircle, ChevronRight } from "lucide-react";
+import { User, Mail, Hash, Users, Film, Star, MessageCircle, ChevronRight, Pencil, Check, X } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
 import axios from "axios";
@@ -19,6 +19,10 @@ const Profile = () => {
   const [stats, setStats] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
   const [activityLoading, setActivityLoading] = useState(true);
+  const [bio, setBio] = useState("");
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioInput, setBioInput] = useState("");
+  const [savingBio, setSavingBio] = useState(false);
   const { userId } = useUser();
 
   useEffect(() => {
@@ -40,6 +44,7 @@ const Profile = () => {
           id: res.data.id,
           email: res.data.email,
         });
+        setBio(res.data.bio || "");
         setLoading(false);
       }
     } catch (err) {
@@ -119,10 +124,63 @@ const Profile = () => {
         </motion.h1>
         <motion.p
           variants={itemVariants}
-          className="text-center text-gray-500 dark:text-gray-400 mb-6"
+          className="text-center text-gray-500 dark:text-gray-400 mb-2"
         >
           Moviepedia Member
         </motion.p>
+
+        <motion.div variants={itemVariants} className="text-center mb-6">
+          {editingBio ? (
+            <div className="max-w-md mx-auto">
+              <textarea
+                value={bioInput}
+                onChange={(e) => setBioInput(e.target.value.slice(0, 200))}
+                placeholder="Write a short bio..."
+                rows={3}
+                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"
+                autoFocus
+              />
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-gray-400">{bioInput.length}/200</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditingBio(false)}
+                    className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setSavingBio(true);
+                      try {
+                        await axios.put("/api/update-bio", { bio: bioInput }, { withCredentials: true });
+                        setBio(bioInput);
+                        setEditingBio(false);
+                      } catch (err) {
+                        console.log(err);
+                      } finally {
+                        setSavingBio(false);
+                      }
+                    }}
+                    disabled={savingBio}
+                    className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors disabled:opacity-50"
+                  >
+                    <Check size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              onClick={() => { setBioInput(bio); setEditingBio(true); }}
+              className="group cursor-pointer relative"
+            >
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                {bio || "Add a bio..."}
+              </p>
+            </div>
+          )}
+        </motion.div>
 
         <motion.div variants={itemVariants} className="mb-6">
           <UserStats stats={stats} loading={!stats} />
