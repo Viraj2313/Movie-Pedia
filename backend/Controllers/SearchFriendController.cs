@@ -162,6 +162,8 @@ namespace MovieApiApp.Controllers
             friendRequest.CreatedAt = DateTime.UtcNow;
             var sender = await _context.Users.FirstOrDefaultAsync(u => u.Id == senderId);
             var receiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (sender == null || receiver == null)
+                return NotFound(new { Message = "User not found." });
             var friend1 = new Friend
             {
                 UserId = friendRequest.ReceiverId,

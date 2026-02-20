@@ -116,7 +116,7 @@ namespace MovieApiApp.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
             if (user == null)
             {
                 return Unauthorized();

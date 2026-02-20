@@ -17,7 +17,7 @@ namespace WbApp.Services
 
         public async Task<string> GetGroqResponse(string prompt)
         {
-            string apiKey = _config["GROQ_API_KEY"];
+            string apiKey = _config["GROQ_API_KEY"]!;
             string url = "https://api.groq.com/openai/v1/chat/completions";
 
             var requestBody = new
@@ -43,7 +43,7 @@ namespace WbApp.Services
                 return "Error: " + json;
             }
 
-            dynamic result = JsonConvert.DeserializeObject(json);
+            dynamic result = JsonConvert.DeserializeObject(json)!;
             return result.choices[0].message.content ?? "No response";
         }
     }

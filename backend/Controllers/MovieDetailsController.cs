@@ -32,7 +32,7 @@ namespace MovieApiApp.Controllers
         {
             var cacheKey = $"omdb_detail_{imdbID}";
 
-            if (_cache.TryGetValue(cacheKey, out string cachedDetails))
+            if (_cache.TryGetValue(cacheKey, out string? cachedDetails))
             {
                 return Ok(cachedDetails);
             }

@@ -41,14 +41,14 @@ namespace MovieApiApp.Controllers
                     var term = SearchTerms[(termIndex + i) % SearchTerms.Length];
                     var cacheKey = $"omdb_browse_{term}_{omdbPage}_{type}_{year}";
 
-                    if (!_cache.TryGetValue(cacheKey, out string response))
+                    if (!_cache.TryGetValue(cacheKey, out string? response))
                     {
                         var url = $"http://www.omdbapi.com/?s={term}&page={omdbPage}&apikey={apiKey}{filterParams}";
                         response = await _httpClient.GetStringAsync(url);
                         _cache.Set(cacheKey, response, TimeSpan.FromMinutes(30));
                     }
 
-                    var movies = ExtractMovies(response);
+                    var movies = ExtractMovies(response!);
                     allMovies.AddRange(movies);
 
                     if (movies.Count < 10) hasMore = false;
@@ -105,9 +105,9 @@ namespace MovieApiApp.Controllers
             {
                 var cacheKey = $"omdb_search_{query.ToLower()}_{type}_{year}";
 
-                if (!_cache.TryGetValue(cacheKey, out string movies))
+                if (!_cache.TryGetValue(cacheKey, out string? movies))
                 {
-                    string apiKey = _configuration["ApiKeyOmDb"];
+                    string apiKey = _configuration["ApiKeyOmDb"]!;
                     var filterParams = BuildFilterParams(type, year);
                     string apiUrl = $"http://www.omdbapi.com/?s={query}&apikey={apiKey}{filterParams}";
                     movies = await _httpClient.GetStringAsync(apiUrl);

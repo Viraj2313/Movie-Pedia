@@ -2,6 +2,6 @@
 {
     public class MovieDel
     {
-        public string MovieId { get; set; }
+        public string MovieId { get; set; } = string.Empty;
     }
 }

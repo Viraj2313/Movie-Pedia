@@ -8,6 +8,6 @@ namespace MovieApiApp.Models
         public bool IsLike { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public Comment Comment { get; set; }
+        public Comment Comment { get; set; } = null!;
     }
 }

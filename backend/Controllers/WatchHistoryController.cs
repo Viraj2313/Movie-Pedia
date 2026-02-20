@@ -32,7 +32,7 @@ namespace MovieApiApp.Controllers
             if (existing != null)
             {
                 existing.Rating = dto.Rating;
-                existing.Review = dto.Review;
+                existing.Review = dto.Review ?? string.Empty;
                 existing.WatchedAt = dto.WatchedAt ?? DateTime.UtcNow;
             }
             else
@@ -44,7 +44,7 @@ namespace MovieApiApp.Controllers
                     MovieTitle = dto.MovieTitle,
                     MoviePoster = dto.MoviePoster,
                     Rating = dto.Rating,
-                    Review = dto.Review,
+                    Review = dto.Review ?? string.Empty,
                     WatchedAt = dto.WatchedAt ?? DateTime.UtcNow,
                     CreatedAt = DateTime.UtcNow
                 };
@@ -177,12 +177,12 @@ namespace MovieApiApp.Controllers
 
     public class WatchHistoryDto
     {
-        public string MovieId { get; set; }
-        public string MovieTitle { get; set; }
-        public string MoviePoster { get; set; }
+        public string MovieId { get; set; } = string.Empty;
+        public string MovieTitle { get; set; } = string.Empty;
+        public string MoviePoster { get; set; } = string.Empty;
         [Range(1, 5)]
         public int? Rating { get; set; }
-        public string Review { get; set; }
+        public string? Review { get; set; }
         public DateTime? WatchedAt { get; set; }
     }
 
@@ -190,7 +190,7 @@ namespace MovieApiApp.Controllers
     {
         [Range(1, 5)]
         public int? Rating { get; set; }
-        public string Review { get; set; }
+        public string? Review { get; set; }
         public DateTime? WatchedAt { get; set; }
     }
 }
