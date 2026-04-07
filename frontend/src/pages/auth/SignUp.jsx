@@ -23,7 +23,7 @@ const SignUp = ({ setUserName }) => {
       setLoading(true);
       navigate("/loading");
       NProgress.start();
-      const response = await axios.post(`/api/register`, user, {
+      const response = await axios.post(`/api/auth/register`, user, {
         withCredentials: true,
       });
 

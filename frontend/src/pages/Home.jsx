@@ -48,19 +48,6 @@ const Home = ({ setSelectedMovie }) => {
   const abortControllerRef = useRef(null);
   const seenIds = useRef(new Set());
 
-  const getUserIdFromToken = async () => {
-    try {
-      const response = await axios.get("/api/get-user-id", {
-        withCredentials: true,
-      });
-      if (response.status === 200) {
-        setUserId(response.data.userId);
-      }
-    } catch (error) {
-      console.error("Failed to get user ID:", error);
-    }
-  };
-
   useEffect(() => {
     if (yearDebounceRef.current) clearTimeout(yearDebounceRef.current);
     yearDebounceRef.current = setTimeout(() => {
@@ -74,7 +61,6 @@ const Home = ({ setSelectedMovie }) => {
       setLoading(true);
     }
     nProgress.start();
-    getUserIdFromToken();
     setPage(1);
     seenIds.current = new Set();
 
@@ -252,7 +238,7 @@ const Home = ({ setSelectedMovie }) => {
   return (
     <div className="min-h-screen dark:text-gray-100 dark:bg-gray-900">
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
 
         <div className="relative px-4 py-12 sm:py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
@@ -262,7 +248,7 @@ const Home = ({ setSelectedMovie }) => {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4"
             >
-              <span className="bg-gradient-to-r from-orange-500 via-orange-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 bg-clip-text text-transparent">
                 Moviepedia
               </span>
             </motion.h1>

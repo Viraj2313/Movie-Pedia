@@ -58,9 +58,15 @@ function App() {
 
     fetchUser();
 
-    const sessionInterval = setInterval(checkSessionExpiration, 1800000);
+    const refreshInterval = setInterval(async () => {
+      try {
+        await axios.post("/api/auth/refresh", {}, { withCredentials: true });
+      } catch {
+        handleLogout();
+      }
+    }, 13 * 60 * 1000);
 
-    return () => clearInterval(sessionInterval);
+    return () => clearInterval(refreshInterval);
   }, []);
   const location = useLocation();
 
@@ -78,27 +84,12 @@ function App() {
       }),
     });
   }, [location.pathname]);
-  const checkSessionExpiration = async () => {
-    try {
-      const response = await axios.get("/api/check-session", {
-        withCredentials: true,
-      });
 
-      if (response.status === 200 && response.data.userId) {
-        console.log("Session Active:", response.data.userId);
-      } else {
-        handleLogout();
-      }
-    } catch (error) {
-      console.error("Session expired or invalid:", error);
-      handleLogout();
-    }
-  };
   const handleLogout = async () => {
     try {
       nProgress.start();
       const response = await axios.post(
-        "/api/logout",
+        "/api/auth/logout",
         {},
         {
           withCredentials: true,

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getUserIdFromToken } from "../utils/GetUserIdFromToken";
+import axios from "axios";
 
 const UserContext = createContext();
 
@@ -11,7 +11,14 @@ export const UserProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         setAuthLoading(true);
-        await getUserIdFromToken(setUserId);
+        const response = await axios.get("/api/auth/check-session", {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setUserId(response.data.userId);
+        }
+      } catch {
+        setUserId(null);
       } finally {
         setAuthLoading(false);
       }

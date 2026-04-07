@@ -35,7 +35,7 @@ const Profile = () => {
 
   const getUserDetails = async () => {
     try {
-      const res = await axios.get("/api/get-user-profile", {
+      const res = await axios.get("/api/user/profile", {
         withCredentials: true,
       });
       if (res.status === 200) {
@@ -153,7 +153,7 @@ const Profile = () => {
                     onClick={async () => {
                       setSavingBio(true);
                       try {
-                        await axios.put("/api/update-bio", { bio: bioInput }, { withCredentials: true });
+                        await axios.put("/api/user/bio", { bio: bioInput }, { withCredentials: true });
                         setBio(bioInput);
                         setEditingBio(false);
                       } catch (err) {

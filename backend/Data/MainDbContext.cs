@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Models;
 
 namespace MovieApiApp.Data
@@ -17,6 +17,7 @@ namespace MovieApiApp.Data
     public DbSet<CommentReaction> CommentReactions { get; set; }
     public DbSet<WatchHistory> WatchHistories { get; set; }
     public DbSet<ActivityLog> ActivityLogs { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
   }
 }

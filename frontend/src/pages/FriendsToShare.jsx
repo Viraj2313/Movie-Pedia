@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getUserIdFromToken } from "../utils/GetUserIdFromToken";
 import { useUser } from "../context/UserContext";
 import Loader from "../components/Loader";
 import axios from "axios";
@@ -7,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 import { toast } from "react-toastify";
 const FriendsToShare = () => {
-  const { userId, setUserId } = useUser();
+  const { userId } = useUser();
   const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState([]);
   const location = useLocation();
@@ -15,17 +14,6 @@ const FriendsToShare = () => {
   const message = params.get("message");
   const [connection, setConnection] = useState(null);
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log("Message: ", message);
-    const fetchUserIdAndFriends = async () => {
-      try {
-        await getUserIdFromToken(setUserId);
-      } catch (error) {
-        console.log("error: ", error);
-      }
-    };
-    fetchUserIdAndFriends();
-  }, []);
 
   useEffect(() => {
     if (userId) {

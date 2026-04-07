@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -6,24 +6,23 @@ using MovieApiApp.Models;
 using MovieApiApp.Data;
 using MovieApiApp.Dto;
 using MovieApiApp.Services;
+using MovieApiApp.Helpers;
 
 namespace MovieApiApp.Controllers
 {
-    [Route("api")]
+    [Route("api/auth")]
     [ApiController]
-    public class AuthenticationController : Controller
+    public class AuthenticationController : ControllerBase
     {
-        public readonly MainDbContext _context;
+        private readonly MainDbContext _context;
         private readonly TokenService _tokenService;
-        public readonly HttpClient _httpClient;
-        public AuthenticationController(MainDbContext context, HttpClient client, TokenService tokenService)
+
+        public AuthenticationController(MainDbContext context, TokenService tokenService)
         {
             _tokenService = tokenService;
             _context = context;
-            _httpClient = client;
         }
 
-        //for sign up/register
         [HttpPost("register")]
         public async Task<IActionResult> SignUp([FromBody] User user)
         {
@@ -41,19 +40,18 @@ namespace MovieApiApp.Controllers
                 return Conflict(new { message = "An account with this email already exists" });
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            user.AuthProvider = "local";
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
             var token = _tokenService.GenerateToken(user);
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddHours(2)
-            });
+            var refreshToken = await _tokenService.GenerateRefreshToken(user.Id);
+
+            Response.SetAuthCookie(token);
+            Response.SetRefreshTokenCookie(refreshToken.Token);
+
             return Ok(new { message = "User registered successfully", userId = user.Id });
         }
-
 
         [Authorize]
         [HttpGet("check-session")]
@@ -61,121 +59,63 @@ namespace MovieApiApp.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-            {
                 return Unauthorized(new { message = "Invalid token." });
-            }
+
             return Ok(new { message = "Session active", userId });
         }
 
-        //for login
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] LoginReq loginReq)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginReq.Email);
-            if (existingUser == null || !BCrypt.Net.BCrypt.Verify(loginReq.Password, existingUser.Password))
-            {
+
+            if (existingUser == null)
                 return Unauthorized(new { message = "Invalid email or password" });
 
+            if (existingUser.AuthProvider == "google")
+                return BadRequest(new { message = "This account uses Google Sign-In. Please log in with Google." });
 
-            }
+            if (!BCrypt.Net.BCrypt.Verify(loginReq.Password, existingUser.Password))
+                return Unauthorized(new { message = "Invalid email or password" });
+
             var token = _tokenService.GenerateToken(existingUser);
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddHours(2)
-            });
+            var refreshToken = await _tokenService.GenerateRefreshToken(existingUser.Id);
+
+            Response.SetAuthCookie(token);
+            Response.SetRefreshTokenCookie(refreshToken.Token);
+
             return Ok(new { message = "login success", userId = existingUser.Id, userName = existingUser.Name });
         }
 
-        //logout
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            if (Request.Cookies["jwt"] != null)
-            {
-                Response.Cookies.Append("jwt", "", new CookieOptions
-                {
-                    Expires = DateTime.UtcNow.AddDays(-1), // Set expiration to past date to delete
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None
-                });
+            var refreshTokenValue = Request.Cookies["refreshToken"];
+            if (!string.IsNullOrEmpty(refreshTokenValue))
+                await _tokenService.RevokeRefreshToken(refreshTokenValue);
 
-                return Ok(new { message = "Cookie deleted" });
-            }
-
-            return Ok(new { message = "Not logged out, no cookie found" });
+            Response.ClearAuthCookies();
+            return Ok(new { message = "Logged out successfully" });
         }
 
-        [Authorize]
-        [HttpGet("user")]
-        public async Task<IActionResult> GetUser()
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh()
         {
+            var refreshTokenValue = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshTokenValue))
+                return Unauthorized(new { message = "No refresh token" });
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var storedToken = await _tokenService.ValidateRefreshToken(refreshTokenValue);
+            if (storedToken == null)
+                return Unauthorized(new { message = "Invalid or expired refresh token" });
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
-            if (user == null)
-            {
-                return Unauthorized();
-            }
+            var newJwt = _tokenService.GenerateToken(storedToken.User);
+            var newRefreshToken = await _tokenService.GenerateRefreshToken(storedToken.UserId);
 
-            return Ok(new { userName = user.Name });
+            Response.SetAuthCookie(newJwt);
+            Response.SetRefreshTokenCookie(newRefreshToken.Token);
+
+            return Ok(new { message = "Token refreshed", userId = storedToken.UserId });
         }
-        [Authorize]
-        [HttpGet("get-user-id")]
-        public IActionResult GetUserId()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (userId == null)
-            {
-                return BadRequest(new { Message = "User ID not found in token." });
-            }
-
-            return Ok(new { UserId = userId });
-        }
-        [HttpGet("get-user-profile")]
-        public async Task<IActionResult> GetUserDetails()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return BadRequest(new { Message = "User ID not found in token." });
-            }
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
-            if (user == null)
-            {
-                return NotFound(new { Message = "User not found." });
-            }
-            return Ok(new { name = user.Name, id = user.Id, email = user.Email, bio = user.Bio ?? "" });
-        }
-        [Authorize]
-        [HttpPut("update-bio")]
-        public async Task<IActionResult> UpdateBio([FromBody] UpdateBioRequest request)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return Unauthorized();
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
-            if (user == null)
-                return NotFound();
-
-            if (request.Bio?.Length > 200)
-                return BadRequest(new { message = "Bio must be 200 characters or less" });
-
-            user.Bio = request.Bio?.Trim();
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Bio updated", bio = user.Bio });
-        }
-    }
-
-    public class UpdateBioRequest
-    {
-        public string? Bio { get; set; }
     }
 }

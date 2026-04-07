@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApiApp.Data;
 using MovieApiApp.Dto;
+using MovieApiApp.Helpers;
 using MovieApiApp.Models;
 using MovieApiApp.Services;
 
@@ -22,9 +23,7 @@ namespace MovieApiApp.Controllers
             {
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token);
                 if (payload == null)
-                {
                     return Unauthorized(new { message = "Invalid Google token" });
-                }
 
                 var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == payload.Email);
                 if (existingUser == null)
@@ -33,21 +32,18 @@ namespace MovieApiApp.Controllers
                     {
                         Name = payload.Name,
                         Email = payload.Email,
-                        Password = ""
+                        Password = "",
+                        AuthProvider = "google"
                     };
                     _context.Users.Add(existingUser);
                     await _context.SaveChangesAsync();
                 }
 
                 var token = _tokenService.GenerateToken(existingUser);
+                var refreshToken = await _tokenService.GenerateRefreshToken(existingUser.Id);
 
-                Response.Cookies.Append("jwt", token, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = DateTime.UtcNow.AddHours(2)
-                });
+                Response.SetAuthCookie(token);
+                Response.SetRefreshTokenCookie(refreshToken.Token);
 
                 return Ok(new { message = "Login successful", userId = existingUser.Id, userName = existingUser.Name });
             }
@@ -57,5 +53,4 @@ namespace MovieApiApp.Controllers
             }
         }
     }
-
 }

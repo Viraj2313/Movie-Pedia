@@ -21,7 +21,7 @@ const Login = ({ setUserName }) => {
       setLoading(true);
       NProgress.start();
       navigate("/loading");
-      const response = await axios.post(`/api/login`, user, {
+      const response = await axios.post(`/api/auth/login`, user, {
         withCredentials: true,
       });
       if (response.status === 200) {
