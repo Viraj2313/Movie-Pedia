@@ -18,7 +18,14 @@ export const UserProvider = ({ children }) => {
           setUserId(response.data.userId);
         }
       } catch {
-        setUserId(null);
+        try {
+          const refreshRes = await axios.post("/api/auth/refresh", {}, { withCredentials: true });
+          if (refreshRes.status === 200) {
+            setUserId(refreshRes.data.userId);
+          }
+        } catch {
+          setUserId(null);
+        }
       } finally {
         setAuthLoading(false);
       }
