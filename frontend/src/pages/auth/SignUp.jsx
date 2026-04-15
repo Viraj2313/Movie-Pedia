@@ -35,7 +35,8 @@ const SignUp = ({ setUserName }) => {
         NProgress.done();
       }
     } catch (error) {
-      toast.error("Signup failed");
+      const msg = error.response?.data?.message || "Signup failed, please try again";
+      toast.error(msg);
       navigate("/signup");
       NProgress.done();
     } finally {

@@ -39,7 +39,6 @@ const Friends = ({ user }) => {
         setFriendRequests(response.data);
       }
     } catch (error) {
-      console.log(error.response?.data || error.message);
     }
   };
 
@@ -54,7 +53,6 @@ const Friends = ({ user }) => {
         setFriends(response.data);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };
@@ -69,7 +67,7 @@ const Friends = ({ user }) => {
       getFriendsList();
       toast.success("Friend request accepted!");
     } catch (error) {
-      toast.error("Couldn't accept friend request");
+      toast.error(error.response?.data?.message || "Couldn't accept friend request");
     }
   };
 
@@ -106,7 +104,7 @@ const Friends = ({ user }) => {
         }
       }
     } catch (error) {
-      toast.error("No user found");
+      toast.error(error.response?.data?.message || "No user found");
     } finally {
       setSearching(false);
       nProgress.done();
@@ -124,7 +122,7 @@ const Friends = ({ user }) => {
       setSearchResults([]);
       toast.success("Friend request sent!");
     } catch (error) {
-      toast.error("Friend request not sent");
+      toast.error(error.response?.data?.message || "Friend request not sent");
     } finally {
       nProgress.done();
     }

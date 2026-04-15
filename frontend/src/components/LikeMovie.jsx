@@ -13,7 +13,7 @@ const LikeMovie = ({ movieId }) => {
     }
     setLiked(value);
     try {
-      console.log(movieId);
+
       const response = await axios.post(`/api/user-likes`, {
         userId: parseInt(userId),
         movieId: String(movieId),
@@ -25,8 +25,7 @@ const LikeMovie = ({ movieId }) => {
         toast.success("Your preference has been saved");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Unable to like movie");
+      toast.error(error.response?.data?.message || "Unable to save preference");
     }
   };
   return (

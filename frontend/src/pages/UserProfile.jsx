@@ -33,8 +33,7 @@ const UserProfile = () => {
             });
             setProfile(res.data);
         } catch (err) {
-            console.error(err);
-            toast.error("Failed to load profile");
+            toast.error(err.response?.data?.message || "Failed to load profile");
         } finally {
             setLoading(false);
             nProgress.done();
@@ -47,7 +46,6 @@ const UserProfile = () => {
             const res = await axios.get(`/api/profile/${profileUserId}/friends`);
             setFriends(res.data);
         } catch (err) {
-            console.error(err);
         } finally {
             setFriendsLoading(false);
         }

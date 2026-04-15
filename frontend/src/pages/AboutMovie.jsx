@@ -57,7 +57,6 @@ const AboutMovie = () => {
       setMovieDetails(response.data);
       await whereToWatch(response.data.Title);
     } catch (error) {
-      console.error("Error fetching movie details:", error);
     } finally {
       setLoading(false);
       nProgress.done();
@@ -76,7 +75,6 @@ const AboutMovie = () => {
         setWatchReview(res.data.entry.review || "");
       }
     } catch (err) {
-      console.error(err);
     }
   };
 
@@ -109,7 +107,7 @@ const AboutMovie = () => {
       toast.success("Added to your watch history!");
       checkWatchStatus();
     } catch (err) {
-      toast.error("Failed to add to watch history");
+      toast.error(err.response?.data?.message || "Failed to add to watch history");
     } finally {
       setSubmitting(false);
       nProgress.done();
@@ -141,7 +139,7 @@ const AboutMovie = () => {
       setTrailerVideoId(response.data);
       setShowTrailer(true);
     } catch (error) {
-      toast.error("Trailer not found");
+      toast.error(error.response?.data?.message || "Trailer not found");
     } finally {
       setTrailerLoading(false);
     }
@@ -158,7 +156,6 @@ const AboutMovie = () => {
         newTab.location.href = imdbUrl;
       }
     } catch (error) {
-      console.log(error);
       newTab.close();
     }
   };
@@ -179,7 +176,6 @@ const AboutMovie = () => {
         setWatchPlatforms([]);
       }
     } catch (error) {
-      console.log(error);
       setWatchPlatforms([]);
     }
   };
@@ -196,7 +192,6 @@ const AboutMovie = () => {
       }
     } catch (error) {
       newTab.close();
-      console.log(error);
     }
   };
 
@@ -212,7 +207,6 @@ const AboutMovie = () => {
       }
     } catch (error) {
       newTab.close();
-      console.error("Failed to get Rotten Tomatoes URL:", error);
     }
   };
 

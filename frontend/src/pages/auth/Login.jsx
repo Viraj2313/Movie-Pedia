@@ -32,7 +32,8 @@ const Login = ({ setUserName }) => {
         navigate("/");
       }
     } catch (error) {
-      toast.error("Login failed");
+      const msg = error.response?.data?.message || "Login failed, please try again";
+      toast.error(msg);
       navigate("/login");
     } finally {
       setLoading(false);

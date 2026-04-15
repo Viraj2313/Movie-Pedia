@@ -101,8 +101,7 @@ function App() {
       navigate("/");
     } catch (error) {
       triggerNotification();
-      toast.error("Logout failed, please try again");
-      console.log("Logout failed", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Logout failed, please try again");
     } finally {
       nProgress.done();
     }

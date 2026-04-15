@@ -27,7 +27,6 @@ const Comments = ({ movieId }) => {
           setComments(response.data);
         }
       } catch (error) {
-        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -54,7 +53,7 @@ const Comments = ({ movieId }) => {
 
       setRefresh(!refresh);
     } catch (error) {
-      toast.error("Failed to react");
+      toast.error(error.response?.data?.message || "Failed to react");
     }
   };
 
@@ -96,8 +95,7 @@ const Comments = ({ movieId }) => {
         setRefresh(!refresh);
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to add comment");
+      toast.error(error.response?.data?.message || "Failed to add comment");
     }
   };
 
@@ -112,8 +110,7 @@ const Comments = ({ movieId }) => {
         setRefresh(!refresh);
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete comment");
+      toast.error(error.response?.data?.message || "Failed to delete comment");
     }
   };
 

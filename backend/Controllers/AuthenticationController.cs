@@ -70,13 +70,13 @@ namespace MovieApiApp.Controllers
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginReq.Email);
 
             if (existingUser == null)
-                return Unauthorized(new { message = "Invalid email or password" });
+                return Unauthorized(new { message = "No account found with this email. Please sign up first." });
 
             if (existingUser.AuthProvider == "google")
                 return BadRequest(new { message = "This account uses Google Sign-In. Please log in with Google." });
 
             if (!BCrypt.Net.BCrypt.Verify(loginReq.Password, existingUser.Password))
-                return Unauthorized(new { message = "Invalid email or password" });
+                return Unauthorized(new { message = "Incorrect password" });
 
             var token = _tokenService.GenerateToken(existingUser);
             var refreshToken = await _tokenService.GenerateRefreshToken(existingUser.Id);

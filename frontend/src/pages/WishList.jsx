@@ -51,8 +51,7 @@ const WishList = ({ setSelectedMovie }) => {
         nProgress.done();
       }
     } catch (error) {
-      toast.error("Unable to remove movie from wishlist");
-      console.log(error);
+      toast.error(error.response?.data?.message || "Unable to remove movie from wishlist");
       nProgress.done();
     }
   };
