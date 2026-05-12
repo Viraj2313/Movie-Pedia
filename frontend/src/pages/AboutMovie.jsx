@@ -55,7 +55,7 @@ const AboutMovie = () => {
     try {
       const response = await axios.get(`/api/movie_details?imdbID=${imdbID}`);
       setMovieDetails(response.data);
-      await whereToWatch(response.data.Title);
+      whereToWatch(response.data.Title);
     } catch (error) {
     } finally {
       setLoading(false);
@@ -160,13 +160,17 @@ const AboutMovie = () => {
     }
   };
 
+  const [platformsLoading, setPlatformsLoading] = useState(false);
+
   const whereToWatch = async (movieTitle) => {
     try {
+      setPlatformsLoading(true);
       const response = await axios.post(`/api/where-to-watch`, {
         movieTitle: movieTitle,
       });
       let data = response.data;
       if (typeof data === "string") {
+        data = data.replace(/```json/g, "").replace(/```/g, "").trim();
         data = data.replace(/'/g, '"');
         data = JSON.parse(data);
       }
@@ -176,7 +180,10 @@ const AboutMovie = () => {
         setWatchPlatforms([]);
       }
     } catch (error) {
+      console.error("Error fetching platforms:", error);
       setWatchPlatforms([]);
+    } finally {
+      setPlatformsLoading(false);
     }
   };
 
@@ -296,7 +303,7 @@ const AboutMovie = () => {
               )}
             </motion.div>
 
-            {Array.isArray(watchPlatforms) && watchPlatforms.length > 0 && (
+            {(platformsLoading || (Array.isArray(watchPlatforms) && watchPlatforms.length > 0)) && (
               <motion.div
                 variants={itemVariants}
                 className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
@@ -304,16 +311,23 @@ const AboutMovie = () => {
                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                   Where to Watch
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {watchPlatforms.map((platform, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1.5 bg-white dark:bg-gray-600 rounded-lg text-sm font-medium shadow-sm"
-                    >
-                      {platform}
-                    </span>
-                  ))}
-                </div>
+                {platformsLoading ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    Searching platforms...
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {watchPlatforms.map((platform, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1.5 bg-white dark:bg-gray-600 rounded-lg text-sm font-medium shadow-sm"
+                      >
+                        {platform}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
