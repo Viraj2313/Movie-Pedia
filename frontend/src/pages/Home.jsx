@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Film, SlidersHorizontal, ArrowUpDown, ChevronDown } from "lucide-react";
+import { Search, X, Film, SlidersHorizontal, ArrowUpDown, ChevronDown, Dice5 } from "lucide-react";
 import Loader from "../components/Loader";
 import { HomeSkeleton } from "../components/Skeletons";
 import { useUser } from "../context/UserContext";
@@ -41,6 +41,7 @@ const Home = ({ setSelectedMovie }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [luckyRolling, setLuckyRolling] = useState(false);
   const isInitialLoad = useRef(true);
   const yearDebounceRef = useRef(null);
   const navigate = useNavigate();
@@ -199,6 +200,17 @@ const Home = ({ setSelectedMovie }) => {
 
   const activeFilterCount = (typeFilter ? 1 : 0) + (yearInput ? 1 : 0) + (sortBy !== "default" ? 1 : 0);
 
+  const handleLucky = () => {
+    if (movies.length === 0) return;
+    setLuckyRolling(true);
+    setTimeout(() => {
+      const pick = movies[Math.floor(Math.random() * movies.length)];
+      setSelectedMovie(pick.imdbID);
+      navigate(`/about/${pick.Title}/${pick.imdbID}`);
+      setLuckyRolling(false);
+    }, 600);
+  };
+
   const handleClick = (movie) => {
     setSelectedMovie(movie.imdbID);
     navigate(`/about/${movie.Title}/${movie.imdbID}`);
@@ -315,7 +327,7 @@ const Home = ({ setSelectedMovie }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-              className="mt-6 flex justify-center"
+              className="mt-6 flex justify-center gap-3"
             >
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -329,6 +341,23 @@ const Home = ({ setSelectedMovie }) => {
                   </span>
                 )}
               </button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLucky}
+                disabled={luckyRolling || movies.length === 0}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-lg shadow-violet-500/25 hover:from-violet-600 hover:to-purple-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <motion.span
+                  animate={luckyRolling ? { rotate: 360 } : { rotate: 0 }}
+                  transition={luckyRolling ? { duration: 0.5, repeat: Infinity, ease: "linear" } : {}}
+                  className="flex items-center"
+                >
+                  <Dice5 className="w-4 h-4" />
+                </motion.span>
+                {luckyRolling ? "Rolling..." : "Feeling Lucky"}
+              </motion.button>
             </motion.div>
 
             <AnimatePresence>
