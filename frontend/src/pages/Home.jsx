@@ -20,8 +20,8 @@ const SORT_OPTIONS = [
   { label: "Default", value: "default" },
   { label: "Title A-Z", value: "title-asc" },
   { label: "Title Z-A", value: "title-desc" },
-  { label: "Year ↑", value: "year-asc" },
-  { label: "Year ↓", value: "year-desc" },
+  { label: "Year (Oldest)", value: "year-asc" },
+  { label: "Year (Newest)", value: "year-desc" },
 ];
 
 const Home = ({ setSelectedMovie }) => {
