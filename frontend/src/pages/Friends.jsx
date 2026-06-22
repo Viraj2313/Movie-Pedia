@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Search, UserPlus, Users, RefreshCw, MessageCircle } from "lucide-react";
+import { Search, UserPlus, Users, RefreshCw, MessageCircle, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { useUser } from "../context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
@@ -68,6 +68,19 @@ const Friends = ({ user }) => {
       toast.success("Friend request accepted!");
     } catch (error) {
       toast.error(error.response?.data?.message || "Couldn't accept friend request");
+    }
+  };
+
+  const handleDeclineReq = async (senderId) => {
+    try {
+      await axios.post(`/api/friends/reject-request`, null, {
+        params: { userId, senderId },
+        withCredentials: true,
+      });
+      getFriendRequests();
+      toast.success("Request declined");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Couldn't decline request");
     }
   };
 
@@ -338,14 +351,24 @@ const Friends = ({ user }) => {
                       </div>
                       <span className="font-medium">{request.senderName}</span>
                     </div>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleAcceptReq(request.senderId)}
-                      className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
-                    >
-                      Accept
-                    </motion.button>
+                    <div className="flex items-center gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAcceptReq(request.senderId)}
+                        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
+                      >
+                        Accept
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleDeclineReq(request.senderId)}
+                        className="p-2 bg-gray-100 dark:bg-gray-600 hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-500 rounded-lg transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </motion.button>
+                    </div>
                   </motion.li>
                 ))}
               </AnimatePresence>

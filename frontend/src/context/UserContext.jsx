@@ -5,6 +5,7 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export const UserProvider = ({ children }) => {
           }
         } catch {
           setUserId(null);
+          setUserName(null);
         }
       } finally {
         setAuthLoading(false);
@@ -33,8 +35,21 @@ export const UserProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    if (!userId) {
+      setUserName(null);
+      return;
+    }
+    axios
+      .get("/api/user", { withCredentials: true })
+      .then((res) => {
+        if (res.data.userName) setUserName(res.data.userName);
+      })
+      .catch(() => {});
+  }, [userId]);
+
   return (
-    <UserContext.Provider value={{ userId, setUserId, authLoading }}>
+    <UserContext.Provider value={{ userId, setUserId, userName, setUserName, authLoading }}>
       {children}
     </UserContext.Provider>
   );

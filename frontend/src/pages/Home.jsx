@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Film, SlidersHorizontal, ArrowUpDown, ChevronDown, Dice5 } from "lucide-react";
+import { Search, X, Film, SlidersHorizontal, ArrowUpDown, ChevronDown, Dice5, Clock } from "lucide-react";
 import Loader from "../components/Loader";
 import { HomeSkeleton } from "../components/Skeletons";
 import { useUser } from "../context/UserContext";
@@ -42,6 +42,14 @@ const Home = ({ setSelectedMovie }) => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [luckyRolling, setLuckyRolling] = useState(false);
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("mp_recent_searches") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [showRecents, setShowRecents] = useState(false);
   const isInitialLoad = useRef(true);
   const yearDebounceRef = useRef(null);
   const navigate = useNavigate();
@@ -218,7 +226,10 @@ const Home = ({ setSelectedMovie }) => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    setSearchMovie(movieSearch.trim());
+    const trimmed = movieSearch.trim();
+    if (trimmed) saveRecentSearch(trimmed);
+    setSearchMovie(trimmed);
+    setShowRecents(false);
   };
 
   const handleInputChange = (e) => {
@@ -232,6 +243,44 @@ const Home = ({ setSelectedMovie }) => {
       setSearchLoading(false);
     }
   };
+
+  const saveRecentSearch = (term) => {
+    if (!term.trim()) return;
+    setRecentSearches((prev) => {
+      const next = [term, ...prev.filter((s) => s !== term)].slice(0, 5);
+      localStorage.setItem("mp_recent_searches", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const removeRecentSearch = (term) => {
+    setRecentSearches((prev) => {
+      const next = prev.filter((s) => s !== term);
+      localStorage.setItem("mp_recent_searches", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const clearRecentSearches = () => {
+    localStorage.removeItem("mp_recent_searches");
+    setRecentSearches([]);
+  };
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (
+        e.key === "/" &&
+        document.activeElement !== searchInputRef.current &&
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   const clearSearch = () => {
     if (abortControllerRef.current) {
@@ -292,10 +341,60 @@ const Home = ({ setSelectedMovie }) => {
                   type="text"
                   value={movieSearch}
                   onChange={handleInputChange}
+                  onFocus={() => setShowRecents(true)}
+                  onBlur={() => setTimeout(() => setShowRecents(false), 150)}
                   className="w-full pl-12 pr-28 py-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-lg focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none transition-all duration-300"
-                  placeholder="Search for movies..."
+                  placeholder="Search for movies... (press '/' to focus)"
                   autoFocus
                 />
+
+                <AnimatePresence>
+                  {showRecents && !movieSearch && recentSearches.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-30"
+                    >
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
+                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Recent Searches</span>
+                        <button
+                          type="button"
+                          onClick={clearRecentSearches}
+                          className="text-xs text-orange-500 hover:text-orange-600 font-medium"
+                        >
+                          Clear all
+                        </button>
+                      </div>
+                      {recentSearches.map((term) => (
+                        <div
+                          key={term}
+                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group/item"
+                        >
+                          <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <button
+                            type="button"
+                            className="flex-1 text-left text-sm text-gray-700 dark:text-gray-300"
+                            onClick={() => {
+                              setSearchMovie(term);
+                              setShowRecents(false);
+                            }}
+                          >
+                            {term}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); removeRecentSearch(term); }}
+                            className="opacity-0 group-hover/item:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <AnimatePresence>
                   {movieSearch && (

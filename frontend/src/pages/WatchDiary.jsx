@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Calendar, Film, Star, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Film, Star, Clock, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
 import { DiaryEntrySkeleton, ProfileSkeleton } from "@/components/Skeletons";
@@ -16,6 +16,7 @@ const WatchDiary = () => {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [stats, setStats] = useState(null);
+    const [diarySearch, setDiarySearch] = useState("");
     const pageSize = 20;
 
     useEffect(() => {
@@ -62,6 +63,12 @@ const WatchDiary = () => {
     };
 
     const totalPages = Math.ceil(total / pageSize);
+
+    const filteredHistory = diarySearch.trim()
+        ? history.filter((e) =>
+              e.movieTitle.toLowerCase().includes(diarySearch.toLowerCase())
+          )
+        : history;
 
     if (!userId) {
         return <LoginRequired />;
@@ -159,11 +166,36 @@ const WatchDiary = () => {
                     transition={{ delay: 0.2 }}
                     className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden"
                 >
-                    {history.length > 0 ? (
+                    <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input
+                                type="text"
+                                value={diarySearch}
+                                onChange={(e) => setDiarySearch(e.target.value)}
+                                placeholder="Search your diary..."
+                                className="w-full pl-9 pr-9 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all dark:text-white"
+                            />
+                            <AnimatePresence>
+                                {diarySearch && (
+                                    <motion.button
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        onClick={() => setDiarySearch("")}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                    {filteredHistory.length > 0 ? (
                         <>
                             <div className="divide-y divide-gray-100 dark:divide-gray-700">
                                 <AnimatePresence>
-                                    {history.map((entry, index) => (
+                                    {filteredHistory.map((entry, index) => (
                                         <motion.div
                                             key={entry.id}
                                             initial={{ opacity: 0, x: -20 }}
@@ -235,18 +267,20 @@ const WatchDiary = () => {
                         <div className="text-center py-16">
                             <Film className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                No movies logged yet
+                                {diarySearch ? `No results for "${diarySearch}"` : "No movies logged yet"}
                             </h3>
                             <p className="text-gray-500 dark:text-gray-400 mb-4">
-                                Start tracking your movie journey
+                                {diarySearch ? "Try a different title" : "Start tracking your movie journey"}
                             </p>
-                            <Link
-                                to="/"
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
-                            >
-                                <Film size={18} />
-                                Browse Movies
-                            </Link>
+                            {!diarySearch && (
+                                <Link
+                                    to="/"
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+                                >
+                                    <Film size={18} />
+                                    Browse Movies
+                                </Link>
+                            )}
                         </div>
                     )}
                 </motion.div>

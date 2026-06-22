@@ -8,7 +8,7 @@ import { ThumbsUp, ThumbsDown, MessageCircle, Trash2, Send, CornerDownRight } fr
 const Comments = ({ movieId }) => {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
-  const { userId } = useUser();
+  const { userId, userName } = useUser();
   const [commentInput, setCommentInput] = useState("");
   const [replyInputs, setReplyInputs] = useState({});
   const [refresh, setRefresh] = useState(false);
@@ -280,7 +280,7 @@ const Comments = ({ movieId }) => {
         <div className="flex gap-3">
           <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
             <span className="text-sm font-medium text-white">
-              {userId ? "Y" : "?"}
+              {userName ? userName.charAt(0).toUpperCase() : "?"}
             </span>
           </div>
           <div className="flex-1 flex gap-2">
