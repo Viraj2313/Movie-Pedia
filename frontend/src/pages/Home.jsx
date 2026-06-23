@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Film, SlidersHorizontal, ArrowUpDown, ChevronDown, Dice5, Clock } from "lucide-react";
+import { Search, X, Film, SlidersHorizontal, ArrowUpDown, Dice5, Clock } from "lucide-react";
 import Loader from "../components/Loader";
 import { HomeSkeleton } from "../components/Skeletons";
 import { useUser } from "../context/UserContext";
@@ -56,6 +56,7 @@ const Home = ({ setSelectedMovie }) => {
   const searchInputRef = useRef(null);
   const abortControllerRef = useRef(null);
   const seenIds = useRef(new Set());
+  const sentinelRef = useRef(null);
 
   useEffect(() => {
     if (yearDebounceRef.current) clearTimeout(yearDebounceRef.current);
@@ -105,7 +106,8 @@ const Home = ({ setSelectedMovie }) => {
       });
   }, [typeFilter, yearFilter]);
 
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
     const nextPage = page + 1;
     setLoadingMore(true);
 
@@ -133,7 +135,21 @@ const Home = ({ setSelectedMovie }) => {
     } finally {
       setLoadingMore(false);
     }
-  };
+  }, [loadingMore, hasMore, page, typeFilter, yearFilter, movieSearch]);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !movieSearch.trim()) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, movieSearch, loadMore]);
 
   useEffect(() => {
     if (abortControllerRef.current) {
@@ -604,25 +620,14 @@ const Home = ({ setSelectedMovie }) => {
                     </motion.ul>
 
                     {hasMore && !movieSearch.trim() && (
-                      <div className="flex justify-center mt-10 mb-4">
-                        <motion.button
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.97 }}
-                          onClick={loadMore}
-                          disabled={loadingMore}
-                          className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium shadow-lg shadow-orange-500/25 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                          {loadingMore ? (
-                            <motion.div
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                              className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                            />
-                          ) : (
-                            <ChevronDown className="w-5 h-5" />
-                          )}
-                          {loadingMore ? "Loading..." : "Load More Movies"}
-                        </motion.button>
+                      <div ref={sentinelRef} className="flex justify-center mt-10 mb-4 h-10">
+                        {loadingMore && (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full"
+                          />
+                        )}
                       </div>
                     )}
                   </div>
