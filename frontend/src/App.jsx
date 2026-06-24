@@ -85,7 +85,10 @@ function App() {
           setUserName(response.data.userName);
         }
       } catch (error) {
-        console.log("User not logged in or session expired.");
+        if (error.response && error.response.status !== 401) {
+          toast.error("Failed to authenticate session");
+        }
+        setUserName(null);
       }
     };
 

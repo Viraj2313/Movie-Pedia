@@ -8,6 +8,7 @@ import axios from "axios";
 import { ProfileSkeleton } from "@/components/Skeletons";
 import ActivityFeed from "@/components/ActivityFeed";
 import UserStats from "@/components/UserStats";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const [user, setUser] = useState({
@@ -48,7 +49,7 @@ const Profile = () => {
         setLoading(false);
       }
     } catch (err) {
-      console.log(err);
+      toast.error("Failed to load profile details");
       setLoading(false);
     }
   };
@@ -60,7 +61,7 @@ const Profile = () => {
       });
       setStats(res.data.stats);
     } catch (err) {
-      console.log(err);
+      toast.error("Failed to load user statistics");
     }
   };
 
@@ -157,7 +158,7 @@ const Profile = () => {
                         setBio(bioInput);
                         setEditingBio(false);
                       } catch (err) {
-                        console.log(err);
+                        toast.error("Failed to update bio");
                       } finally {
                         setSavingBio(false);
                       }

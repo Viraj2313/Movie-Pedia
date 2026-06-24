@@ -30,13 +30,13 @@ function GoogleSignInButton({ setUserName }) {
         nProgress.done();
       }
     } catch (error) {
-      console.error("Google Sign-In Error:", error);
+      toast.error("Google Sign-In Error");
       nProgress.done();
     }
   };
 
   const handleFailure = (error) => {
-    console.error("Google Sign-In Failed:", error);
+    toast.error("Google Sign-In Failed");
   };
 
   return (

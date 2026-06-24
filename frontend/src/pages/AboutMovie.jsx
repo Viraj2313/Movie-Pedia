@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useParams } from "react-router-dom";
-import { Play, ExternalLink, BookOpen, Star, Volume2, VolumeX, Eye, Check, X } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Play, ExternalLink, BookOpen, Star, Volume2, VolumeX, Eye, Check, X, ChevronLeft, Clock } from "lucide-react";
 import { MovieDetailSkeleton } from "../components/Skeletons";
 import { useOpenLink } from "../hooks/useOpenLink";
 import SaveMovie from "../components/SaveMovie";
@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 
 const AboutMovie = () => {
   const { imdbID } = useParams();
+  const navigate = useNavigate();
   const openLink = useOpenLink();
   const [isPlaying, setIsPlaying] = useState(false);
   const [movieDetails, setMovieDetails] = useState(null);
@@ -180,8 +181,6 @@ const AboutMovie = () => {
         setWatchPlatforms([]);
       }
     } catch (error) {
-      console.error("Error fetching platforms:", error);
-      setWatchPlatforms([]);
     } finally {
       setPlatformsLoading(false);
     }
@@ -255,6 +254,17 @@ const AboutMovie = () => {
       variants={containerVariants}
       className="max-w-5xl mx-auto px-4 py-8"
     >
+      <motion.button
+        variants={itemVariants}
+        onClick={() => navigate(-1)}
+        whileHover={{ x: -3 }}
+        whileTap={{ scale: 0.95 }}
+        className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors mb-6"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        Back
+      </motion.button>
+
       <motion.h1
         variants={itemVariants}
         className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"

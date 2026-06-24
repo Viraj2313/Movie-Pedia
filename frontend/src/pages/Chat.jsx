@@ -6,6 +6,7 @@ import axios from "axios";
 import { Send, ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const Chat = () => {
       setFriendName(response.data);
       setLoadingFriendName(false);
     } catch (error) {
-      console.error("Error fetching friend name:", error);
+      toast.error("Failed to load chat details");
       setLoadingFriendName(false);
     }
   };
@@ -62,7 +63,6 @@ const Chat = () => {
     newConnection
       .start()
       .then(() => {
-        console.log("Connected to SignalR hub");
         setConnection(newConnection);
 
         newConnection.on("ReceiveChatHistory", (history) => {
@@ -108,18 +108,18 @@ const Chat = () => {
 
         return newConnection
           .invoke("GetChatHistory", parseInt(senderId), parseInt(receiverId))
-          .catch((err) => console.error("Error fetching chat history:", err));
+          .catch((err) => {});
       })
       .then(() => {
         setLoadingMessages(false);
       })
-      .catch((err) => console.error("Error connecting to SignalR:", err));
+      .catch((err) => toast.error("Error connecting to chat server"));
 
     return () => {
       if (newConnection) {
         newConnection
           .stop()
-          .catch((err) => console.error("Error disconnecting:", err));
+          .catch((err) => {});
       }
     };
   }, [senderId, receiverId]);
@@ -146,7 +146,7 @@ const Chat = () => {
 
       setNewMessage("");
     } catch (error) {
-      console.error("Error sending message:", error);
+      toast.error("Failed to send message");
     }
   };
 

@@ -6,6 +6,7 @@ import { Search, X, Film, SlidersHorizontal, ArrowUpDown, Dice5, Clock } from "l
 import Loader from "../components/Loader";
 import { HomeSkeleton } from "../components/Skeletons";
 import { useUser } from "../context/UserContext";
+import { toast } from "react-toastify";
 import InternalServerError from "@/components/ServerError";
 import nProgress from "nprogress";
 import MovieCard from "../components/MovieCard";
@@ -95,7 +96,6 @@ const Home = ({ setSelectedMovie }) => {
         nProgress.done();
       })
       .catch((error) => {
-        console.error(error);
         setServerError(true);
         setError("Unable to fetch movies from server");
         setLoading(false);
@@ -131,7 +131,7 @@ const Home = ({ setSelectedMovie }) => {
       setHasMore(data.hasMore);
       setPage(nextPage);
     } catch (error) {
-      console.error(error);
+      toast.error("Failed to load more movies");
     } finally {
       setLoadingMore(false);
     }
@@ -188,10 +188,8 @@ const Home = ({ setSelectedMovie }) => {
           setSearchLoading(false);
         })
         .catch((error) => {
-          if (error.name === "AbortError") {
-            console.log("Search request aborted");
-          } else {
-            console.error("Error fetching search results:", error);
+          if (error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
+            toast.error("Failed to fetch search results");
             setSearchResults([]);
             setSearchLoading(false);
           }

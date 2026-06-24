@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { Calendar, Film, Star, Clock, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import LoginRequired from "@/components/LoginRequired";
@@ -37,7 +38,7 @@ const WatchDiary = () => {
             setHistory(res.data.history);
             setTotal(res.data.total);
         } catch (err) {
-            console.error(err);
+            toast.error("Failed to load watch history");
         } finally {
             setLoading(false);
             nProgress.done();
@@ -49,7 +50,7 @@ const WatchDiary = () => {
             const res = await axios.get(`/api/watch-history/stats/${userId}`);
             setStats(res.data);
         } catch (err) {
-            console.error(err);
+            toast.error("Failed to load watch statistics");
         }
     };
 

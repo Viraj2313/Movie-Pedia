@@ -9,6 +9,7 @@ import { MovieCardSkeleton } from "@/components/Skeletons";
 import SaveMovie from "../components/SaveMovie";
 import LoginRequired from "@/components/LoginRequired";
 import nProgress from "nprogress";
+import { toast } from "react-toastify";
 
 const Recommendations = ({ setSelectedMovie }) => {
   const { userId } = useUser();
@@ -25,7 +26,7 @@ const Recommendations = ({ setSelectedMovie }) => {
         const response = await axios.get(`/recommender-api/${userId}`);
         setRecommendations(response.data.Recommendations);
       } catch (error) {
-        console.error("Error fetching recommendations:", error);
+        toast.error("Failed to load recommendations");
         setRecommendations([]);
       } finally {
         setLoading(false);

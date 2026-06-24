@@ -17,7 +17,6 @@ const FriendsToShare = () => {
 
   useEffect(() => {
     if (userId) {
-      console.log("User ID Set: ", userId);
       getFriendsList();
 
       const newConnection = new signalR.HubConnectionBuilder()
@@ -28,10 +27,9 @@ const FriendsToShare = () => {
       newConnection
         .start()
         .then(() => {
-          console.log("SignalR Connected");
           setConnection(newConnection);
         })
-        .catch((err) => console.error("SignalR Error: ", err));
+        .catch((err) => toast.error("Failed to connect to chat server"));
     }
   }, [userId]);
 
@@ -45,14 +43,13 @@ const FriendsToShare = () => {
         setFriends(response.data);
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to load friends list");
     }
   };
 
   const handleClick = async (friendId) => {
     if (message && connection) {
       try {
-        console.log(typeof Number(userId), typeof friendId, typeof message);
         await connection.invoke(
           "SendMessage",
           Number(userId),
@@ -62,7 +59,7 @@ const FriendsToShare = () => {
         navigate(-1);
         toast.success(`Message sent`);
       } catch (err) {
-        console.error("Message Sending Error: ", err);
+        toast.error("Failed to send message");
       }
     } else {
       toast.error("Message not available or SignalR not connected");
