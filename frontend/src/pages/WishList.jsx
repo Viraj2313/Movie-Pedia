@@ -110,13 +110,20 @@ const WishList = ({ setSelectedMovie }) => {
                   className="relative overflow-hidden aspect-[2/3]"
                   onClick={() => handleClick(item)}
                 >
-                  <motion.img
-                    src={item.moviePoster}
-                    alt={item.movieTitle}
-                    className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.4 }}
-                  />
+                  {item.moviePoster !== "N/A" ? (
+                    <motion.img
+                      src={item.moviePoster}
+                      alt={item.movieTitle}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.4 }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 p-4 text-center">
+                      <Film className="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-2" />
+                      <span className="text-zinc-400 dark:text-zinc-500 font-medium text-sm leading-tight line-clamp-3">{item.movieTitle}</span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
                 </div>
 

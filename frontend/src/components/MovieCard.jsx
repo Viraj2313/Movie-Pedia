@@ -3,7 +3,7 @@ import SaveMovie from "./SaveMovie";
 import { useUser } from "@/context/UserContext";
 import { useState, useRef, useCallback } from "react";
 import axios from "axios";
-import { Star } from "lucide-react";
+import { Star, Film } from "lucide-react";
 
 const GENRE_COLORS = {
   Action: "bg-red-500/80",
@@ -33,6 +33,7 @@ const MovieCard = ({ movie, onClick, index = 0 }) => {
   const [hovered, setHovered] = useState(false);
   const [details, setDetails] = useState(null);
   const [fetching, setFetching] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const cacheRef = useRef(null);
 
   const handleMouseEnter = useCallback(async () => {
@@ -77,13 +78,21 @@ const MovieCard = ({ movie, onClick, index = 0 }) => {
       onMouseLeave={() => setHovered(false)}
     >
       <div className="relative overflow-hidden aspect-[2/3]">
-        <motion.img
-          src={movie.Poster}
-          alt={movie.Title}
-          className="w-full h-full object-cover"
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        />
+        {movie.Poster !== "N/A" && !imageError ? (
+          <motion.img
+            src={movie.Poster}
+            alt={movie.Title}
+            className="w-full h-full object-cover"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 p-4 text-center">
+            <Film className="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-2" />
+            <span className="text-zinc-400 dark:text-zinc-500 font-medium text-sm leading-tight line-clamp-3">{movie.Title}</span>
+          </div>
+        )}
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-300" />
 

@@ -25,6 +25,7 @@ import UserProfile from "./pages/UserProfile";
 import WatchDiary from "./pages/WatchDiary";
 import Footer from "./components/Footer";
 import { useLocation } from "react-router-dom";
+import NotFound from "./pages/NotFound";
 
 
 function ScrollToTop() {
@@ -198,6 +199,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/diary" element={<WatchDiary />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </UserProvider>
       <ScrollToTopButton />

@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
-import { Play, ExternalLink, BookOpen, Star, Volume2, VolumeX, Eye, Check, X, ChevronLeft, Clock } from "lucide-react";
+import { Play, ExternalLink, BookOpen, Star, Volume2, VolumeX, Eye, Check, X, ChevronLeft, Clock, Film } from "lucide-react";
 import { MovieDetailSkeleton } from "../components/Skeletons";
 import { useOpenLink } from "../hooks/useOpenLink";
 import SaveMovie from "../components/SaveMovie";
@@ -281,11 +281,18 @@ const AboutMovie = () => {
             variants={itemVariants}
             className="flex justify-center md:col-span-1"
           >
-            <img
-              className="rounded-xl shadow-lg max-w-full h-auto object-cover"
-              src={movieDetails.Poster}
-              alt={movieDetails.Title}
-            />
+            {movieDetails.Poster !== "N/A" ? (
+              <img
+                className="rounded-xl shadow-lg w-full h-auto object-cover aspect-[2/3]"
+                src={movieDetails.Poster}
+                alt={movieDetails.Title}
+              />
+            ) : (
+              <div className="rounded-xl shadow-lg w-full aspect-[2/3] flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 p-4 text-center">
+                <Film className="w-16 h-16 text-zinc-300 dark:text-zinc-600 mb-4" />
+                <span className="text-zinc-400 dark:text-zinc-500 font-medium text-lg">{movieDetails.Title}</span>
+              </div>
+            )}
           </motion.div>
 
           <div className="md:col-span-2 space-y-6">
