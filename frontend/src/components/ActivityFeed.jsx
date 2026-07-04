@@ -95,7 +95,7 @@ const ActivityItem = ({ activity, showUser = true }) => {
                     {showUser && (
                         <Link
                             to={`/user/${activity.userId}`}
-                            className="font-semibold text-gray-900 dark:text-white hover:text-orange-500 transition-colors"
+                            className="font-semibold text-gray-900 dark:text-white hover:text-zinc-900 dark:text-white transition-colors"
                         >
                             {activity.userName}
                         </Link>

@@ -59,7 +59,7 @@ function ScrollToTopButton() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 left-6 z-50 w-11 h-11 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:from-orange-600 hover:to-orange-700 transition-colors"
+          className="fixed bottom-6 left-6 z-50 w-11 h-11 bg-gradient-to-br from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 rounded-full shadow-lg shadow-zinc-900/30 flex items-center justify-center hover:from-zinc-700 hover:to-zinc-800 dark:hover:from-zinc-300 dark:hover:to-zinc-200 transition-colors"
         >
           <ChevronUp className="w-5 h-5" />
         </motion.button>

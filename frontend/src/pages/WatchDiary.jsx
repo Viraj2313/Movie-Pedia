@@ -100,14 +100,14 @@ const WatchDiary = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+        <div className="min-h-screen bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-8"
                 >
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent mb-2">
                         Watch Diary
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -141,7 +141,7 @@ const WatchDiary = () => {
                             </p>
                         </div>
                         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center">
-                            <Star className="w-6 h-6 text-orange-500 mx-auto mb-2" />
+                            <Star className="w-6 h-6 text-zinc-900 dark:text-white mx-auto mb-2" />
                             <p className="text-2xl font-bold text-gray-900 dark:text-white">
                                 {stats.totalRated}
                             </p>
@@ -175,7 +175,7 @@ const WatchDiary = () => {
                                 value={diarySearch}
                                 onChange={(e) => setDiarySearch(e.target.value)}
                                 placeholder="Search your diary..."
-                                className="w-full pl-9 pr-9 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all dark:text-white"
+                                className="w-full pl-9 pr-9 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:border-zinc-900 dark:border-white focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-white/10 outline-none transition-all dark:text-white"
                             />
                             <AnimatePresence>
                                 {diarySearch && (
@@ -214,7 +214,7 @@ const WatchDiary = () => {
                                             <div className="flex-1 min-w-0">
                                                 <Link
                                                     to={`/about/${entry.movieTitle}/${entry.movieId}`}
-                                                    className="font-semibold text-gray-900 dark:text-white hover:text-orange-500 transition-colors block truncate"
+                                                    className="font-semibold text-gray-900 dark:text-white hover:text-zinc-900 dark:text-white transition-colors block truncate"
                                                 >
                                                     {entry.movieTitle}
                                                 </Link>
@@ -276,7 +276,7 @@ const WatchDiary = () => {
                             {!diarySearch && (
                                 <Link
                                     to="/"
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-900 rounded-lg transition-colors"
                                 >
                                     <Film size={18} />
                                     Browse Movies

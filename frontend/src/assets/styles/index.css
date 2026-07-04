@@ -13,7 +13,7 @@ html {
 
 #nprogress .bar {
   height: 3px !important;
-  background: linear-gradient(90deg, #f97316, #ea580c) !important;
+  background: linear-gradient(90deg, #18181b, #09090b) !important;
 }
 
 #nprogress .spinner {
@@ -235,7 +235,7 @@ html {
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+  box-shadow: 0 0 20px rgba(24, 24, 27, 0.4);
 }
 
 .input-modern {
@@ -245,13 +245,13 @@ html {
 }
 
 .input-modern:focus {
-  border-color: #f97316;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: #18181b;
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.1);
   outline: none;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  background: linear-gradient(135deg, #18181b 0%, #09090b 100%);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -259,7 +259,7 @@ html {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px -4px rgba(249, 115, 22, 0.5);
+  box-shadow: 0 8px 20px -4px rgba(24, 24, 27, 0.5);
 }
 
 .btn-primary:active {

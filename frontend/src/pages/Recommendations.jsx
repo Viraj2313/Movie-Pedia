@@ -68,8 +68,8 @@ const Recommendations = ({ setSelectedMovie }) => {
         className="text-center mb-8"
       >
         <div className="inline-flex items-center gap-2 mb-2">
-          <Sparkles className="w-6 h-6 text-orange-500" />
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+          <Sparkles className="w-6 h-6 text-zinc-900 dark:text-white" />
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
             Recommendations
           </h1>
         </div>
@@ -107,7 +107,7 @@ const Recommendations = ({ setSelectedMovie }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
 
-                <div className="absolute top-2 right-2 px-2 py-1 bg-orange-500/90 backdrop-blur-sm rounded-full flex items-center gap-1">
+                <div className="absolute top-2 right-2 px-2 py-1 bg-zinc-50 dark:bg-zinc-800/500/90 backdrop-blur-sm rounded-full flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-white" />
                   <span className="text-xs text-white font-medium">AI Pick</span>
                 </div>
@@ -131,7 +131,7 @@ const Recommendations = ({ setSelectedMovie }) => {
               </div>
 
 
-              <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-orange-500/30 transition-colors pointer-events-none" />
+              <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-zinc-900 dark:border-white/30 transition-colors pointer-events-none" />
             </motion.li>
           ))}
         </motion.ul>
@@ -145,9 +145,9 @@ const Recommendations = ({ setSelectedMovie }) => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl flex items-center justify-center mb-6"
+            className="w-20 h-20 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700 dark:from-zinc-800 dark:to-zinc-700 rounded-2xl flex items-center justify-center mb-6"
           >
-            <Film className="w-10 h-10 text-orange-500" />
+            <Film className="w-10 h-10 text-zinc-900 dark:text-white" />
           </motion.div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             No recommendations yet

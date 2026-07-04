@@ -196,7 +196,7 @@ const Chat = () => {
         >
           <ArrowLeft className="w-5 h-5" />
         </motion.button>
-        <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+        <div className="w-10 h-10 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center text-white font-semibold">
           {friendName.charAt(0).toUpperCase()}
         </div>
         <div>
@@ -221,7 +221,7 @@ const Chat = () => {
               >
                 <div
                   className={`max-w-[75%] px-4 py-2.5 rounded-2xl shadow-sm ${isOwn
-                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-br-md"
+                    ? "bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 rounded-br-md"
                     : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md border border-gray-200 dark:border-gray-700"
                     }`}
                 >
@@ -255,14 +255,14 @@ const Chat = () => {
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-transparent focus:border-orange-500 focus:bg-white dark:focus:bg-gray-600 outline-none transition-all"
+            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-transparent focus:border-zinc-900 dark:border-white focus:bg-white dark:focus:bg-gray-600 outline-none transition-all"
           />
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={sendMessage}
             disabled={!connection || !newMessage.trim()}
-            className="p-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            className="p-3 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 rounded-xl shadow-lg shadow-zinc-900/20 dark:shadow-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
           >
             <Send className="w-5 h-5" />
           </motion.button>

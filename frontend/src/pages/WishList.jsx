@@ -83,7 +83,7 @@ const WishList = ({ setSelectedMovie }) => {
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-3xl font-bold mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+        className="text-3xl font-bold mb-8 bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent"
       >
         Your WatchList
       </motion.h1>
@@ -139,7 +139,7 @@ const WishList = ({ setSelectedMovie }) => {
                   </motion.button>
                 </div>
 
-                <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-orange-500/30 transition-colors pointer-events-none" />
+                <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-zinc-900 dark:border-white/30 transition-colors pointer-events-none" />
               </motion.li>
             ))}
           </AnimatePresence>
@@ -154,9 +154,9 @@ const WishList = ({ setSelectedMovie }) => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl flex items-center justify-center mb-6"
+            className="w-20 h-20 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700 dark:from-zinc-800 dark:to-zinc-700 rounded-2xl flex items-center justify-center mb-6"
           >
-            <Film className="w-10 h-10 text-orange-500" />
+            <Film className="w-10 h-10 text-zinc-900 dark:text-white" />
           </motion.div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Your watchlist is empty

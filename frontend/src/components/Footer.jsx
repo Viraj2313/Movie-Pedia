@@ -61,7 +61,7 @@ const Footer = () => {
           <motion.div variants={itemVariants}>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
               Discover More with
-              <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent font-bold">
+              <span className="bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent font-bold">
                 {" "}Moviepedia
               </span>
             </h3>
@@ -83,12 +83,12 @@ const Footer = () => {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-orange-400 dark:hover:border-orange-500 transition-all duration-300"
+                    className="group p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-zinc-900 dark:hover:border-white transition-all duration-300"
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     aria-label={link.name}
                   >
-                    <Icon className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-orange-500 transition-colors" />
+                    <Icon className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:text-white transition-colors" />
                   </motion.a>
                 </Tippy>
               );
@@ -109,7 +109,7 @@ const Footer = () => {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-gray-400 dark:text-gray-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                    className="text-gray-400 dark:text-gray-500 hover:text-zinc-900 dark:text-white dark:hover:text-zinc-800 dark:text-zinc-200 transition-colors"
                   >
                     {link.label}
                   </Link>

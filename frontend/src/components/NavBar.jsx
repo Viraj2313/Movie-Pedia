@@ -64,15 +64,15 @@ const NavBar = ({ user, handleLogout }) => {
         onClick={mobile ? toggleMenu : undefined}
         className={`relative text-md font-medium transition-colors duration-300 ${mobile ? "py-3 text-lg" : "hidden md:block"
           } ${isActive
-            ? "text-orange-500"
-            : "text-gray-700 dark:text-gray-200 hover:text-orange-500"
+            ? "text-zinc-900 dark:text-white"
+            : "text-gray-700 dark:text-gray-200 hover:text-zinc-900 dark:text-white"
           }`}
       >
         {label}
         {isActive && !mobile && (
           <motion.div
             layoutId="activeNav"
-            className="absolute -bottom-1 left-0 right-0 h-0.5 bg-orange-500 rounded-full"
+            className="absolute -bottom-1 left-0 right-0 h-0.5 bg-zinc-50 dark:bg-zinc-800/500 rounded-full"
             initial={false}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
@@ -94,12 +94,12 @@ const NavBar = ({ user, handleLogout }) => {
           to={to}
           onClick={toggleMenu}
           className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${isActive
-            ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
+            ? "bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20"
             : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
         >
           <div className={`p-2 rounded-xl ${isActive ? "bg-white/20" : "bg-gray-100 dark:bg-gray-800"}`}>
-            <Icon size={20} className={isActive ? "text-white" : "text-orange-500"} />
+            <Icon size={20} className={isActive ? "text-white" : "text-zinc-900 dark:text-white"} />
           </div>
           <span className="text-lg font-medium">{label}</span>
         </Link>
@@ -120,7 +120,7 @@ const NavBar = ({ user, handleLogout }) => {
           <div className="p-4 border-b border-gray-100 dark:border-gray-700">
             <Link to={"/profile"}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center">
                   <span className="text-lg font-bold text-white">
                     {user?.charAt(0).toUpperCase()}
                   </span>
@@ -210,7 +210,7 @@ const NavBar = ({ user, handleLogout }) => {
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <X size={24} className="text-orange-500" />
+                  <X size={24} className="text-zinc-900 dark:text-white" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -228,7 +228,7 @@ const NavBar = ({ user, handleLogout }) => {
 
           <Link to="/">
             <motion.h2
-              className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+              className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -253,10 +253,10 @@ const NavBar = ({ user, handleLogout }) => {
             <div className="relative" ref={dropdownRef}>
               <motion.button
                 onClick={() => setProfileDropdown(!profileDropdown)}
-                className="flex items-center gap-2 p-1.5 pr-3 rounded-full border-2 border-orange-400 bg-orange-50 dark:bg-orange-900/20 hover:border-orange-500 transition-colors"
+                className="flex items-center gap-2 p-1.5 pr-3 rounded-full border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 hover:border-zinc-900 dark:hover:border-white transition-colors"
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="w-7 h-7 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
+                <div className="w-7 h-7 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center">
                   <span className="text-sm font-bold text-white">
                     {user.charAt(0).toUpperCase()}
                   </span>
@@ -275,7 +275,7 @@ const NavBar = ({ user, handleLogout }) => {
             <div className="flex gap-2 items-center">
               <Link to="/login" className="hidden sm:block">
                 <motion.button
-                  className="px-4 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 border border-orange-300 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -284,7 +284,7 @@ const NavBar = ({ user, handleLogout }) => {
               </Link>
               <Link to="/signup" className="hidden sm:block">
                 <motion.button
-                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-sm text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                  className="px-4 py-2 bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white text-sm text-white dark:text-zinc-900 font-medium rounded-lg shadow-md hover:shadow-lg transition-shadow"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -321,7 +321,7 @@ const NavBar = ({ user, handleLogout }) => {
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
                   <Link to="/" onClick={toggleMenu}>
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
                       Movies
                     </h2>
                   </Link>
@@ -342,7 +342,7 @@ const NavBar = ({ user, handleLogout }) => {
                     className="p-6 border-b border-gray-100 dark:border-gray-800"
                   >
                     <Link to="/profile" onClick={toggleMenu} className="flex items-center gap-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/25">
+                      <div className="w-14 h-14 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center shadow-lg shadow-zinc-900/20 dark:shadow-white/20">
                         <span className="text-xl font-bold text-white">
                           {user.charAt(0).toUpperCase()}
                         </span>
@@ -385,7 +385,7 @@ const NavBar = ({ user, handleLogout }) => {
                       <Link to="/login" onClick={toggleMenu} className="flex-1">
                         <motion.button
                           whileTap={{ scale: 0.98 }}
-                          className="w-full py-3 flex items-center justify-center gap-2 border-2 border-orange-400 text-orange-500 rounded-xl font-medium"
+                          className="w-full py-3 flex items-center justify-center gap-2 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white rounded-xl font-medium"
                         >
                           <LogIn size={18} />
                           Login
@@ -394,7 +394,7 @@ const NavBar = ({ user, handleLogout }) => {
                       <Link to="/signup" onClick={toggleMenu} className="flex-1">
                         <motion.button
                           whileTap={{ scale: 0.98 }}
-                          className="w-full py-3 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium shadow-lg shadow-orange-500/25"
+                          className="w-full py-3 flex items-center justify-center gap-2 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 rounded-xl font-medium shadow-lg shadow-zinc-900/20 dark:shadow-white/20"
                         >
                           <UserPlus size={18} />
                           Sign Up

@@ -99,7 +99,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -110,7 +110,7 @@ const Profile = () => {
           variants={itemVariants}
           className="flex justify-center mb-6"
         >
-          <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-xl shadow-orange-500/25">
+          <div className="w-24 h-24 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center shadow-xl shadow-zinc-900/20 dark:shadow-white/20">
             <span className="text-4xl font-bold text-white">
               {user.name.charAt(0).toUpperCase()}
             </span>
@@ -138,7 +138,7 @@ const Profile = () => {
                 onChange={(e) => setBioInput(e.target.value.slice(0, 200))}
                 placeholder="Write a short bio..."
                 rows={3}
-                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"
+                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-zinc-900/20 dark:focus:ring-white/20 focus:border-zinc-900 dark:border-white transition-all resize-none"
                 autoFocus
               />
               <div className="flex items-center justify-between mt-2">
@@ -164,7 +164,7 @@ const Profile = () => {
                       }
                     }}
                     disabled={savingBio}
-                    className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors disabled:opacity-50"
+                    className="p-1.5 text-zinc-900 dark:text-white hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors disabled:opacity-50"
                   >
                     <Check size={16} />
                   </button>
@@ -232,7 +232,7 @@ const Profile = () => {
             </h2>
             <Link
               to={`/user/${userId}`}
-              className="text-sm text-orange-500 hover:text-orange-600"
+              className="text-sm text-zinc-900 dark:text-white hover:text-zinc-500 dark:hover:text-zinc-400"
             >
               View All
             </Link>
@@ -254,8 +254,8 @@ const Profile = () => {
           </h2>
 
           <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-              <User className="w-5 h-5 text-orange-500" />
+            <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+              <User className="w-5 h-5 text-zinc-900 dark:text-white" />
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">

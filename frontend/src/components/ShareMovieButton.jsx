@@ -96,12 +96,12 @@ const ShareMovieButton = ({ movieTitle }) => {
   ];
 
   return (
-    <div className="relative" ref={buttonRef}>
+    <div className="relative h-full w-full" ref={buttonRef}>
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setShowMenu((prev) => !prev)}
-        className="flex items-center justify-center gap-2 px-4 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl text-sm font-medium transition-colors w-full"
+        className="flex items-center justify-center gap-2 px-4 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl text-sm font-medium transition-colors w-full h-full"
       >
         <Share2 className="w-4 h-4" />
         Share

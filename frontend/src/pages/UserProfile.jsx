@@ -96,14 +96,14 @@ const UserProfile = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+        <div className="min-h-screen bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-8"
                 >
-                    <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full shadow-xl shadow-orange-500/25 mb-4">
+                    <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full shadow-xl shadow-zinc-900/20 dark:shadow-white/20 mb-4">
                         <span className="text-4xl font-bold text-white">
                             {profile.user.name.charAt(0).toUpperCase()}
                         </span>
@@ -121,7 +121,7 @@ const UserProfile = () => {
 
                     <button
                         onClick={handleShowFriends}
-                        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors"
+                        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-zinc-900 dark:text-white transition-colors"
                     >
                         <Users size={18} />
                         <span className="font-medium">{profile.stats.friendCount} friends</span>
@@ -144,7 +144,7 @@ const UserProfile = () => {
                                     whileTap={{ scale: 0.98 }}
                                     onClick={handleSendRequest}
                                     disabled={sendingRequest}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full text-sm font-medium transition-colors disabled:opacity-60"
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-200 dark:text-zinc-900 rounded-full text-sm font-medium transition-colors disabled:opacity-60"
                                 >
                                     <UserPlus size={16} />
                                     Add Friend
@@ -156,7 +156,7 @@ const UserProfile = () => {
                     {profile.isOwnProfile && (
                         <Link
                             to="/profile"
-                            className="inline-block mt-4 text-sm text-orange-500 hover:text-orange-600"
+                            className="inline-block mt-4 text-sm text-zinc-900 dark:text-white hover:text-zinc-500 dark:hover:text-zinc-400"
                         >
                             Edit Profile
                         </Link>
@@ -215,7 +215,7 @@ const UserProfile = () => {
                     className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
                 >
                     <div className="flex items-center gap-2 mb-4">
-                        <Film className="w-5 h-5 text-orange-500" />
+                        <Film className="w-5 h-5 text-zinc-900 dark:text-white" />
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                             Recent Activity
                         </h2>
@@ -275,7 +275,7 @@ const UserProfile = () => {
                                                 onClick={() => setShowFriends(false)}
                                                 className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-colors"
                                             >
-                                                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center text-white font-semibold">
                                                     {friend.friendName.charAt(0).toUpperCase()}
                                                 </div>
                                                 <span className="font-medium text-gray-900 dark:text-white">

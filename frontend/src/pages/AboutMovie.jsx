@@ -259,7 +259,7 @@ const AboutMovie = () => {
         onClick={() => navigate(-1)}
         whileHover={{ x: -3 }}
         whileTap={{ scale: 0.95 }}
-        className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors mb-6"
+        className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-zinc-900 dark:text-white dark:hover:text-zinc-800 dark:text-zinc-200 transition-colors mb-6"
       >
         <ChevronLeft className="w-4 h-4" />
         Back
@@ -267,7 +267,7 @@ const AboutMovie = () => {
 
       <motion.h1
         variants={itemVariants}
-        className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+        className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent"
       >
         {movieDetails.Title}
       </motion.h1>
@@ -323,7 +323,7 @@ const AboutMovie = () => {
                 </h3>
                 {platformsLoading ? (
                   <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-zinc-900 dark:border-white border-t-transparent rounded-full animate-spin"></div>
                     Searching platforms...
                   </div>
                 ) : (
@@ -414,7 +414,7 @@ const AboutMovie = () => {
             </motion.button>
 
             <ShareMovieButton movieTitle={movieDetails.Title} />
-            <SaveMovie userId={userId} movie={movieDetails} />
+            <SaveMovie userId={userId} movie={movieDetails} className="flex items-center justify-center gap-2 px-4 py-3 bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl text-sm font-medium transition-colors w-full" />
           </div>
         </motion.div>
       </motion.div>
@@ -507,7 +507,7 @@ const AboutMovie = () => {
                     onChange={(e) => setWatchReview(e.target.value)}
                     placeholder="What did you think?"
                     rows={3}
-                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none resize-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:border-zinc-900 dark:border-white focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-white/10 outline-none resize-none"
                   />
                 </div>
 
@@ -516,7 +516,7 @@ const AboutMovie = () => {
                   whileTap={{ scale: 0.98 }}
                   onClick={submitWatch}
                   disabled={submitting}
-                  className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium disabled:opacity-60"
+                  className="w-full py-3 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 rounded-xl font-medium disabled:opacity-60"
                 >
                   {submitting ? "Saving..." : watched ? "Update" : "Add to Diary"}
                 </motion.button>

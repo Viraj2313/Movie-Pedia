@@ -59,7 +59,7 @@ const SignUp = ({ setUserName }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -67,7 +67,7 @@ const SignUp = ({ setUserName }) => {
         className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
       >
         <motion.div variants={itemVariants} className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
             Create Account
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2">
@@ -92,7 +92,7 @@ const SignUp = ({ setUserName }) => {
                 placeholder="Enter your full name"
                 value={user.name}
                 onChange={(e) => setUserState({ ...user, name: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 dark:bg-gray-700 dark:text-white transition-all duration-200 outline-none"
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-zinc-900 dark:border-white focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-white/10 dark:bg-gray-700 dark:text-white transition-all duration-200 outline-none"
                 required
               />
             </div>
@@ -114,7 +114,7 @@ const SignUp = ({ setUserName }) => {
                 placeholder="Enter your email"
                 value={user.email}
                 onChange={(e) => setUserState({ ...user, email: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 dark:bg-gray-700 dark:text-white transition-all duration-200 outline-none"
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-zinc-900 dark:border-white focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-white/10 dark:bg-gray-700 dark:text-white transition-all duration-200 outline-none"
                 required
               />
             </div>
@@ -136,7 +136,7 @@ const SignUp = ({ setUserName }) => {
                 placeholder="Create a password"
                 value={user.password}
                 onChange={(e) => setUserState({ ...user, password: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 dark:bg-gray-700 dark:text-white transition-all duration-200 outline-none"
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-zinc-900 dark:border-white focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-white/10 dark:bg-gray-700 dark:text-white transition-all duration-200 outline-none"
                 required
               />
             </div>
@@ -148,7 +148,7 @@ const SignUp = ({ setUserName }) => {
             whileTap={{ scale: 0.99 }}
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl hover:from-orange-600 hover:to-orange-700 font-medium shadow-lg shadow-orange-500/25 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 py-3 rounded-xl hover:from-zinc-700 hover:to-zinc-800 dark:hover:from-zinc-300 dark:hover:to-zinc-200 font-medium shadow-lg shadow-zinc-900/20 dark:shadow-white/20 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
               <motion.div
@@ -187,7 +187,7 @@ const SignUp = ({ setUserName }) => {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-orange-500 hover:text-orange-600 font-medium"
+            className="text-zinc-900 dark:text-white hover:text-zinc-500 dark:hover:text-zinc-400 font-medium"
           >
             Sign in
           </Link>

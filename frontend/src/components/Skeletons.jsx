@@ -71,7 +71,7 @@ export const MovieDetailSkeleton = () => (
 );
 
 export const ProfileSkeleton = () => (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
         <div className="max-w-2xl mx-auto pt-8">
             <div className="flex justify-center mb-6">
                 <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
@@ -160,7 +160,7 @@ export const FriendsPageSkeleton = () => (
 export const HomeSkeleton = () => (
     <div className="min-h-screen dark:text-gray-100 dark:bg-gray-900">
         <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
             <div className="relative px-4 py-12 sm:py-16 lg:py-20">
                 <div className="max-w-4xl mx-auto text-center">
                     <Pulse className="h-14 w-72 mx-auto mb-4 rounded-lg" />

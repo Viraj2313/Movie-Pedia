@@ -237,7 +237,7 @@ const Comments = ({ movieId }) => {
                       })
                     }
                     onKeyDown={(e) => e.key === "Enter" && handleAddComment(comment.id)}
-                    className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                    className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/20 dark:focus:ring-white/20 focus:border-zinc-900 dark:border-white transition-all"
                   />
                   <button
                     onClick={() => handleAddComment(comment.id)}
@@ -278,8 +278,8 @@ const Comments = ({ movieId }) => {
 
       <div className="p-5">
         <div className="flex gap-3">
-          <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-            <span className="text-sm font-medium text-white">
+          <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white flex items-center justify-center">
+            <span className="text-sm font-medium text-white dark:text-zinc-900">
               {userName ? userName.charAt(0).toUpperCase() : "?"}
             </span>
           </div>
@@ -291,7 +291,7 @@ const Comments = ({ movieId }) => {
               onChange={(e) => setCommentInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
               disabled={!userId}
-              className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/20 dark:focus:ring-white/20 focus:border-zinc-900 dark:border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -308,7 +308,7 @@ const Comments = ({ movieId }) => {
         <div className="mt-2">
           {loading ? (
             <div className="flex justify-center py-8">
-              <div className="w-6 h-6 border-2 border-gray-200 dark:border-gray-700 border-t-orange-500 rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-gray-200 dark:border-gray-700 border-t-zinc-900 dark:border-t-white rounded-full animate-spin" />
             </div>
           ) : comments.length === 0 ? (
             <div className="text-center py-10">

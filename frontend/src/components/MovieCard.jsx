@@ -7,7 +7,7 @@ import { Star } from "lucide-react";
 
 const GENRE_COLORS = {
   Action: "bg-red-500/80",
-  Adventure: "bg-orange-500/80",
+  Adventure: "bg-zinc-50 dark:bg-zinc-800/500/80",
   Animation: "bg-yellow-500/80",
   Biography: "bg-lime-500/80",
   Comedy: "bg-green-500/80",
@@ -130,7 +130,7 @@ const MovieCard = ({ movie, onClick, index = 0 }) => {
           >
             {fetching ? (
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-zinc-900 dark:border-white border-t-transparent rounded-full animate-spin" />
                 <span className="text-xs text-gray-300">Loading...</span>
               </div>
             ) : (
@@ -163,7 +163,7 @@ const MovieCard = ({ movie, onClick, index = 0 }) => {
         )}
       </AnimatePresence>
 
-      <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-orange-500/30 transition-colors duration-300" />
+      <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-zinc-900 dark:border-white/30 transition-colors duration-300" />
     </motion.li>
   );
 };

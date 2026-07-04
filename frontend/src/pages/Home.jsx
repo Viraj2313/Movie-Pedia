@@ -313,7 +313,7 @@ const Home = ({ setSelectedMovie }) => {
   return (
     <div className="min-h-screen dark:text-gray-100 dark:bg-gray-900">
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 dark:from-zinc-900 via-white to-zinc-50 dark:to-zinc-900 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800" />
 
         <div className="relative px-4 py-12 sm:py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
@@ -323,7 +323,7 @@ const Home = ({ setSelectedMovie }) => {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4"
             >
-              <span className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-900 dark:from-zinc-200 dark:via-zinc-400 dark:to-white bg-clip-text text-transparent">
                 Moviepedia
               </span>
             </motion.h1>
@@ -347,7 +347,7 @@ const Home = ({ setSelectedMovie }) => {
             >
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                  <Search className="w-5 h-5 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
+                  <Search className="w-5 h-5 text-gray-400 group-focus-within:text-zinc-900 dark:text-white transition-colors" />
                 </div>
 
                 <input
@@ -357,7 +357,7 @@ const Home = ({ setSelectedMovie }) => {
                   onChange={handleInputChange}
                   onFocus={() => setShowRecents(true)}
                   onBlur={() => setTimeout(() => setShowRecents(false), 150)}
-                  className="w-full pl-12 pr-28 py-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-lg focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none transition-all duration-300"
+                  className="w-full pl-12 pr-28 py-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-lg focus:border-zinc-900 dark:border-white focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-white/10 focus:outline-none transition-all duration-300"
                   placeholder="Search for movies... (press '/' to focus)"
                   autoFocus
                 />
@@ -376,7 +376,7 @@ const Home = ({ setSelectedMovie }) => {
                         <button
                           type="button"
                           onClick={clearRecentSearches}
-                          className="text-xs text-orange-500 hover:text-orange-600 font-medium"
+                          className="text-xs text-zinc-900 dark:text-white hover:text-zinc-500 dark:hover:text-zinc-400 font-medium"
                         >
                           Clear all
                         </button>
@@ -429,7 +429,7 @@ const Home = ({ setSelectedMovie }) => {
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="absolute inset-y-2 right-2 flex items-center px-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 font-medium shadow-lg shadow-orange-500/25 transition-all duration-300"
+                  className="absolute inset-y-2 right-2 flex items-center px-6 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 rounded-xl hover:from-zinc-700 hover:to-zinc-800 dark:hover:from-zinc-300 dark:hover:to-zinc-200 font-medium shadow-lg shadow-zinc-900/20 dark:shadow-white/20 transition-all duration-300"
                 >
                   Search
                 </motion.button>
@@ -444,12 +444,12 @@ const Home = ({ setSelectedMovie }) => {
             >
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-orange-500 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-zinc-900 dark:border-white transition-all"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters & Sort
                 {activeFilterCount > 0 && (
-                  <span className="px-1.5 py-0.5 bg-orange-500 text-white text-xs rounded-full min-w-[20px] text-center">
+                  <span className="px-1.5 py-0.5 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs rounded-full min-w-[20px] text-center">
                     {activeFilterCount}
                   </span>
                 )}
@@ -493,7 +493,7 @@ const Home = ({ setSelectedMovie }) => {
                             key={opt.value}
                             onClick={() => setTypeFilter(opt.value)}
                             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${typeFilter === opt.value
-                              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
+                              ? "bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20"
                               : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                               }`}
                           >
@@ -515,7 +515,7 @@ const Home = ({ setSelectedMovie }) => {
                           value={yearInput}
                           onChange={(e) => setYearInput(e.target.value)}
                           placeholder="e.g. 2024"
-                          className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-orange-500 outline-none transition-all text-sm"
+                          className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-zinc-900 dark:border-white outline-none transition-all text-sm"
                         />
                       </div>
 
@@ -528,7 +528,7 @@ const Home = ({ setSelectedMovie }) => {
                           <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-orange-500 outline-none transition-all text-sm appearance-none cursor-pointer"
+                            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-zinc-900 dark:border-white outline-none transition-all text-sm appearance-none cursor-pointer"
                           >
                             {SORT_OPTIONS.map((opt) => (
                               <option key={opt.value} value={opt.value}>
@@ -548,7 +548,7 @@ const Home = ({ setSelectedMovie }) => {
                           setYearFilter("");
                           setSortBy("default");
                         }}
-                        className="text-sm text-orange-500 hover:text-orange-600 font-medium transition-colors"
+                        className="text-sm text-zinc-900 dark:text-white hover:text-zinc-500 dark:hover:text-zinc-400 font-medium transition-colors"
                       >
                         Clear All Filters
                       </button>
@@ -623,7 +623,7 @@ const Home = ({ setSelectedMovie }) => {
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full"
+                            className="w-8 h-8 border-2 border-zinc-900 dark:border-white border-t-transparent rounded-full"
                           />
                         )}
                       </div>
@@ -641,9 +641,9 @@ const Home = ({ setSelectedMovie }) => {
                           initial={{ scale: 0.8 }}
                           animate={{ scale: 1 }}
                           transition={{ type: "spring", stiffness: 200 }}
-                          className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl flex items-center justify-center"
+                          className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700 dark:from-zinc-800 dark:to-zinc-700 rounded-2xl flex items-center justify-center"
                         >
-                          <Film className="w-10 h-10 text-orange-500" />
+                          <Film className="w-10 h-10 text-zinc-900 dark:text-white" />
                         </motion.div>
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                           Start Your Movie Journey

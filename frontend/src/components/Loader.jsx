@@ -17,14 +17,14 @@ const Loader = ({ size = "default", message = "" }) => {
     <div className="flex flex-col justify-center items-center min-h-[200px] gap-4">
       <div className={`relative ${sizeClasses[size]}`}>
         <motion.div
-          className="absolute inset-0 rounded-full border-4 border-orange-200 dark:border-orange-900"
+          className="absolute inset-0 rounded-full border-4 border-zinc-200 dark:border-zinc-800"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         />
 
         <motion.div
-          className="absolute inset-0 rounded-full border-4 border-transparent border-t-orange-500 border-r-orange-400"
+          className="absolute inset-0 rounded-full border-4 border-transparent border-t-zinc-900 border-r-zinc-800 dark:border-t-white dark:border-r-zinc-200"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -34,7 +34,7 @@ const Loader = ({ size = "default", message = "" }) => {
         />
 
         <motion.div
-          className="absolute inset-2 rounded-full bg-gradient-to-br from-orange-400 to-orange-600"
+          className="absolute inset-2 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white"
           animate={{
             scale: [1, 0.8, 1],
             opacity: [0.8, 0.5, 0.8],
@@ -51,7 +51,7 @@ const Loader = ({ size = "default", message = "" }) => {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className={`${dotSize[size]} rounded-full bg-orange-500`}
+            className={`${dotSize[size]} rounded-full bg-zinc-50 dark:bg-zinc-800/500`}
             animate={{
               y: [0, -8, 0],
               opacity: [0.5, 1, 0.5],

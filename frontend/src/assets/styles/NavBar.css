@@ -20,7 +20,7 @@ nav {
 }
 
 .tabs a:hover h2 {
-  color: #ff5722;
+  color: #18181b;
   transition: color 0.3s ease;
 }
 
@@ -48,7 +48,7 @@ button {
   font-size: 14px;
   height: 40px;
   font-size: 14px;
-  background-color: #ff5722;
+  background-color: #18181b;
   color: white;
   border: none;
   border-radius: 4px;
@@ -113,7 +113,7 @@ body {
     font-size: 14px;
     height: 40px;
     font-size: 14px;
-    background-color: #ff5722;
+    background-color: #18181b;
     color: white;
     border: none;
     border-radius: 4px;

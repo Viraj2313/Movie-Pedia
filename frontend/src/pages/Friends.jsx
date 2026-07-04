@@ -167,7 +167,7 @@ const Friends = ({ user }) => {
     >
       <motion.h1
         variants={itemVariants}
-        className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+        className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-zinc-800 to-zinc-900 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent"
       >
         Friends
       </motion.h1>
@@ -179,7 +179,7 @@ const Friends = ({ user }) => {
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
         >
           <div className="flex items-center gap-2 mb-4">
-            <Users className="w-5 h-5 text-orange-500" />
+            <Users className="w-5 h-5 text-zinc-900 dark:text-white" />
             <h3 className="text-lg font-semibold">Your Friends</h3>
           </div>
 
@@ -197,13 +197,13 @@ const Friends = ({ user }) => {
                   >
                     <Link
                       to={`/chatHub?senderId=${userId}&receiverId=${friendItem.friendId}`}
-                      className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-orange-50 dark:hover:bg-gray-600 transition-colors group"
+                      className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800/50 dark:hover:bg-gray-600 transition-colors group"
                     >
-                      <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-200 dark:to-white rounded-full flex items-center justify-center text-white font-semibold">
                         {friendItem.friendName.charAt(0).toUpperCase()}
                       </div>
                       <span className="flex-1 font-medium">{friendItem.friendName}</span>
-                      <MessageCircle className="w-4 h-4 text-gray-400 group-hover:text-orange-500 transition-colors" />
+                      <MessageCircle className="w-4 h-4 text-gray-400 group-hover:text-zinc-900 dark:text-white transition-colors" />
                     </Link>
                   </motion.li>
                 ))}
@@ -222,7 +222,7 @@ const Friends = ({ user }) => {
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
         >
           <div className="flex items-center gap-2 mb-4">
-            <Search className="w-5 h-5 text-orange-500" />
+            <Search className="w-5 h-5 text-zinc-900 dark:text-white" />
             <h3 className="text-lg font-semibold">Find Friends</h3>
           </div>
 
@@ -232,14 +232,14 @@ const Friends = ({ user }) => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Username or ID..."
-              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 dark:bg-gray-700 dark:text-white transition-all outline-none"
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-zinc-900 dark:border-white focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-white/10 dark:bg-gray-700 dark:text-white transition-all outline-none"
             />
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={searching}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl font-medium disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white dark:from-zinc-200 dark:to-white dark:text-zinc-900 py-3 rounded-xl font-medium disabled:opacity-60"
             >
               {searching ? (
                 <motion.div
@@ -315,10 +315,10 @@ const Friends = ({ user }) => {
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-orange-500" />
+              <UserPlus className="w-5 h-5 text-zinc-900 dark:text-white" />
               <h3 className="text-lg font-semibold">Requests</h3>
               {friendRequests.length > 0 && (
-                <span className="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-medium rounded-full">
+                <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 text-xs font-medium rounded-full">
                   {friendRequests.length}
                 </span>
               )}
