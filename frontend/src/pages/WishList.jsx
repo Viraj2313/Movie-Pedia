@@ -2,12 +2,189 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Trash2, Film } from "lucide-react";
+import { Trash2, Film, Eye, X, Check } from "lucide-react";
 import { MovieCardSkeleton } from "../components/Skeletons";
 import LoginRequired from "@/components/LoginRequired";
 import { useUser } from "@/context/UserContext";
 import nProgress from "nprogress";
 import { toast } from "react-toastify";
+import StarRating from "@/components/StarRating";
+
+const WatchModal = ({ item, onClose, onSuccess }) => {
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setSubmitting(true);
+      nProgress.start();
+      await axios.post(
+        "/api/watch-history/add",
+        {
+          movieId: item.movieId,
+          movieTitle: item.movieTitle,
+          moviePoster: item.moviePoster,
+          rating: rating || null,
+          review: review || "",
+          watchedAt: new Date().toISOString(),
+        },
+        { withCredentials: true }
+      );
+      await axios.delete("/api/remove", {
+        data: { movieId: item.movieId },
+        withCredentials: true,
+      });
+      toast.success(`"${item.movieTitle}" moved to your diary!`);
+      onSuccess(item.movieId);
+      onClose();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
+      nProgress.done();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-800"
+      >
+        <div className="flex justify-between items-start mb-5">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Mark as Watched</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">{item.movieTitle}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors mt-0.5">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Rating (Optional)</label>
+            <StarRating rating={rating} setRating={setRating} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Review (Optional)</label>
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              rows="3"
+              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-zinc-900 dark:focus:border-white text-gray-900 dark:text-white resize-none text-sm transition-colors"
+              placeholder="What did you think?"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors font-medium text-sm"
+          >
+            Cancel
+          </button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="flex items-center gap-2 px-5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 rounded-lg font-medium text-sm transition-colors disabled:opacity-60"
+          >
+            <Check size={16} />
+            {submitting ? "Saving..." : "Mark as Watched"}
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+const WishlistCard = ({ item, index, onRemove, onClick, onWatched }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+      <AnimatePresence>
+        {showModal && (
+          <WatchModal
+            item={item}
+            onClose={() => setShowModal(false)}
+            onSuccess={onWatched}
+          />
+        )}
+      </AnimatePresence>
+      <motion.li
+        layout
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+        whileHover={{ y: -8, scale: 1.02 }}
+        className="relative cursor-pointer overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 shadow-lg group"
+      >
+        <div
+          className="relative overflow-hidden aspect-[2/3]"
+          onClick={() => onClick(item)}
+        >
+          {item.moviePoster !== "N/A" ? (
+            <motion.img
+              src={item.moviePoster}
+              alt={item.movieTitle}
+              className="w-full h-full object-cover"
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.4 }}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 p-4 text-center">
+              <Film className="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-2" />
+              <span className="text-zinc-400 dark:text-zinc-500 font-medium text-sm leading-tight line-clamp-3">{item.movieTitle}</span>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 p-3">
+          <h3 className="text-white font-semibold text-sm leading-tight mb-2.5 line-clamp-2 drop-shadow-lg">
+            {item.movieTitle}
+          </h3>
+          <div className="flex gap-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowModal(true);
+              }}
+              className="flex items-center justify-center gap-1.5 flex-1 px-2 py-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-medium rounded-lg transition-colors"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              Watched
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove(item);
+              }}
+              className="flex items-center justify-center p-1.5 bg-red-500/80 hover:bg-red-600 text-white rounded-lg transition-colors"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </motion.button>
+          </div>
+        </div>
+
+        <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-zinc-900 dark:border-white/30 transition-colors pointer-events-none" />
+      </motion.li>
+    </>
+  );
+};
 
 const WishList = ({ setSelectedMovie }) => {
   const [wishlist, setWishlist] = useState(null);
@@ -47,7 +224,7 @@ const WishList = ({ setSelectedMovie }) => {
 
       if (response.status === 200) {
         toast.success("Movie removed from wishlist");
-        getWishlist();
+        setWishlist(prev => prev.filter(m => m.movieId !== movie.movieId));
         nProgress.done();
       }
     } catch (error) {
@@ -96,58 +273,14 @@ const WishList = ({ setSelectedMovie }) => {
         >
           <AnimatePresence mode="popLayout">
             {wishlist.map((item, index) => (
-              <motion.li
+              <WishlistCard
                 key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="relative cursor-pointer overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 shadow-lg group"
-              >
-                <div
-                  className="relative overflow-hidden aspect-[2/3]"
-                  onClick={() => handleClick(item)}
-                >
-                  {item.moviePoster !== "N/A" ? (
-                    <motion.img
-                      src={item.moviePoster}
-                      alt={item.movieTitle}
-                      className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.4 }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 p-4 text-center">
-                      <Film className="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-2" />
-                      <span className="text-zinc-400 dark:text-zinc-500 font-medium text-sm leading-tight line-clamp-3">{item.movieTitle}</span>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
-                </div>
-
-                <div className="absolute inset-x-0 bottom-0 p-4">
-                  <h3 className="text-white font-semibold text-base leading-tight mb-3 line-clamp-2 drop-shadow-lg">
-                    {item.movieTitle}
-                  </h3>
-
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemove(item);
-                    }}
-                    className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Remove
-                  </motion.button>
-                </div>
-
-                <div className="absolute inset-0 rounded-xl border border-white/10 group-hover:border-zinc-900 dark:border-white/30 transition-colors pointer-events-none" />
-              </motion.li>
+                item={item}
+                index={index}
+                onRemove={handleRemove}
+                onClick={handleClick}
+                onWatched={(movieId) => setWishlist(prev => prev.filter(m => m.movieId !== movieId))}
+              />
             ))}
           </AnimatePresence>
         </motion.ul>
