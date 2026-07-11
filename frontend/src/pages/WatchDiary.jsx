@@ -166,7 +166,7 @@ const WatchDiary = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                        className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
                     >
                         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center">
                             <Film className="w-6 h-6 text-blue-500 mx-auto mb-2" />
@@ -202,6 +202,15 @@ const WatchDiary = () => {
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">
                                 Reviews
+                            </p>
+                        </div>
+                        <div className={`rounded-xl p-4 shadow-sm text-center ${stats.weekStreak > 0 ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800' : 'bg-white dark:bg-gray-800'}`}>
+                            <span className="text-2xl mx-auto mb-2 block leading-none">🔥</span>
+                            <p className={`text-2xl font-bold ${stats.weekStreak > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-900 dark:text-white'}`}>
+                                {stats.weekStreak > 0 ? `${stats.weekStreak}w` : '—'}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                                Streak
                             </p>
                         </div>
                     </motion.div>

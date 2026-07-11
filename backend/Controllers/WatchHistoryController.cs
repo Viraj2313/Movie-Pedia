@@ -152,12 +152,56 @@ namespace MovieApiApp.Controllers
                 .AverageAsync(w => (double?)w.Rating) ?? 0;
             var totalReviews = await _context.WatchHistories.CountAsync(w => w.UserId == userId && !string.IsNullOrEmpty(w.Review));
 
+            var watchedDates = await _context.WatchHistories
+                .Where(w => w.UserId == userId)
+                .Select(w => w.WatchedAt)
+                .ToListAsync();
+
+            var watchedWeeks = watchedDates
+                .Select(d => {
+                    var day = (int)d.DayOfWeek;
+                    var monday = d.AddDays(day == 0 ? -6 : -(day - 1)).Date;
+                    return monday;
+                })
+                .Distinct()
+                .OrderByDescending(w => w)
+                .ToList();
+
+            int streak = 0;
+            var today = DateTime.UtcNow.Date;
+            var dayOfWeek = (int)today.DayOfWeek;
+            var currentWeekStart = today.AddDays(dayOfWeek == 0 ? -6 : -(dayOfWeek - 1));
+
+            if (watchedWeeks.Count > 0)
+            {
+                var expected = watchedWeeks[0] == currentWeekStart || watchedWeeks[0] == currentWeekStart.AddDays(-7)
+                    ? watchedWeeks[0]
+                    : (DateTime?)null;
+
+                if (expected.HasValue)
+                {
+                    foreach (var week in watchedWeeks)
+                    {
+                        if (week == expected.Value)
+                        {
+                            streak++;
+                            expected = expected.Value.AddDays(-7);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
             return Ok(new
             {
                 totalWatched,
                 totalRated,
                 averageRating = Math.Round(avgRating, 1),
-                totalReviews
+                totalReviews,
+                weekStreak = streak
             });
         }
 

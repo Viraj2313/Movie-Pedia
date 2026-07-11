@@ -27,6 +27,49 @@ namespace MovieApiApp.Controllers
             var totalComments = await _context.Comments.CountAsync(c => c.UserId == userId);
             var wishlistCount = await _context.Wishlists.CountAsync(w => w.UserId == userId);
 
+            var watchedDates = await _context.WatchHistories
+                .Where(w => w.UserId == userId)
+                .Select(w => w.WatchedAt)
+                .ToListAsync();
+
+            var watchedWeeks = watchedDates
+                .Select(d => {
+                    var day = (int)d.DayOfWeek;
+                    var monday = d.AddDays(day == 0 ? -6 : -(day - 1)).Date;
+                    return monday;
+                })
+                .Distinct()
+                .OrderByDescending(w => w)
+                .ToList();
+
+            int weekStreak = 0;
+            var today = DateTime.UtcNow.Date;
+            var dayOfWeek = (int)today.DayOfWeek;
+            var currentWeekStart = today.AddDays(dayOfWeek == 0 ? -6 : -(dayOfWeek - 1));
+
+            if (watchedWeeks.Count > 0)
+            {
+                var expected = watchedWeeks[0] == currentWeekStart || watchedWeeks[0] == currentWeekStart.AddDays(-7)
+                    ? watchedWeeks[0]
+                    : (DateTime?)null;
+
+                if (expected.HasValue)
+                {
+                    foreach (var week in watchedWeeks)
+                    {
+                        if (week == expected.Value)
+                        {
+                            weekStreak++;
+                            expected = expected.Value.AddDays(-7);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
             var recentActivity = await _context.ActivityLogs
                 .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.CreatedAt)
@@ -67,7 +110,8 @@ namespace MovieApiApp.Controllers
                     averageRating = Math.Round(avgRating, 1),
                     totalReviews,
                     totalComments,
-                    wishlistCount
+                    wishlistCount,
+                    weekStreak
                 },
                 recentActivity,
                 favoriteMovies,
